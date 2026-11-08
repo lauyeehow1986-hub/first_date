@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GovTech FirstDate: Actuarial, WebGIS & Demographic Policy Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .zone-hover:hover {
+      filter: brightness(1.25);
+      cursor: pointer;
+      stroke-width: 2.5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.4);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.7);
+    }
+    .tab-active {
+      border-bottom: 2px solid #6366f1;
+      color: #ffffff;
+      background: rgba(99, 102, 241, 0.12);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col custom-scrollbar">
+
+  <!-- Top Global Announcement Banner -->
+  <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-900/40 px-4 py-2 text-xs text-center text-slate-300 flex items-center justify-center gap-2">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Official Singapore Demographic Simulation</span>
+    <span>Calibrated to SingStat 2025 Tables (M810581, M810091, M830184) & Data.gov.sg PSD Headcount</span>
+    <a href="https://github.com/lauyeehow1986-hub/first_date" target="_blank" class="underline text-indigo-400 hover:text-indigo-300 ml-1">GitHub Repo &rarr;</a>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 font-black text-white text-lg">
+          FD
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-extrabold text-white tracking-tight">GovTech FirstDate Actuarial & WebGIS Policy Hub</h1>
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">v2.5 FastMCP</span>
+          </div>
+          <p class="text-xs text-slate-400">Computational Demography, Multipartite Matching, Housing Latency & TFR Reversal Simulation</p>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Header -->
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="text-right">
+          <div class="text-[10px] text-slate-400 uppercase font-sans">National TFR (2025)</div>
+          <div class="text-base font-extrabold text-rose-400">0.87 <span class="text-[10px] font-normal text-slate-500">(29,864 Births)</span></div>
+        </div>
+        <div class="h-8 w-px bg-slate-800"></div>
+        <div class="text-right">
+          <div class="text-[10px] text-slate-400 uppercase font-sans">FirstDate Pilot Lift</div>
+          <div class="text-base font-extrabold text-amber-400">+0.0042 <span class="text-[10px] font-normal text-slate-500">(+144 Births/yr)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-auto custom-scrollbar flex gap-1 border-t border-slate-800/80 text-xs font-medium">
+      <button onclick="switchTab('exec-summary')" id="tab-btn-exec-summary" class="tab-active px-3.5 py-2.5 transition-colors whitespace-nowrap text-slate-200">
+        1. Executive Summary & Insights
+      </button>
+      <button onclick="switchTab('webgis')" id="tab-btn-webgis" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        2. WebGIS Spatial Map (Planning Areas)
+      </button>
+      <button onclick="switchTab('golden-band')" id="tab-btn-golden-band" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        3. Golden Ageband & CMIO Demographics
+      </button>
+      <button onclick="switchTab('asymmetry')" id="tab-btn-asymmetry" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        4. Match Asymmetries & Friction
+      </button>
+      <button onclick="switchTab('financial-ledger')" id="tab-btn-financial-ledger" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        5. Financial Ledger & Singlehood Arbitrage
+      </button>
+      <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        6. Interactive Match Simulator
+      </button>
+      <button onclick="switchTab('platform-benchmark')" id="tab-btn-platform-benchmark" class="px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400">
+        7. Dating Apps Benchmark & Reforms
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: EXECUTIVE SUMMARY & STRATEGIC INSIGHTS -->
+    <!-- ========================================================================= -->
+    <section id="panel-exec-summary" class="space-y-6">
+      
+      <!-- Top Banner Callout -->
+      <div class="bg-gradient-to-r from-rose-950/40 via-slate-900 to-indigo-950/40 border border-rose-900/30 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-start gap-4">
+          <div class="h-10 w-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 font-bold text-lg">
+            !
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Macro Verdict: GovTech FirstDate Cannot Reverse Singapore's TFR on Its Own</h2>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+              While GovTech FirstDate successfully mitigates online identity fraud and informational asymmetry through Singpass employment verification, our FastMCP actuarial audit proves it operates on an addressable pool that accounts for only <strong>2.3% of the single population</strong>. At baseline, the pilot yields approximately <strong>+143.8 live births annually</strong>, lifting national TFR by just <strong>+0.00419 points</strong>—less than 8.4% of the minimum policy significance threshold (+0.0500).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Gross Public Service Base</div>
+          <div class="text-2xl font-black text-white mt-1">157,997</div>
+          <div class="text-xs text-rose-400 mt-1 font-mono">-65,000 Healthcare Excluded</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Unpartnered Singles (Ages 21–45)</div>
+          <div class="text-2xl font-black text-amber-400 mt-1">20,690</div>
+          <div class="text-xs text-slate-400 mt-1">50.2% already partnered (BTO queues)</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Prime Golden Ageband</div>
+          <div class="text-2xl font-black text-emerald-400 mt-1">F: 25–29 | M: 27–31</div>
+          <div class="text-xs text-slate-400 mt-1">Conception pre-34 avoids ovarian cliff</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Turan Bipartite Capacity</div>
+          <div class="text-2xl font-black text-indigo-400 mt-1">88.08%</div>
+          <div class="text-xs text-slate-400 mt-1">-12.57% intra-agency collision loss</div>
+        </div>
+      </div>
+
+      <!-- Multi-Stage Funnel Breakdown -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h3 class="text-sm font-bold text-white mb-2">The Multi-Stage Attrition Funnel: From Singpass Registration to Live Birth</h3>
+        <p class="text-xs text-slate-400 mb-4">Every proposed pairing undergoes compound filtering across administrative constraints, physical reveal hazard, and housing wait latency:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-2 text-center text-xs">
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-indigo-400">3,828</div>
+            <div class="text-[10px] text-slate-400 mt-1">Annual Active Registered Pool</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-amber-400">3,350</div>
+            <div class="text-[10px] text-slate-400 mt-1">Valid Cross-Agency Pairs (-12.6%)</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-amber-400">2,613</div>
+            <div class="text-[10px] text-slate-400 mt-1">In-Person Dates (-22% Photo Hazard)</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-emerald-400">1,288</div>
+            <div class="text-[10px] text-slate-400 mt-1">2nd Date Progressions (38.4%)</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-emerald-400">386</div>
+            <div class="text-[10px] text-slate-400 mt-1">Committed Courtships (1.2 yrs)</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <div class="font-bold text-indigo-300">104.2</div>
+            <div class="text-[10px] text-slate-400 mt-1">ROM Solemnizations (2.7% Funnel)</div>
+          </div>
+          <div class="bg-slate-950 border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-3">
+            <div class="font-bold text-emerald-400">143.8</div>
+            <div class="text-[10px] text-slate-400 mt-1">Completed Live Births (Post BTO)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Core Structural Takeaways -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-amber-400 mb-1">1. The "Partnered Single" Illusion</div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            SingStat records classify anyone unmarried as single. However, NPTD surveys confirm that <strong>50.2% of singles aged 21–45 are already attached</strong>, peaking at <strong>53.8% in ages 25–34</strong> because couples ballot for BTO flats 3.5 years before their formal ROM date.
+          </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-rose-400 mb-1">2. The 3.5-Year BTO Housing Latency</div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Dating app success at age 32 does not mean conceiving at age 32. Adding 1.2 years of courtship and 2.5–3.5 years of construction delay pushes conception to age <strong>35.5</strong>, accelerating female subfertility (33.3%) and natural miscarriage (18.4%).
+          </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-emerald-400 mb-1">3. The Singlehood Arbitrage at 35</div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Turning age 35 unlocks 2-room Flexi BTOs and up to S$115,000 in CPF grants for singles. Staying single eliminates divorce asset division risks and preserves <strong>over S$650,000 in liquid wealth</strong>, creating an economic penalty on marriage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: WEBGIS SPATIAL EFFECTIVENESS MAP -->
+    <!-- ========================================================================= -->
+    <section id="panel-webgis" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-white">Singapore Planning Area Spatial Effectiveness Map</h2>
+            <p class="text-xs text-slate-400">Click a planning region to inspect childhood SES, resale housing prices, and FirstDate Matchmaking Effectiveness (FEI)</p>
+          </div>
+          <div class="flex gap-2 text-xs">
+            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">OCR Optimal (80+)</span>
+            <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">RCR Moderate (70-79)</span>
+            <span class="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-400 font-medium">CCR Resilient (&lt;50)</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Vector Map (7 cols) -->
+          <div class="lg:col-span-7 bg-slate-950 rounded-xl border border-slate-800 p-3 aspect-[16/10] flex items-center justify-center relative">
+            <svg viewBox="0 0 880 520" class="w-full h-full">
+              <defs>
+                <linearGradient id="gradOCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.8" />
+                  <stop offset="100%" stop-color="#059669" stop-opacity="0.9" />
+                </linearGradient>
+                <linearGradient id="gradRCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8" />
+                  <stop offset="100%" stop-color="#d97706" stop-opacity="0.9" />
+                </linearGradient>
+                <linearGradient id="gradCCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.8" />
+                  <stop offset="100%" stop-color="#e11d48" stop-opacity="0.9" />
+                </linearGradient>
+              </defs>
+
+              <!-- OCR North -->
+              <path id="svg-north" class="zone-hover transition-all duration-200"
+                    d="M 320 60 L 460 50 L 520 120 L 480 170 L 360 170 L 310 120 Z"
+                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
+                    onclick="loadGisDetail('north')" />
+              <text x="400" y="115" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR North</text>
+              <text x="400" y="132" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Woodlands / Yishun</text>
+
+              <!-- OCR North-East -->
+              <path id="svg-ne" class="zone-hover transition-all duration-200"
+                    d="M 525 110 L 670 100 L 710 180 L 610 220 L 520 180 Z"
+                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
+                    onclick="loadGisDetail('ne')" />
+              <text x="610" y="155" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR North-East</text>
+              <text x="610" y="172" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Punggol / Sengkang</text>
+
+              <!-- OCR West -->
+              <path id="svg-west" class="zone-hover transition-all duration-200"
+                    d="M 120 160 L 310 160 L 330 290 L 260 360 L 110 320 L 80 230 Z"
+                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
+                    onclick="loadGisDetail('west')" />
+              <text x="200" y="250" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR West</text>
+              <text x="200" y="267" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Jurong / CCK / Batok</text>
+
+              <!-- OCR East -->
+              <path id="svg-east" class="zone-hover transition-all duration-200"
+                    d="M 680 185 L 820 190 L 850 300 L 710 310 L 625 240 Z"
+                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
+                    onclick="loadGisDetail('east')" />
+              <text x="740" y="245" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR East</text>
+              <text x="740" y="262" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Tampines / Bedok</text>
+
+              <!-- RCR Mature -->
+              <path id="svg-rcr" class="zone-hover transition-all duration-200"
+                    d="M 345 200 L 510 190 L 605 240 L 580 340 L 360 330 L 335 270 Z"
+                    fill="url(#gradRCR_main)" stroke="#b45309" stroke-width="1.5"
+                    onclick="loadGisDetail('rcr')" />
+              <text x="460" y="260" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">RCR Mature</text>
+              <text x="460" y="277" font-size="10" fill="#fffbeb" text-anchor="middle" pointer-events="none">Bishan / Toa Payoh</text>
+
+              <!-- CCR Core Central -->
+              <path id="svg-ccr" class="zone-hover transition-all duration-200"
+                    d="M 380 340 L 520 335 L 540 430 L 410 440 L 370 380 Z"
+                    fill="url(#gradCCR_main)" stroke="#be123c" stroke-width="1.5"
+                    onclick="loadGisDetail('ccr')" />
+              <text x="455" y="385" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">CCR High-SES</text>
+              <text x="455" y="402" font-size="10" fill="#ffe4e6" text-anchor="middle" pointer-events="none">Bt Timah / Tanglin</text>
+
+              <!-- Civil Service Hub Markers -->
+              <circle cx="340" cy="315" r="6" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
+              <text x="340" y="303" font-size="9" font-weight="bold" fill="#818cf8" text-anchor="middle">Buona Vista MOE Hub</text>
+
+              <circle cx="515" cy="415" r="6" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
+              <text x="515" y="433" font-size="9" font-weight="bold" fill="#818cf8" text-anchor="middle">Treasury / CBD</text>
+            </svg>
+          </div>
+
+          <!-- Region Detail Inspector (5 cols) -->
+          <div class="lg:col-span-5 bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                <div>
+                  <span id="gis-badge" class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-400">
+                    OCR Heartland (Top Target)
+                  </span>
+                  <h3 id="gis-title" class="text-base font-bold text-white mt-1">OCR West: Jurong West & CCK</h3>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-slate-400">FEI Score</div>
+                  <div id="gis-fei" class="text-2xl font-black text-emerald-400">89.8 <span class="text-xs font-normal text-slate-500">/100</span></div>
+                </div>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                  <span class="text-slate-400">Representative Subzones:</span>
+                  <span id="gis-subzones" class="font-semibold text-white">Boon Lay, Jurong Gateway, Gombak</span>
+                </div>
+                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                  <span class="text-slate-400">HDB 4-Rm Resale Median (2025):</span>
+                  <span id="gis-hdb" class="font-semibold text-white">S$490,000 – S$550,000</span>
+                </div>
+                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                  <span class="text-slate-400">Commute to Buona Vista MOE:</span>
+                  <span id="gis-commute" class="font-semibold text-emerald-400">22 – 32 mins (Low Transit Tax)</span>
+                </div>
+                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                  <span class="text-slate-400">Proximity Housing Support (PHG):</span>
+                  <span id="gis-phg" class="font-semibold text-emerald-400">1.08x (High Grandparent Proximity)</span>
+                </div>
+                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
+                  <span class="text-slate-400">Tuition Reference-Point Outlay:</span>
+                  <span id="gis-tuition" class="font-semibold text-white">S$450 – S$600 / mo / child</span>
+                </div>
+              </div>
+
+              <p id="gis-narrative" class="text-xs text-slate-400 mt-3 p-3 rounded-lg bg-slate-900 border border-slate-800 leading-relaxed">
+                Dense cluster of junior-to-mid executive civil servants (MX13/MX12). Close transit proximity to the Buona Vista tech/education belt minimizes evening exhaustion, while high grandparent proximity unlocks the S$30k Proximity Housing Grant and informal childcare.
+              </p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+              <span>2nd Date Conversion: <strong id="gis-conv" class="text-emerald-400">61.4%</strong></span>
+              <span>Expected Fertility: <strong id="gis-kids" class="text-white">1.58 kids</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: GOLDEN AGEBAND & CMIO DEMOGRAPHICS -->
+    <!-- ========================================================================= -->
+    <section id="panel-golden-band" class="hidden space-y-6">
+      
+      <!-- Golden Ageband Timeline -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">The Golden Ageband: Gender & Racial Timelines</h2>
+        <p class="text-xs text-slate-400 mb-4">
+          Accounting for tertiary graduation, 2-year National Service (NS) catch-up, and a mandatory <strong>3.5-year courtship + BTO queue delay</strong> before first conception:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-950 border border-emerald-500/30 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-emerald-400 text-sm">Female Golden Ageband</span>
+              <span class="text-xs font-mono font-bold text-white">25 – 29 Years (Peak: 26–28)</span>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+              <li>Matching at age 27 results in conception post-BTO at age <strong>30.5</strong>.</li>
+              <li>Avoids the maternal age-37 ovarian reserve cliff (<25,000 oocytes remaining).</li>
+              <li>Expected completed children: <strong>1.53 – 1.62 kids</strong> per married union.</li>
+              <li>Eligible for MOH 75% Assisted Reproductive Technology (ART/IVF) co-funding prior to age 40.</li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-950 border border-indigo-500/30 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-indigo-400 text-sm">Male Golden Ageband</span>
+              <span class="text-xs font-mono font-bold text-white">27 – 31 Years (Peak: 28–30)</span>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+              <li>Accommodates 2 years of full-time National Service (NS) and university graduation at age 25.</li>
+              <li>Allows 2–3 years of savings accumulation for S$70k+ wedding banquet and renovation deposits.</li>
+              <li>Conception occurs at <strong>31.5 to 34.5</strong>, preventing the <strong>paternal age 40+ Sperm DFI jump</strong> (+15.2% miscarriage risk).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- CMIO Demographic Odds Matrix -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h3 class="text-sm font-bold text-white mb-1">CMIO Community Odds of Marriage & Childbirth (SingStat 2025 Calibrated)</h3>
+        <p class="text-xs text-slate-400 mb-4">Empirical singlehood proportions, annual ASMR (/1,000), 5-year marriage odds, ASFR (/1,000), and completed fertility post-BTO wait:</p>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3">Race & TFR</th>
+                <th class="py-2.5 px-3">Age Band</th>
+                <th class="py-2.5 px-3">Singlehood Rate (M/F)</th>
+                <th class="py-2.5 px-3">Annual ASMR (M/F)</th>
+                <th class="py-2.5 px-3">5-Yr Marriage Odds (M/F)</th>
+                <th class="py-2.5 px-3">Annual ASFR (/1k)</th>
+                <th class="py-2.5 px-3 font-semibold text-emerald-400">Post-BTO Expected Kids</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-mono">
+              <!-- Malay -->
+              <tr class="bg-emerald-500/5">
+                <td class="py-2 px-3 font-sans font-bold text-emerald-400" rowspan="3">Malay<br><span class="text-[10px] font-normal text-slate-400">TFR 1.53</span></td>
+                <td class="py-2 px-3">20–24</td>
+                <td class="py-2 px-3">96.5% / 91.5%</td>
+                <td class="py-2 px-3">19.5 / 38.6</td>
+                <td class="py-2 px-3 text-emerald-400 font-bold">9.3% / 17.6%</td>
+                <td class="py-2 px-3">29.5</td>
+                <td class="py-2 px-3 font-bold text-emerald-400">2.85</td>
+              </tr>
+              <tr class="bg-emerald-500/5">
+                <td class="py-2 px-3 font-bold text-emerald-300">25–29 (Golden)</td>
+                <td class="py-2 px-3">72.5% / 58.2%</td>
+                <td class="py-2 px-3">88.2 / 118.5</td>
+                <td class="py-2 px-3 text-emerald-400 font-bold">35.7% / 44.7%</td>
+                <td class="py-2 px-3">84.6</td>
+                <td class="py-2 px-3 font-bold text-emerald-400">2.69</td>
+              </tr>
+              <tr class="bg-emerald-500/5">
+                <td class="py-2 px-3">30–34</td>
+                <td class="py-2 px-3">37.5% / 24.5%</td>
+                <td class="py-2 px-3">82.4 / 76.2</td>
+                <td class="py-2 px-3 text-emerald-400 font-bold">33.8% / 31.7%</td>
+                <td class="py-2 px-3">98.2</td>
+                <td class="py-2 px-3 font-bold text-emerald-400">2.22</td>
+              </tr>
+
+              <!-- Chinese -->
+              <tr>
+                <td class="py-2 px-3 font-sans font-bold text-rose-400" rowspan="3">Chinese<br><span class="text-[10px] font-normal text-slate-400">TFR 0.70</span></td>
+                <td class="py-2 px-3 font-bold text-emerald-300">25–29 (Golden)</td>
+                <td class="py-2 px-3">88.2% / 76.5%</td>
+                <td class="py-2 px-3">52.4 / 82.5</td>
+                <td class="py-2 px-3 text-indigo-400 font-bold">23.0% / 33.8%</td>
+                <td class="py-2 px-3">28.5</td>
+                <td class="py-2 px-3 font-bold text-rose-300">1.23</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3">30–34</td>
+                <td class="py-2 px-3">49.5% / 36.8%</td>
+                <td class="py-2 px-3">98.6 / 112.4</td>
+                <td class="py-2 px-3 text-indigo-400 font-bold">38.9% / 43.0%</td>
+                <td class="py-2 px-3">62.4</td>
+                <td class="py-2 px-3 font-bold text-rose-300">1.01</td>
+              </tr>
+              <tr>
+                <td class="py-2 px-3 text-rose-400">35–39 (Cliff)</td>
+                <td class="py-2 px-3">25.6% / 21.8%</td>
+                <td class="py-2 px-3">81.2 / 54.8</td>
+                <td class="py-2 px-3 text-indigo-400 font-bold">33.4% / 24.0%</td>
+                <td class="py-2 px-3">40.1</td>
+                <td class="py-2 px-3 font-bold text-rose-400">0.62</td>
+              </tr>
+
+              <!-- Indian -->
+              <tr class="bg-slate-950/40">
+                <td class="py-2 px-3 font-sans font-bold text-cyan-400" rowspan="2">Indian<br><span class="text-[10px] font-normal text-slate-400">TFR 0.92</span></td>
+                <td class="py-2 px-3 font-bold text-emerald-300">25–29 (Golden)</td>
+                <td class="py-2 px-3">84.5% / 71.0%</td>
+                <td class="py-2 px-3">58.4 / 91.2</td>
+                <td class="py-2 px-3 text-cyan-400 font-bold">25.3% / 36.6%</td>
+                <td class="py-2 px-3">41.2</td>
+                <td class="py-2 px-3 font-bold text-cyan-300">1.62</td>
+              </tr>
+              <tr class="bg-slate-950/40">
+                <td class="py-2 px-3">30–34</td>
+                <td class="py-2 px-3">46.2% / 33.5%</td>
+                <td class="py-2 px-3">94.1 / 101.5</td>
+                <td class="py-2 px-3 text-cyan-400 font-bold">37.5% / 39.8%</td>
+                <td class="py-2 px-3">74.5</td>
+                <td class="py-2 px-3 font-bold text-cyan-300">1.33</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: MATCH ASYMMETRIES & FRICTION -->
+    <!-- ========================================================================= -->
+    <section id="panel-asymmetry" class="hidden space-y-6">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">Asymmetric Pairings: Attrition, Rejection Penalties & ROI</h2>
+        <p class="text-xs text-slate-400 mb-4">
+          When matches deviate from demographic and hierarchical parity, the FastMCP graph solver applies empirical attrition penalties calibrated to SingStat marriage records:
+        </p>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3">Match Archetype</th>
+                <th class="py-2.5 px-3">Friction Penalty</th>
+                <th class="py-2.5 px-3">2nd Date Conv.</th>
+                <th class="py-2.5 px-3">Est. ROM Rate</th>
+                <th class="py-2.5 px-3">Conception Age (F/M)</th>
+                <th class="py-2.5 px-3 font-semibold text-emerald-400">ROI (Live Births/100 Matches)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-mono">
+              <tr class="bg-emerald-500/5">
+                <td class="py-2.5 px-3 font-sans font-bold text-emerald-400">Symmetric Peers (M29 MX12 + F27 MX12)</td>
+                <td class="py-2.5 px-3 text-slate-400">Minimal (-4.0%)</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-bold">60.7%</td>
+                <td class="py-2.5 px-3">2.73%</td>
+                <td class="py-2.5 px-3">30.5 / 32.5</td>
+                <td class="py-2.5 px-3 font-bold text-emerald-400">4.18 Births (100% Index)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-200">Older Groom +7y (M34 MX11 + F27 MX12)</td>
+                <td class="py-2.5 px-3 text-amber-400">Moderate (-24.0%)</td>
+                <td class="py-2.5 px-3 text-amber-400 font-bold">42.5%</td>
+                <td class="py-2.5 px-3">1.91%</td>
+                <td class="py-2.5 px-3">30.5 / 37.5</td>
+                <td class="py-2.5 px-3 font-bold text-amber-300">2.92 Births (-30.1%)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-rose-300">Older Groom +12y (M39 MX10 + F27 MX12)</td>
+                <td class="py-2.5 px-3 text-rose-400">Severe (-68.0%)</td>
+                <td class="py-2.5 px-3 text-rose-400 font-bold">15.0%</td>
+                <td class="py-2.5 px-3">0.68%</td>
+                <td class="py-2.5 px-3">30.5 / 42.5</td>
+                <td class="py-2.5 px-3 font-bold text-rose-400">1.04 Births (-75.1%)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-amber-300">Older Bride +3y (M27 MX13 + F30 MX12)</td>
+                <td class="py-2.5 px-3 text-amber-400">Hypogamy (-36.0%)</td>
+                <td class="py-2.5 px-3 text-amber-400 font-bold">40.9%</td>
+                <td class="py-2.5 px-3">1.84%</td>
+                <td class="py-2.5 px-3">33.5 / 30.5</td>
+                <td class="py-2.5 px-3 font-bold text-amber-300">2.65 Births (-36.6%)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-rose-400">Older Bride +6y (M26 MX13 + F32 MX11)</td>
+                <td class="py-2.5 px-3 text-rose-400">Biological Cliff (-65%)</td>
+                <td class="py-2.5 px-3 text-rose-400 font-bold">16.2%</td>
+                <td class="py-2.5 px-3">0.73%</td>
+                <td class="py-2.5 px-3">35.5 / 29.5</td>
+                <td class="py-2.5 px-3 font-bold text-rose-400">0.92 Births (-78.0%)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-indigo-300">Senior Male / Jr Female (M34 MX10 + F26 MX13)</td>
+                <td class="py-2.5 px-3 text-amber-400">Power Distance (-45%)</td>
+                <td class="py-2.5 px-3 text-amber-400 font-bold">22.3%</td>
+                <td class="py-2.5 px-3">1.00%</td>
+                <td class="py-2.5 px-3">29.5 / 37.5</td>
+                <td class="py-2.5 px-3 font-bold text-amber-300">1.62 Births (-61.2%)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-rose-400">AMLA Inter-Faith (Chinese M + Malay F)</td>
+                <td class="py-2.5 px-3 text-rose-400">Legal Conversion (-64%)</td>
+                <td class="py-2.5 px-3 text-rose-400 font-bold">22.5%</td>
+                <td class="py-2.5 px-3">1.01%</td>
+                <td class="py-2.5 px-3">30.5 / 32.5</td>
+                <td class="py-2.5 px-3 font-bold text-emerald-400">2.24 Births (-46.4%)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Explanatory Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-rose-400 mb-1">AMLA Statutory Conversion Requirement</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            In Singapore, under the <strong>Administration of Muslim Law Act (AMLA)</strong>, a non-Muslim must formally convert to Islam before solemnising a marriage at the Registry of Muslim Marriages (ROMM). The attendant lifestyle and legal requirements (halal diet, circumcision, Faraid inheritance laws superseding civil wills) impose a <strong>64% drop-off penalty</strong> on inter-faith blind dates.
+          </p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-amber-400 mb-1">Paternal Sperm DFI vs Maternal Ovarian Reserve</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            When male age exceeds 40, Sperm DNA Fragmentation Index (DFI) adds a <strong>+15.2% surcharge to miscarriage risks</strong> (`PMC13032545`) if the maternal partner is 35+. Conversely, older brides matching at age 32+ experience a <strong>33.3% subfertility rate</strong> because the 3.5-year BTO queue delay postpones first pregnancy to age 35.5.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: FINANCIAL LEDGER & SINGLEHOOD ARBITRAGE -->
+    <!-- ========================================================================= -->
+    <section id="panel-financial-ledger" class="hidden space-y-6">
+      
+      <!-- Financial Outlay Breakdown -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">0-to-22-Year Child Financial Commitment vs The Singlehood Arbitrage</h2>
+        <p class="text-xs text-slate-400 mb-4">Cumulative expenditures across three household tiers vs. upfront wedding sunk costs and divorce downside risks:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-xs font-bold text-emerald-400 uppercase">Public Anchor Tier</div>
+            <div class="text-xl font-black text-white mt-1">S$260,000 <span class="text-xs font-normal text-slate-400">Gross</span></div>
+            <div class="text-xs text-emerald-400 font-semibold mt-1">Net Outlay: S$208,820</div>
+            <p class="text-[11px] text-slate-400 mt-2">Restructured hospital delivery, ECDA Anchor Operator (AOP) infant care, MOE schooling, local poly/university.</p>
+          </div>
+          <div class="bg-slate-950 border border-indigo-500/30 rounded-xl p-4">
+            <div class="text-xs font-bold text-indigo-400 uppercase">Civil Service Mid-Tier (Standard)</div>
+            <div class="text-xl font-black text-white mt-1">S$564,200 <span class="text-xs font-normal text-slate-400">Gross</span></div>
+            <div class="text-xs text-indigo-300 font-semibold mt-1">Net Outlay: S$513,020</div>
+            <p class="text-[11px] text-slate-400 mt-2">Private hospital delivery, 10-yr foreign domestic worker (FDW), secondary academic enrichment, NUS/NTU tuition.</p>
+          </div>
+          <div class="bg-slate-950 border border-rose-500/30 rounded-xl p-4">
+            <div class="text-xs font-bold text-rose-400 uppercase">High-SES Private Tier (CCR Enclave)</div>
+            <div class="text-xl font-black text-white mt-1">S$1,160,400 <span class="text-xs font-normal text-slate-400">Gross</span></div>
+            <div class="text-xs text-rose-300 font-semibold mt-1">Net Outlay: S$1,109,220</div>
+            <p class="text-[11px] text-slate-400 mt-2">Gleneagles delivery, premium preschool, elite preparatory tuition, overseas university tuition & living.</p>
+          </div>
+        </div>
+
+        <!-- The Singlehood Arbitrage Breakdown Box -->
+        <div class="bg-slate-950 border border-amber-500/30 rounded-xl p-4">
+          <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">The Economic Balance Sheet: Why Singlehood Preserves Over S$650,000 in Wealth</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
+            <div>
+              <span class="font-bold text-rose-400 block mb-1">Costs Borne by Getting Married:</span>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-slate-200">Wedding & Renovation Sunk Cost:</strong> S$85,000 – S$130,000 liquid capital drain before child conception.</li>
+                <li><strong class="text-slate-200">0–22y Child Financial Outlay:</strong> S$513,020 net cash outlay per child.</li>
+                <li><strong class="text-slate-200">Divorce Exposure (Women's Charter):</strong> Section 112 matrimonial asset division + Section 113 spousal maintenance + HDB 5-year MOP forced surrender penalty.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="font-bold text-emerald-400 block mb-1">Economic Arbitrage of Staying Single:</span>
+              <ul class="list-disc list-inside space-y-1 text-slate-400">
+                <li><strong class="text-slate-200">HDB Single Scheme at Age 35:</strong> Unlocks 2-room Flexi BTOs across Standard, Plus, and Prime estates.</li>
+                <li><strong class="text-slate-200">Resale Housing Grants:</strong> Up to S$115,000 in CPF grants (Enhanced CPF Housing Grant + Proximity Housing Grant).</li>
+                <li><strong class="text-slate-200">Total Net Financial Advantage:</strong> Preserves <strong>over S$650,000 in CPF and liquid net worth</strong> with zero legal exposure.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 6: INTERACTIVE MATCH SIMULATOR -->
+    <!-- ========================================================================= -->
+    <section id="panel-simulator" class="hidden space-y-6">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-1">Interactive Match Simulator: FirstDate Pairwise Odds & Financial Ledger</h2>
+        <p class="text-xs text-slate-400 mb-5">Adjust ages, MX grades, race, and planning zone to simulate 2nd date survival, post-BTO conception timing, and expected completed fertility:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-6">
+          <div>
+            <label class="block font-semibold text-slate-200 mb-1">Female Officer Age & MX:</label>
+            <div class="flex gap-2">
+              <input id="sim-f-age" type="number" value="27" min="21" max="45" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
+              <select id="sim-f-mx" class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
+                <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
+                <option value="MX12" selected>MX12 (Assistant Director: S$4.4k-7.5k)</option>
+                <option value="MX11">MX11 (Senior AD: S$6.0k-9.0k)</option>
+                <option value="MX10">MX10 (Senior Deputy Dir: S$9k-15.6k)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-200 mb-1">Male Officer Age & MX:</label>
+            <div class="flex gap-2">
+              <input id="sim-m-age" type="number" value="29" min="21" max="48" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
+              <select id="sim-m-mx" class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
+                <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
+                <option value="MX12">MX12 (Assistant Director: S$4.4k-7.5k)</option>
+                <option value="MX11" selected>MX11 (Senior AD: S$6.0k-9.0k)</option>
+                <option value="MX10">MX10 (Senior Deputy Dir: S$9k-15.6k)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-200 mb-1">Race & Community:</label>
+            <select id="sim-race" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
+              <option value="Chinese" selected>Chinese (TFR 0.70)</option>
+              <option value="Malay">Malay (TFR 1.53)</option>
+              <option value="Indian">Indian (TFR 0.92)</option>
+              <option value="Others_Eurasian">Others / Eurasian (TFR 0.89)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-200 mb-1">Childhood Origin & Housing Tier:</label>
+            <select id="sim-tier" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
+              <option value="OCR_Heartland" selected>OCR Heartland (Jurong / Punggol)</option>
+              <option value="RCR_Mature">RCR Mature (Bishan / Toa Payoh)</option>
+              <option value="CCR_Enclave">CCR Enclave (Bukit Timah)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Calculated Live KPI Outputs -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+          <div>
+            <span class="text-slate-400 block text-[11px]">2nd Date Survival:</span>
+            <span id="out-survival" class="text-lg font-black text-emerald-400">60.7%</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Conception Timing:</span>
+            <span id="out-conception" class="text-lg font-black text-white">F: 30.5 | M: 32.5</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Miscarriage Risk:</span>
+            <span id="out-miscarriage" class="text-lg font-black text-amber-400">11.2%</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Expected Completed Kids:</span>
+            <span id="out-kids" class="text-lg font-black text-emerald-400">1.53 kids</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">MOH 75% IVF Co-Funding:</span>
+            <span id="out-ivf" class="text-lg font-black text-emerald-400">ELIGIBLE (&lt;40)</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Net 0-22y Child Outlay:</span>
+            <span id="out-cost" class="text-lg font-black text-white">S$513,020</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 7: DATING APPS BENCHMARK & POLICY REFORMS -->
+    <!-- ========================================================================= -->
+    <section id="panel-platform-benchmark" class="hidden space-y-6">
+      
+      <!-- Comparison Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">FirstDate vs. Commercial Matchmaking Platforms Benchmark</h2>
+        <p class="text-xs text-slate-400 mb-4">Why commercial apps incentivize perpetual singlehood, whereas FirstDate optimizes for ROM exit:</p>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3">Platform</th>
+                <th class="py-2.5 px-3">Verification Integrity</th>
+                <th class="py-2.5 px-3">Business Model Incentive</th>
+                <th class="py-2.5 px-3">Active Scale (SG)</th>
+                <th class="py-2.5 px-3 font-semibold text-emerald-400">National TFR Impact</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 font-mono">
+              <tr class="bg-indigo-500/5">
+                <td class="py-2.5 px-3 font-sans font-bold text-indigo-400">GovTech FirstDate</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">100% Singpass / CorpPass</td>
+                <td class="py-2.5 px-3 text-slate-300">Public Sector ROM Marriage Exit</td>
+                <td class="py-2.5 px-3">3,828 users/yr</td>
+                <td class="py-2.5 px-3 font-bold text-emerald-400">+0.0042 TFR Points (High Integrity, Constrained Scale)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-200">Coffee Meets Bagel (CMB)</td>
+                <td class="py-2.5 px-3 text-amber-400">Self-Declared LinkedIn</td>
+                <td class="py-2.5 px-3 text-slate-400">Subscription & Coffee Beans (Monetizes Churn Failure)</td>
+                <td class="py-2.5 px-3">~120,000</td>
+                <td class="py-2.5 px-3 text-slate-400">Negligible (Swipe Paralysis & Ghosting)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-200">Hinge</td>
+                <td class="py-2.5 px-3 text-slate-400">Self-Declared Instagram</td>
+                <td class="py-2.5 px-3 text-slate-400">Subscription & Boosts ("Designed to be Deleted")</td>
+                <td class="py-2.5 px-3">~160,000</td>
+                <td class="py-2.5 px-3 text-slate-400">Negligible (Chat Abandonment Friction)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-200">Bumble</td>
+                <td class="py-2.5 px-3 text-slate-400">Basic Photo Verification</td>
+                <td class="py-2.5 px-3 text-slate-400">Premium Spotlight & SuperSwipes</td>
+                <td class="py-2.5 px-3">~210,000</td>
+                <td class="py-2.5 px-3 text-slate-400">Negligible (Casual-to-Serious Skew)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-slate-200">Kopi Date</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">Curated Offline Interview</td>
+                <td class="py-2.5 px-3 text-slate-300">Experiential Blind Conversation Package</td>
+                <td class="py-2.5 px-3">~8,000</td>
+                <td class="py-2.5 px-3 text-slate-400">Negligible (Boutique Scale Barrier)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-sans font-medium text-emerald-300">Muzz (Muzmatch)</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">Selfie & ID Vetting</td>
+                <td class="py-2.5 px-3 text-slate-300">Muslim Halal Marriage Solemnization</td>
+                <td class="py-2.5 px-3">~45,000</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-semibold">Moderate Localized (Supported by High Malay TFR 1.53)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5 Policy Reforms to Move the Needle -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h3 class="text-sm font-bold text-white mb-2">The 5 Government Policy Levers to Meaningfully Move Singapore's TFR</h3>
+        <p class="text-xs text-slate-400 mb-4">Dating apps solve initial connection; state policy must resolve downstream housing latency and childcare deficits:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-950 border border-emerald-500/20 rounded-lg p-3">
+            <span class="font-bold text-emerald-400 block mb-1">1. BTO "Parenthood Fast-Track" (&lt;2.0 Yrs)</span>
+            <p class="text-slate-400 leading-relaxed">Grant verified FirstDate couples marrying in the Golden Ageband immediate access to Shorter Waiting Time (SWT) BTOs, preventing the 3.5-year latency that pushes women into the age-37 ovarian cliff (+164.5 births/yr).</p>
+          </div>
+          <div class="bg-slate-950 border border-emerald-500/20 rounded-lg p-3">
+            <span class="font-bold text-emerald-400 block mb-1">2. 10-Day Dedicated HFMD Quarantine Leave</span>
+            <p class="text-slate-400 leading-relaxed">Institute dedicated child medical quarantine leave distinct from standard 6-day GPCL, resolving the 9.5-day annual preschool childcare leave deficit (+192.0 births/yr).</p>
+          </div>
+          <div class="bg-slate-950 border border-indigo-500/20 rounded-lg p-3">
+            <span class="font-bold text-indigo-400 block mb-1">3. Include MOHH Healthcare Cluster Workers</span>
+            <p class="text-slate-400 leading-relaxed">Amend FirstDate Clause 6.1.1 to incorporate the ~65,000 SingHealth, NHG Health, and NUHS workers, balancing gender queues across statutory boards (+78.4 births/yr).</p>
+          </div>
+          <div class="bg-slate-950 border border-indigo-500/20 rounded-lg p-3">
+            <span class="font-bold text-indigo-400 block mb-1">4. Pre-Key Interim PPHS Rental Subsidies</span>
+            <p class="text-slate-400 leading-relaxed">Provide subsidized open-market PPHS rental flats upon filing ROM notice, allowing immediate cohabitation and family planning while waiting for keys (+88.2 births/yr).</p>
+          </div>
+          <div class="bg-slate-950 border border-amber-500/20 rounded-lg p-3">
+            <span class="font-bold text-amber-400 block mb-1">5. Wedding & Reno Sunk Cost CPF Offset</span>
+            <p class="text-slate-400 leading-relaxed">Permit couples to draw up to S$30,000 from CPF-OA for initial marriage and BTO renovation expenses, preserving liquid savings for infant care (+52.0 births/yr).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-4 text-center text-xs text-slate-500">
+    Singapore GovTech FirstDate Actuarial & WebGIS Policy Hub · Developed with Antigravity IDE & FastMCP Engine · For Research & Demographic Evaluation Only
+  </footer>
+
+  <!-- Script for Tab Navigation, GIS Inspector, and Live Simulation -->
+  <script>
+    function switchTab(tabId) {
+      const tabs = [
+        'exec-summary', 'webgis', 'golden-band', 
+        'asymmetry', 'financial-ledger', 'simulator', 'platform-benchmark'
+      ];
+      
+      tabs.forEach(t => {
+        const panel = document.getElementById('panel-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tabId) {
+          panel.classList.remove('hidden');
+          btn.className = "tab-active px-3.5 py-2.5 transition-colors whitespace-nowrap text-white font-semibold";
+        } else {
+          panel.classList.add('hidden');
+          btn.className = "px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400";
+        }
+      });
+    }
+
+    const gisData = {
+      west: {
+        badge: "OCR Heartland (Top Target)",
+        badgeClass: "bg-emerald-500/20 text-emerald-400",
+        title: "OCR West: Jurong West & CCK",
+        fei: "89.8",
+        feiColor: "text-emerald-400",
+        subzones: "Boon Lay, Jurong Gateway, Gombak",
+        hdb: "S$490,000 – S$550,000",
+        commute: "22 – 32 mins (Low Transit Tax)",
+        commuteColor: "text-emerald-400",
+        phg: "1.08x (High Grandparent Proximity)",
+        phgColor: "text-emerald-400",
+        tuition: "S$450 – S$600 / mo / child",
+        narrative: "Dense cluster of junior-to-mid executive civil servants (MX13/MX12). Close transit proximity to the Buona Vista tech/education belt minimizes evening exhaustion, while high grandparent proximity unlocks the S$30k Proximity Housing Grant and informal childcare.",
+        conv: "61.4%",
+        kids: "1.58 kids"
+      },
+      ne: {
+        badge: "OCR Heartland (High Volume)",
+        badgeClass: "bg-emerald-500/20 text-emerald-400",
+        title: "OCR North-East: Punggol & Sengkang",
+        fei: "88.4",
+        feiColor: "text-emerald-400",
+        subzones: "Punggol Field, Compassvale, Rivervale",
+        hdb: "S$540,000 – S$610,000",
+        commute: "45 – 52 mins (Moderate Commute)",
+        commuteColor: "text-amber-400",
+        phg: "1.05x (Dense Young Parent Enclave)",
+        phgColor: "text-emerald-400",
+        tuition: "S$500 – S$700 / mo / child",
+        narrative: "Dense cluster of newly minted civil servant couples. High availability of government Anchor Operator (AOP) infant-care centres in Punggol and Sengkang eases preschool entry, though a 50-minute evening MRT commute creates infant pickup stress.",
+        conv: "59.2%",
+        kids: "1.54 kids"
+      },
+      north: {
+        badge: "OCR Heartland (Affordable)",
+        badgeClass: "bg-emerald-500/20 text-emerald-400",
+        title: "OCR North: Woodlands & Yishun",
+        fei: "84.6",
+        feiColor: "text-emerald-400",
+        subzones: "Woodlands East, Midview, Khatib",
+        hdb: "S$480,000 – S$530,000",
+        commute: "48 – 56 mins (High Commute Tax)",
+        commuteColor: "text-rose-400",
+        phg: "1.10x (Multi-Gen Support)",
+        phgColor: "text-emerald-400",
+        tuition: "S$420 – S$550 / mo / child",
+        narrative: "Most affordable entry-level resale housing in Singapore. Strong inter-generational co-residence rates where grandparents live nearby. High Malay and Chinese family support buffers childcare fees, despite a 50+ min transit commute to Central CBD.",
+        conv: "57.8%",
+        kids: "1.64 kids"
+      },
+      east: {
+        badge: "OCR Heartland (Established East)",
+        badgeClass: "bg-emerald-500/20 text-emerald-400",
+        title: "OCR East: Tampines & Bedok",
+        fei: "82.5",
+        feiColor: "text-emerald-400",
+        subzones: "Tampines Central, Simei, Bedok North",
+        hdb: "S$530,000 – S$620,000",
+        commute: "38 – 46 mins (Moderate Commute)",
+        commuteColor: "text-amber-400",
+        phg: "1.04x (High East Coast Amenity)",
+        phgColor: "text-emerald-400",
+        tuition: "S$550 – S$750 / mo / child",
+        narrative: "Established residential heartland with extensive community support infrastructure. High stability in housing and school proximity. Solid marriage conversion rates, though slightly older demographic profile compared to Punggol/Sengkang.",
+        conv: "55.4%",
+        kids: "1.49 kids"
+      },
+      rcr: {
+        badge: "RCR Mature Estates (High Barrier)",
+        badgeClass: "bg-amber-500/20 text-amber-400",
+        title: "RCR Mature: Bishan & Toa Payoh",
+        fei: "76.2",
+        feiColor: "text-amber-400",
+        subzones: "Bishan East, Marymount, Toa Payoh",
+        hdb: "S$880,000 – S$1,080,000 (Million-Dollar Resale)",
+        commute: "18 – 24 mins (Fast Transit to Hubs)",
+        commuteColor: "text-emerald-400",
+        phg: "0.94x (Moderate Singlehood Delay)",
+        phgColor: "text-amber-400",
+        tuition: "S$950 – S$1,400 / mo / child",
+        narrative: "Prime central accessibility and elite school catchment zones. However, exorbitant 4-room resale prices (S$900k–S$1.1M) force civil servants to delay marriage until reaching upper-senior grades (MX11/MX11A) to afford home loans, compressing female fertility into the 33–36 cliff window.",
+        conv: "48.6%",
+        kids: "1.26 kids"
+      },
+      ccr: {
+        badge: "CCR Enclave (Hyper-Competitive)",
+        badgeClass: "bg-rose-500/20 text-rose-400",
+        title: "CCR High-SES: Bukit Timah & Tanglin",
+        fei: "41.5",
+        feiColor: "text-rose-400",
+        subzones: "Sixth Avenue, Coronation, Nassim",
+        hdb: "Non-HDB / S$2,200,000+ Condominiums",
+        commute: "12 – 16 mins (Direct CBD Proximity)",
+        commuteColor: "text-emerald-400",
+        phg: "0.82x (High Singlehood & Hypogamy)",
+        phgColor: "text-rose-400",
+        tuition: "S$2,200+ / mo / child (Private Benchmark)",
+        narrative: "Lowest FirstDate effectiveness. Officers raised in CCR enclaves internalize high private consumption benchmarks (Gleneagles delivery, premium preschool, overseas university) that require >S$1.1M per child. Severe educational and lifestyle homogamy expectations lead to extreme rejection rates on blind dates.",
+        conv: "28.5%",
+        kids: "0.88 kids"
+      }
+    };
+
+    function loadGisDetail(zone) {
+      const d = gisData[zone];
+      if (!d) return;
+
+      document.getElementById('gis-badge').textContent = d.badge;
+      document.getElementById('gis-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + d.badgeClass;
+      document.getElementById('gis-title').textContent = d.title;
+      document.getElementById('gis-fei').innerHTML = d.fei + ' <span class="text-xs font-normal text-slate-500">/100</span>';
+      document.getElementById('gis-fei').className = "text-2xl font-black " + d.feiColor;
+      document.getElementById('gis-subzones').textContent = d.subzones;
+      document.getElementById('gis-hdb').textContent = d.hdb;
+      document.getElementById('gis-commute').textContent = d.commute;
+      document.getElementById('gis-commute').className = "font-semibold " + d.commuteColor;
+      document.getElementById('gis-phg').textContent = d.phg;
+      document.getElementById('gis-phg').className = "font-semibold " + d.phgColor;
+      document.getElementById('gis-tuition').textContent = d.tuition;
+      document.getElementById('gis-narrative').textContent = d.narrative;
+      document.getElementById('gis-conv').textContent = d.conv;
+      document.getElementById('gis-kids').textContent = d.kids;
+    }
+
+    function calculateLiveSimulation() {
+      const fAge = parseFloat(document.getElementById('sim-f-age').value) || 27;
+      const mAge = parseFloat(document.getElementById('sim-m-age').value) || 29;
+      const race = document.getElementById('sim-race').value;
+      const tier = document.getElementById('sim-tier').value;
+
+      // Post 3.5y BTO Conception Timing
+      const fConc = fAge + 3.5;
+      const mConc = mAge + 3.5;
+
+      // Age Gap Penalty
+      const ageDiff = mAge - fAge;
+      let agePenalty = 0.05;
+      if (ageDiff >= 4 && ageDiff <= 6) agePenalty = 0.24;
+      else if (ageDiff >= 7) agePenalty = 0.45;
+      else if (ageDiff <= -2) agePenalty = 0.38;
+
+      // Survival to 2nd Date
+      const photoHazard = 0.22;
+      const survival = (1.0 - agePenalty) * (1.0 - 0.04) * (1.0 - 0.03) * (1.0 - 0.12) * (1.0 - photoHazard);
+
+      // Miscarriage Risk Curve
+      let misc = 0.112;
+      if (fConc >= 35 && fConc < 38) misc = 0.184;
+      else if (fConc >= 38 && fConc < 40) misc = 0.350;
+      else if (fConc >= 40) misc = 0.520;
+      if (fConc >= 35 && mConc >= 40) misc += 0.152; // Paternal DFI surcharge
+
+      // Completed Fertility Multipliers
+      const raceMult = { Chinese: 0.80, Malay: 1.76, Indian: 1.06, Others_Eurasian: 1.02 }[race] || 1.0;
+      const tierMult = { OCR_Heartland: 1.05, RCR_Mature: 0.94, CCR_Enclave: 0.82 }[tier] || 1.0;
+
+      let baseKids = 1.62;
+      if (fAge >= 25 && fAge <= 29) baseKids = 1.53;
+      else if (fAge >= 30 && fAge <= 34) baseKids = 1.26;
+      else if (fAge >= 35 && fAge <= 39) baseKids = 0.77;
+      else if (fAge >= 40) baseKids = 0.59;
+
+      const expectedKids = Math.max(0.2, baseKids * raceMult * tierMult);
+
+      let netCost = "S$513,020";
+      if (tier === "CCR_Enclave") netCost = "S$1,109,220";
+      else if (tier === "OCR_Heartland") netCost = "S$482,000";
+
+      document.getElementById('out-survival').textContent = (survival * 100).toFixed(1) + "%";
+      document.getElementById('out-conception').textContent = "F: " + fConc.toFixed(1) + " | M: " + mConc.toFixed(1);
+      document.getElementById('out-miscarriage').textContent = (misc * 100).toFixed(1) + "%";
+      document.getElementById('out-kids').textContent = expectedKids.toFixed(2) + " kids";
+      document.getElementById('out-ivf').textContent = fConc < 40.0 ? "ELIGIBLE (<40)" : "EXPIRED (>=40)";
+      document.getElementById('out-ivf').className = fConc < 40.0 ? "text-lg font-black text-emerald-400" : "text-lg font-black text-rose-400";
+      document.getElementById('out-cost').textContent = netCost;
+    }
+  </script>
+</body>
+</html>
