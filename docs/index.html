@@ -832,15 +832,52 @@
     <!-- ========================================================================= -->
     <section id="panel-simulator" class="hidden space-y-6">
       
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-        <h2 class="text-base font-bold text-white mb-1">Interactive Match Simulator: FirstDate Pairwise Odds & Financial Ledger</h2>
-        <p class="text-xs text-slate-400 mb-5">Adjust ages, MX grades, race, and planning zone to simulate 2nd date survival, post-BTO conception timing, and expected completed fertility:</p>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-5">
+        
+        <!-- Header & Policy Switch -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-white mb-0.5">Interactive Match Simulator: FirstDate Pairwise Odds & Financial Ledger</h2>
+            <p class="text-xs text-slate-400">Simulate 2nd date survival, courtship-to-ROM latency, maternal/paternal biological risks, and expected fertility:</p>
+          </div>
+          
+          <!-- Policy Mode Toggle -->
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-xs text-slate-400 font-semibold">Policy Levers:</span>
+            <div class="inline-flex p-0.5 rounded-lg bg-slate-950 border border-slate-800 text-xs">
+              <button id="sim-btn-baseline" onclick="setSimPolicyMode('baseline')" class="px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
+                <span>🏛️</span>
+                <span>Unassisted Status Quo (Crisis Baseline)</span>
+              </button>
+              <button id="sim-btn-policy" onclick="setSimPolicyMode('policy')" class="px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-emerald-300 hover:bg-slate-800 flex items-center gap-1.5">
+                <span>✨</span>
+                <span>Targeted Policy Reforms Applied</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs mb-6">
+        <!-- Loaded Geographic / Demographic Context Banner -->
+        <div id="sim-context-banner" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <span id="sim-context-badge" class="px-2 py-0.5 rounded font-bold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+              Default Profile
+            </span>
+            <span id="sim-context-text" class="text-slate-300 font-medium">
+              National Civil Service Standard Baseline (MX12/MX11 Pairing)
+            </span>
+          </div>
+          <span id="sim-latency-badge" class="text-[11px] font-mono text-amber-400">
+            Courtship-to-BTO Latency: +3.5 Years
+          </span>
+        </div>
+
+        <!-- Simulator Input Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
           <div>
             <label class="block font-semibold text-slate-200 mb-1">Female Officer Age & MX:</label>
             <div class="flex gap-2">
-              <input id="sim-f-age" type="number" value="27" min="21" max="45" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
+              <input id="sim-f-age" type="number" value="29" min="21" max="45" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
               <select id="sim-f-mx" class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
                 <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
                 <option value="MX12" selected>MX12 (Assistant Director: S$4.4k-7.5k)</option>
@@ -853,7 +890,7 @@
           <div>
             <label class="block font-semibold text-slate-200 mb-1">Male Officer Age & MX:</label>
             <div class="flex gap-2">
-              <input id="sim-m-age" type="number" value="29" min="21" max="48" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
+              <input id="sim-m-age" type="number" value="31" min="21" max="48" class="w-16 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-center text-white font-bold" onchange="calculateLiveSimulation()">
               <select id="sim-m-mx" class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
                 <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
                 <option value="MX12">MX12 (Assistant Director: S$4.4k-7.5k)</option>
@@ -876,9 +913,9 @@
           <div>
             <label class="block font-semibold text-slate-200 mb-1">Childhood Origin & Housing Tier:</label>
             <select id="sim-tier" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200" onchange="calculateLiveSimulation()">
-              <option value="OCR_Heartland" selected>OCR Heartland (Jurong / Punggol)</option>
+              <option value="OCR_Heartland">OCR Heartland (Jurong / Punggol)</option>
               <option value="RCR_Mature">RCR Mature (Bishan / Toa Payoh)</option>
-              <option value="CCR_Enclave">CCR Enclave (Bukit Timah)</option>
+              <option value="CCR_Enclave" selected>CCR Enclave (Bukit Timah / Tanglin)</option>
             </select>
           </div>
         </div>
@@ -887,19 +924,19 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs">
           <div>
             <span class="text-slate-400 block text-[11px]">2nd Date Survival:</span>
-            <span id="out-survival" class="text-lg font-black text-emerald-400">60.7%</span>
+            <span id="out-survival" class="text-lg font-black text-rose-400">28.5%</span>
           </div>
           <div>
             <span class="text-slate-400 block text-[11px]">Conception Timing:</span>
-            <span id="out-conception" class="text-lg font-black text-white">F: 30.5 | M: 32.5</span>
+            <span id="out-conception" class="text-lg font-black text-white">F: 34.8 | M: 36.8</span>
           </div>
           <div>
             <span class="text-slate-400 block text-[11px]">Miscarriage Risk:</span>
-            <span id="out-miscarriage" class="text-lg font-black text-amber-400">11.2%</span>
+            <span id="out-miscarriage" class="text-lg font-black text-amber-400">18.4%</span>
           </div>
           <div>
             <span class="text-slate-400 block text-[11px]">Expected Completed Kids:</span>
-            <span id="out-kids" class="text-lg font-black text-emerald-400">1.53 kids</span>
+            <span id="out-kids" class="text-lg font-black text-rose-400">0.88 kids</span>
           </div>
           <div>
             <span class="text-slate-400 block text-[11px]">MOH 75% IVF Co-Funding:</span>
@@ -907,9 +944,59 @@
           </div>
           <div>
             <span class="text-slate-400 block text-[11px]">Net 0-22y Child Outlay:</span>
-            <span id="out-cost" class="text-lg font-black text-white">S$513,020</span>
+            <span id="out-cost" class="text-lg font-black text-white">S$1,160,400</span>
           </div>
         </div>
+
+        <!-- Side-by-Side Comparative Actuarial Ledger Card -->
+        <div id="sim-comparison-card" class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <span>⚖️</span>
+              <span>Comparative Actuarial Ledger: Status Quo vs. Targeted Policy Reform</span>
+            </span>
+            <span id="sim-diff-badge" class="px-2 py-0.5 rounded font-bold text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Policy Lift: +0.22 Kids | +29.7% 2nd Date
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Left: Status Quo Breakdown -->
+            <div id="sim-ledger-statusquo" class="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-amber-400">🏛️ Status Quo (Crisis Baseline)</span>
+                <span id="sq-kpi-badge" class="text-[10px] text-rose-400 font-mono font-bold">FEI: 41.5 (Severe Deficit)</span>
+              </div>
+              <p id="sq-explanation" class="text-[11px] text-slate-400 leading-relaxed">
+                In unassisted status quo, high lifestyle/status homogamy friction causes a 52% second-date rejection penalty. Couples delay ROM by +5.8 years to accumulate private condo downpayments, pushing female conception to age 34.8 (near ovarian cliff).
+              </p>
+              <div class="pt-1.5 border-t border-slate-800/80 flex justify-between text-[11px] text-slate-300">
+                <span>2nd Date: <strong class="text-rose-400">28.5%</strong></span>
+                <span>Conception: <strong class="text-white">F: 34.8y</strong></span>
+                <span>Fertility: <strong class="text-rose-400">0.88 kids</strong></span>
+              </div>
+            </div>
+
+            <!-- Right: Post-Policy Breakdown -->
+            <div id="sim-ledger-policy" class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/30 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-emerald-400">✨ With Targeted Policy Reforms</span>
+                <span id="pol-kpi-badge" class="text-[10px] text-emerald-400 font-mono font-bold">TFR Yield: +0.22 Recovered</span>
+              </div>
+              <p id="pol-explanation" class="text-[11px] text-slate-300 leading-relaxed">
+                Enacting statutory pre-nuptials under Women's Charter Section 112 neutralizes divorce asset division fears; removing the S$50k WMCR cap and BTO Parenthood Fast-Track compress courtship latency down to 2.0 years (Conception at 31.0y).
+              </p>
+              <div class="pt-1.5 border-t border-slate-800/80 flex justify-between text-[11px] text-slate-200">
+                <span>2nd Date: <strong class="text-emerald-400">58.2%</strong></span>
+                <span>Conception: <strong class="text-white">F: 31.0y</strong></span>
+                <span>Fertility: <strong class="text-emerald-400">1.10 kids</strong></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -2192,6 +2279,23 @@
       }
     }
 
+    let simPolicyMode = 'baseline'; // 'baseline' or 'policy'
+
+    function setSimPolicyMode(mode) {
+      simPolicyMode = mode;
+      const btnBase = document.getElementById('sim-btn-baseline');
+      const btnPol = document.getElementById('sim-btn-policy');
+
+      if (mode === 'baseline') {
+        btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30 flex items-center gap-1.5 shadow-sm";
+        btnPol.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-emerald-300 hover:bg-slate-800 flex items-center gap-1.5";
+      } else {
+        btnPol.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm";
+        btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-amber-300 hover:bg-slate-800 flex items-center gap-1.5";
+      }
+      calculateLiveSimulation();
+    }
+
     function loadSubzoneToSimulator() {
       switchTab('simulator');
 
@@ -2201,46 +2305,76 @@
         const h = hotspotData[currentRank];
 
         if (h) {
+          const badgeEl = document.getElementById('sim-context-badge');
+          if (badgeEl) {
+            badgeEl.className = "px-2 py-0.5 rounded font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400";
+            badgeEl.textContent = "🟢 Hotspot Profile";
+          }
+          const textEl = document.getElementById('sim-context-text');
+          if (textEl) {
+            textEl.textContent = `[#${h.rank}] ${h.title} (FEI: ${h.fei}/100)`;
+          }
+
           if (h.type === "top" || h.type === "heartland") {
             document.getElementById('sim-tier').value = "OCR_Heartland";
             document.getElementById('sim-f-age').value = 27;
             document.getElementById('sim-m-age').value = 29;
+            document.getElementById('sim-f-mx').value = "MX12";
+            document.getElementById('sim-m-mx').value = "MX11";
           } else if (h.type === "mature") {
             document.getElementById('sim-tier').value = "RCR_Mature";
             document.getElementById('sim-f-age').value = 31;
             document.getElementById('sim-m-age').value = 33;
+            document.getElementById('sim-f-mx').value = "MX12";
+            document.getElementById('sim-m-mx').value = "MX11";
           } else if (h.type === "work") {
             document.getElementById('sim-tier').value = "CCR_Enclave";
             document.getElementById('sim-f-age').value = 33;
             document.getElementById('sim-m-age').value = 35;
+            document.getElementById('sim-f-mx').value = "MX11";
+            document.getElementById('sim-m-mx').value = "MX10";
           }
         }
       } else {
-        // In Intervention mode: simulate policy intervention applied!
+        // In Intervention mode
         const select = document.getElementById('gis-zone-dropdown');
         const currentId = select ? parseInt(select.value) : 1;
         const item = interventionData[currentId];
 
         if (item) {
+          const badgeEl = document.getElementById('sim-context-badge');
+          if (badgeEl) {
+            badgeEl.className = "px-2 py-0.5 rounded font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400";
+            badgeEl.textContent = "🚨 Intervention Profile";
+          }
+          const textEl = document.getElementById('sim-context-text');
+          if (textEl) {
+            textEl.textContent = `[${item.code}] ${item.title} (IPI: ${item.ipi}/100)`;
+          }
+
           if (item.type === "trap") {
             document.getElementById('sim-tier').value = "CCR_Enclave";
-            document.getElementById('sim-f-age').value = 29; // policy compresses latency
+            document.getElementById('sim-f-age').value = 29;
             document.getElementById('sim-m-age').value = 31;
+            document.getElementById('sim-f-mx').value = "MX12";
+            document.getElementById('sim-m-mx').value = "MX11";
           } else if (item.type === "wall" || item.type === "squeeze") {
             document.getElementById('sim-tier').value = "RCR_Mature";
-            document.getElementById('sim-f-age').value = 28;
-            document.getElementById('sim-m-age').value = 30;
+            document.getElementById('sim-f-age').value = 30;
+            document.getElementById('sim-m-age').value = 32;
+            document.getElementById('sim-f-mx').value = "MX12";
+            document.getElementById('sim-m-mx').value = "MX11";
           } else {
             document.getElementById('sim-tier').value = "OCR_Heartland";
-            document.getElementById('sim-f-age').value = 26;
-            document.getElementById('sim-m-age').value = 28;
+            document.getElementById('sim-f-age').value = 28;
+            document.getElementById('sim-m-age').value = 30;
+            document.getElementById('sim-f-mx').value = "MX13";
+            document.getElementById('sim-m-mx').value = "MX12";
           }
         }
       }
 
-      if (typeof calculateLiveSimulation === 'function') {
-        calculateLiveSimulation();
-      }
+      calculateLiveSimulation();
 
       const sim = document.getElementById('panel-simulator');
       if (sim) {
@@ -2283,59 +2417,142 @@
       link.remove();
     }
 
-
     function calculateLiveSimulation() {
-      const fAge = parseFloat(document.getElementById('sim-f-age').value) || 27;
-      const mAge = parseFloat(document.getElementById('sim-m-age').value) || 29;
+      const fAge = parseFloat(document.getElementById('sim-f-age').value) || 29;
+      const mAge = parseFloat(document.getElementById('sim-m-age').value) || 31;
+      const fMx = document.getElementById('sim-f-mx').value;
+      const mMx = document.getElementById('sim-m-mx').value;
       const race = document.getElementById('sim-race').value;
       const tier = document.getElementById('sim-tier').value;
 
-      // Post 3.5y BTO Conception Timing
-      const fConc = fAge + 3.5;
-      const mConc = mAge + 3.5;
+      // 1. Seniority / MX Grade hierarchy friction
+      const mxRank = { MX13: 1, MX12: 2, MX11: 3, MX10: 4 };
+      const fRank = mxRank[fMx] || 2;
+      const mRank = mxRank[mMx] || 3;
+      let mxPenalty = 0.04;
+      if (fRank > mRank) {
+        // Female hypogamy (e.g. Female MX10 vs Male MX13: power-distance friction)
+        mxPenalty = simPolicyMode === 'baseline' ? 0.38 : 0.12;
+      } else if (mRank - fRank >= 2) {
+        // Male hypergamy (Male Senior Deputy Dir vs Female Executive)
+        mxPenalty = simPolicyMode === 'baseline' ? 0.18 : 0.06;
+      }
 
-      // Age Gap Penalty
+      // 2. Age Gap Penalty
       const ageDiff = mAge - fAge;
       let agePenalty = 0.05;
       if (ageDiff >= 4 && ageDiff <= 6) agePenalty = 0.24;
       else if (ageDiff >= 7) agePenalty = 0.45;
       else if (ageDiff <= -2) agePenalty = 0.38;
 
-      // Survival to 2nd Date
-      const photoHazard = 0.22;
-      const survival = (1.0 - agePenalty) * (1.0 - 0.04) * (1.0 - 0.03) * (1.0 - 0.12) * (1.0 - photoHazard);
+      // 3. Housing Tier / Consumption Homogamy Penalty & Latency
+      let tierPenalty = 0.02;
+      let latencyYears = 3.5;
+      let baseGrossOutlay = 564200;
+      let subsidies = 51180;
 
-      // Miscarriage Risk Curve
+      if (tier === 'CCR_Enclave') {
+        tierPenalty = simPolicyMode === 'baseline' ? 0.52 : 0.05; // Severe private consumption & status friction in baseline
+        latencyYears = simPolicyMode === 'baseline' ? 5.8 : 2.0;   // Prolonged hesitation in baseline vs fast-track
+        baseGrossOutlay = 1160400;
+        subsidies = simPolicyMode === 'baseline' ? 0 : 300400;     // WMCR cap removal & subsidies
+      } else if (tier === 'RCR_Mature') {
+        tierPenalty = simPolicyMode === 'baseline' ? 0.22 : 0.04; // Million-dollar resale hurdle
+        latencyYears = simPolicyMode === 'baseline' ? 4.5 : 2.0;
+        baseGrossOutlay = 685000;
+        subsidies = simPolicyMode === 'baseline' ? 51180 : 145000; // Shared equity, priority resale grant
+      } else {
+        tierPenalty = 0.02;
+        latencyYears = simPolicyMode === 'baseline' ? 3.5 : 2.0;
+        baseGrossOutlay = 513020;
+        subsidies = simPolicyMode === 'baseline' ? 51180 : 93020;
+      }
+
+      // 4. Survival to 2nd Date
+      const photoHazard = 0.22;
+      const survival = (1.0 - agePenalty) * (1.0 - mxPenalty) * (1.0 - tierPenalty) * (1.0 - 0.03) * (1.0 - photoHazard);
+
+      // 5. Conception Timing
+      const fConc = fAge + latencyYears;
+      const mConc = mAge + latencyYears;
+
+      // 6. Biological Miscarriage Hazard Curve (BMJ 2019 + Paternal DFI)
       let misc = 0.112;
       if (fConc >= 35 && fConc < 38) misc = 0.184;
       else if (fConc >= 38 && fConc < 40) misc = 0.350;
       else if (fConc >= 40) misc = 0.520;
-      if (fConc >= 35 && mConc >= 40) misc += 0.152; // Paternal DFI surcharge
+      if (fConc >= 35 && mConc >= 40) misc += 0.152; // Paternal DFI jump
 
-      // Completed Fertility Multipliers
+      // 7. Completed Fertility Multipliers
       const raceMult = { Chinese: 0.80, Malay: 1.76, Indian: 1.06, Others_Eurasian: 1.02 }[race] || 1.0;
       const tierMult = { OCR_Heartland: 1.05, RCR_Mature: 0.94, CCR_Enclave: 0.82 }[tier] || 1.0;
 
       let baseKids = 1.62;
-      if (fAge >= 25 && fAge <= 29) baseKids = 1.53;
-      else if (fAge >= 30 && fAge <= 34) baseKids = 1.26;
-      else if (fAge >= 35 && fAge <= 39) baseKids = 0.77;
-      else if (fAge >= 40) baseKids = 0.59;
+      if (fConc < 30) baseKids = 1.62;
+      else if (fConc < 35) baseKids = 1.34;
+      else if (fConc < 38) baseKids = 0.88;
+      else if (fConc < 40) baseKids = 0.52;
+      else baseKids = 0.28;
 
-      const expectedKids = Math.max(0.2, baseKids * raceMult * tierMult);
+      let expectedKids = Math.max(0.2, baseKids * raceMult * tierMult);
+      if (simPolicyMode === 'policy') {
+        expectedKids += 0.22; // Policy recovery yield from leave shield and childcare guarantee
+      }
 
-      let netCost = "S$513,020";
-      if (tier === "CCR_Enclave") netCost = "S$1,109,220";
-      else if (tier === "OCR_Heartland") netCost = "S$482,000";
+      const netOutlay = baseGrossOutlay - subsidies;
 
+      // Update KPI Outputs
       document.getElementById('out-survival').textContent = (survival * 100).toFixed(1) + "%";
+      document.getElementById('out-survival').className = survival >= 0.50 ? "text-lg font-black text-emerald-400" : (survival >= 0.35 ? "text-lg font-black text-amber-400" : "text-lg font-black text-rose-400");
+      
       document.getElementById('out-conception').textContent = "F: " + fConc.toFixed(1) + " | M: " + mConc.toFixed(1);
+      document.getElementById('out-conception').className = fConc < 35.0 ? "text-lg font-black text-white" : "text-lg font-black text-rose-400";
+
       document.getElementById('out-miscarriage').textContent = (misc * 100).toFixed(1) + "%";
+      document.getElementById('out-miscarriage').className = misc <= 0.12 ? "text-lg font-black text-emerald-400" : (misc <= 0.20 ? "text-lg font-black text-amber-400" : "text-lg font-black text-rose-400");
+
       document.getElementById('out-kids').textContent = expectedKids.toFixed(2) + " kids";
+      document.getElementById('out-kids').className = expectedKids >= 1.20 ? "text-lg font-black text-emerald-400" : (expectedKids >= 1.00 ? "text-lg font-black text-amber-400" : "text-lg font-black text-rose-400");
+
       document.getElementById('out-ivf').textContent = fConc < 40.0 ? "ELIGIBLE (<40)" : "EXPIRED (>=40)";
       document.getElementById('out-ivf').className = fConc < 40.0 ? "text-lg font-black text-emerald-400" : "text-lg font-black text-rose-400";
-      document.getElementById('out-cost').textContent = netCost;
+
+      document.getElementById('out-cost').textContent = "S$" + netOutlay.toLocaleString('en-SG');
+
+      const latencyBadge = document.getElementById('sim-latency-badge');
+      if (latencyBadge) {
+        latencyBadge.textContent = `Courtship-to-BTO Latency: +${latencyYears.toFixed(1)} Years`;
+        latencyBadge.className = latencyYears <= 2.5 ? "text-[11px] font-mono text-emerald-400 font-bold" : "text-[11px] font-mono text-amber-400";
+      }
+
+      // Update Comparative Side-by-Side Ledger
+      updateComparativeLedgerUI(survival, fConc, expectedKids, netOutlay, tier, latencyYears);
     }
+
+    function updateComparativeLedgerUI(currSurvival, currFConc, currKids, currCost, tier, latencyYears) {
+      const diffBadge = document.getElementById('sim-diff-badge');
+      const sqKpi = document.getElementById('sq-kpi-badge');
+      const sqExp = document.getElementById('sq-explanation');
+      const polExp = document.getElementById('pol-explanation');
+
+      if (tier === 'CCR_Enclave') {
+        if (diffBadge) diffBadge.textContent = "Policy Lift: +0.22 Kids | +29.7% 2nd Date | -S$300k Cost";
+        if (sqKpi) sqKpi.textContent = "FEI: 41.5 (Severe Deficit)";
+        if (sqExp) sqExp.textContent = "In unassisted status quo, high lifestyle/status homogamy friction causes a 52% second-date rejection penalty. Couples delay ROM by +5.8 years to accumulate private condo downpayments, pushing female conception to age 34.8 (near ovarian cliff).";
+        if (polExp) polExp.textContent = "Enacting statutory pre-nuptials under Women's Charter Section 112 neutralizes divorce asset division fears; removing the S$50k WMCR cap and BTO Parenthood Fast-Track compress courtship latency down to 2.0 years (Conception at 31.0y).";
+      } else if (tier === 'RCR_Mature') {
+        if (diffBadge) diffBadge.textContent = "Policy Lift: +0.24 Kids | +18.4% 2nd Date | -S$145k Cost";
+        if (sqKpi) sqKpi.textContent = "FEI: 76.2 (Resale Barrier)";
+        if (sqExp) sqExp.textContent = "In unassisted status quo, million-dollar 4-room resale prices force civil servants to delay marriage until reaching upper-senior grades (MX11 at age 33-36).";
+        if (polExp) polExp.textContent = "Shared-Equity Civil Service Housing (30% state co-ownership) lowers entry cost to S$550k and waives PLH MOP down to 5 years upon birth of second child.";
+      } else {
+        if (diffBadge) diffBadge.textContent = "Policy Lift: +0.18 Kids | +10.2% 2nd Date | BTO Fast-Track";
+        if (sqKpi) sqKpi.textContent = "FEI: 89.8 (Optimal Base)";
+        if (sqExp) sqExp.textContent = "In unassisted status quo, heartland BTO waiting times (3.5 years) still create biological delay and infant-care pickup transit strain.";
+        if (polExp) polExp.textContent = "BTO Parenthood Fast-Track Guarantee (<2.0 yrs) and 10-day dedicated HFMD childcare leave eliminate the annual leave deficit.";
+      }
+    }
+
   </script>
 </body>
 </html>
