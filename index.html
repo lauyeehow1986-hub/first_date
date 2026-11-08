@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Leaflet GIS Map Assets -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GovTech FirstDate: Actuarial, WebGIS & Demographic Policy Hub</title>
@@ -56,6 +60,68 @@
       color: #ffffff;
       background: rgba(99, 102, 241, 0.12);
     }
+  
+    /* Leaflet RTA-Style Map & Custom Markers */
+    #leaflet-map {
+      width: 100%;
+      height: 520px;
+      border-radius: 0.75rem;
+      z-index: 10;
+    }
+    @media (max-width: 768px) {
+      #leaflet-map {
+        height: 390px;
+      }
+    }
+    .hotspot-div-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-weight: 800;
+      color: #ffffff;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .hotspot-div-icon:hover {
+      transform: scale(1.3);
+      z-index: 1000 !important;
+    }
+    .hotspot-red {
+      background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.85);
+    }
+    .hotspot-green {
+      background: radial-gradient(circle, #10b981 0%, #047857 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.75);
+    }
+    .hotspot-amber {
+      background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.75);
+    }
+    .hotspot-purple {
+      background: radial-gradient(circle, #8b5cf6 0%, #6d28d9 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.75);
+    }
+    .leaflet-popup-content-wrapper {
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      border: 1px solid #334155 !important;
+      border-radius: 0.75rem !important;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-size: 12px !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
+    .leaflet-popup-tip {
+      background: #0f172a !important;
+    }
+
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col custom-scrollbar">
@@ -234,146 +300,201 @@
     <!-- TAB 2: WEBGIS SPATIAL EFFECTIVENESS MAP -->
     <!-- ========================================================================= -->
     <section id="panel-webgis" class="hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
+      
+      <!-- Main Map Card matching RTA interactive structure -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+        
+        <!-- Header Row -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
           <div>
-            <h2 class="text-base font-bold text-white">Singapore Planning Area Spatial Effectiveness Map</h2>
-            <p class="text-xs text-slate-400">Click a planning region to inspect childhood SES, resale housing prices, and FirstDate Matchmaking Effectiveness (FEI)</p>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-white">Singapore High-Efficacy Corridors & Subzone Hotspots</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Click hotspot nodes to inspect annual BTO delivery, MX grade density, PHG grandparent proximity, and childcare access</p>
           </div>
-          <div class="flex gap-2 text-xs">
-            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">OCR Optimal (80+)</span>
-            <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">RCR Moderate (70-79)</span>
-            <span class="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-400 font-medium">CCR Resilient (&lt;50)</span>
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400 whitespace-nowrap">
+              <span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+              10 Audited Priority Corridors
+            </span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- Vector Map (7 cols) -->
-          <div class="lg:col-span-7 bg-slate-950 rounded-xl border border-slate-800 p-3 aspect-[16/10] flex items-center justify-center relative">
-            <svg viewBox="0 0 880 520" class="w-full h-full">
-              <defs>
-                <linearGradient id="gradOCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.8" />
-                  <stop offset="100%" stop-color="#059669" stop-opacity="0.9" />
-                </linearGradient>
-                <linearGradient id="gradRCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8" />
-                  <stop offset="100%" stop-color="#d97706" stop-opacity="0.9" />
-                </linearGradient>
-                <linearGradient id="gradCCR_main" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.8" />
-                  <stop offset="100%" stop-color="#e11d48" stop-opacity="0.9" />
-                </linearGradient>
-              </defs>
-
-              <!-- OCR North -->
-              <path id="svg-north" class="zone-hover transition-all duration-200"
-                    d="M 320 60 L 460 50 L 520 120 L 480 170 L 360 170 L 310 120 Z"
-                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
-                    onclick="loadGisDetail('north')" />
-              <text x="400" y="115" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR North</text>
-              <text x="400" y="132" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Woodlands / Yishun</text>
-
-              <!-- OCR North-East -->
-              <path id="svg-ne" class="zone-hover transition-all duration-200"
-                    d="M 525 110 L 670 100 L 710 180 L 610 220 L 520 180 Z"
-                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
-                    onclick="loadGisDetail('ne')" />
-              <text x="610" y="155" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR North-East</text>
-              <text x="610" y="172" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Punggol / Sengkang</text>
-
-              <!-- OCR West -->
-              <path id="svg-west" class="zone-hover transition-all duration-200"
-                    d="M 120 160 L 310 160 L 330 290 L 260 360 L 110 320 L 80 230 Z"
-                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
-                    onclick="loadGisDetail('west')" />
-              <text x="200" y="250" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR West</text>
-              <text x="200" y="267" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Jurong / CCK / Batok</text>
-
-              <!-- OCR East -->
-              <path id="svg-east" class="zone-hover transition-all duration-200"
-                    d="M 680 185 L 820 190 L 850 300 L 710 310 L 625 240 Z"
-                    fill="url(#gradOCR_main)" stroke="#047857" stroke-width="1.5"
-                    onclick="loadGisDetail('east')" />
-              <text x="740" y="245" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">OCR East</text>
-              <text x="740" y="262" font-size="10" fill="#ecfdf5" text-anchor="middle" pointer-events="none">Tampines / Bedok</text>
-
-              <!-- RCR Mature -->
-              <path id="svg-rcr" class="zone-hover transition-all duration-200"
-                    d="M 345 200 L 510 190 L 605 240 L 580 340 L 360 330 L 335 270 Z"
-                    fill="url(#gradRCR_main)" stroke="#b45309" stroke-width="1.5"
-                    onclick="loadGisDetail('rcr')" />
-              <text x="460" y="260" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">RCR Mature</text>
-              <text x="460" y="277" font-size="10" fill="#fffbeb" text-anchor="middle" pointer-events="none">Bishan / Toa Payoh</text>
-
-              <!-- CCR Core Central -->
-              <path id="svg-ccr" class="zone-hover transition-all duration-200"
-                    d="M 380 340 L 520 335 L 540 430 L 410 440 L 370 380 Z"
-                    fill="url(#gradCCR_main)" stroke="#be123c" stroke-width="1.5"
-                    onclick="loadGisDetail('ccr')" />
-              <text x="455" y="385" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">CCR High-SES</text>
-              <text x="455" y="402" font-size="10" fill="#ffe4e6" text-anchor="middle" pointer-events="none">Bt Timah / Tanglin</text>
-
-              <!-- Civil Service Hub Markers -->
-              <circle cx="340" cy="315" r="6" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
-              <text x="340" y="303" font-size="9" font-weight="bold" fill="#818cf8" text-anchor="middle">Buona Vista MOE Hub</text>
-
-              <circle cx="515" cy="415" r="6" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
-              <text x="515" y="433" font-size="9" font-weight="bold" fill="#818cf8" text-anchor="middle">Treasury / CBD</text>
-            </svg>
+        <!-- Controls Toolbar matching RTA layout -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-xs">
+          
+          <!-- Layer Toggles -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-slate-400 font-semibold mr-1">GIS Layers:</span>
+            <button id="btn-toggle-heat" onclick="toggleGisLayer('heat')" class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium hover:bg-rose-500/30 transition-all">
+              🔥 FEI Hotspots (ON)
+            </button>
+            <button id="btn-toggle-poly" onclick="toggleGisLayer('poly')" class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium hover:bg-emerald-500/30 transition-all">
+              🏘️ BTO Clusters (ON)
+            </button>
+            <button id="btn-toggle-hotspots" onclick="toggleGisLayer('hotspots')" class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium hover:bg-amber-500/30 transition-all">
+              📍 Hotspots (ON)
+            </button>
+            <button id="btn-toggle-mrt" onclick="toggleGisLayer('mrt')" class="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium hover:bg-indigo-500/30 transition-all">
+              🚇 Transit Lines (ON)
+            </button>
+            <button id="btn-toggle-work" onclick="toggleGisLayer('work')" class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 font-medium hover:bg-purple-500/30 transition-all">
+              🏢 Work Hubs (ON)
+            </button>
           </div>
 
-          <!-- Region Detail Inspector (5 cols) -->
-          <div class="lg:col-span-5 bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
-                <div>
-                  <span id="gis-badge" class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-400">
-                    OCR Heartland (Top Target)
-                  </span>
-                  <h3 id="gis-title" class="text-base font-bold text-white mt-1">OCR West: Jurong West & CCK</h3>
-                </div>
-                <div class="text-right">
-                  <div class="text-[10px] text-slate-400">FEI Score</div>
-                  <div id="gis-fei" class="text-2xl font-black text-emerald-400">89.8 <span class="text-xs font-normal text-slate-500">/100</span></div>
-                </div>
-              </div>
-
-              <div class="space-y-2 text-xs">
-                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
-                  <span class="text-slate-400">Representative Subzones:</span>
-                  <span id="gis-subzones" class="font-semibold text-white">Boon Lay, Jurong Gateway, Gombak</span>
-                </div>
-                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
-                  <span class="text-slate-400">HDB 4-Rm Resale Median (2025):</span>
-                  <span id="gis-hdb" class="font-semibold text-white">S$490,000 – S$550,000</span>
-                </div>
-                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
-                  <span class="text-slate-400">Commute to Buona Vista MOE:</span>
-                  <span id="gis-commute" class="font-semibold text-emerald-400">22 – 32 mins (Low Transit Tax)</span>
-                </div>
-                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
-                  <span class="text-slate-400">Proximity Housing Support (PHG):</span>
-                  <span id="gis-phg" class="font-semibold text-emerald-400">1.08x (High Grandparent Proximity)</span>
-                </div>
-                <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800/80">
-                  <span class="text-slate-400">Tuition Reference-Point Outlay:</span>
-                  <span id="gis-tuition" class="font-semibold text-white">S$450 – S$600 / mo / child</span>
-                </div>
-              </div>
-
-              <p id="gis-narrative" class="text-xs text-slate-400 mt-3 p-3 rounded-lg bg-slate-900 border border-slate-800 leading-relaxed">
-                Dense cluster of junior-to-mid executive civil servants (MX13/MX12). Close transit proximity to the Buona Vista tech/education belt minimizes evening exhaustion, while high grandparent proximity unlocks the S$30k Proximity Housing Grant and informal childcare.
-              </p>
+          <!-- Base Tile Selector & Map Actions -->
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <select id="tile-selector" onchange="switchTileLayer(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 rounded-md px-2.5 py-1 text-xs focus:ring-1 focus:ring-indigo-500 outline-none">
+                <option value="osm">🌐 OpenStreetMap (Default)</option>
+                <option value="dark">🌑 CartoDB Dark Matter</option>
+                <option value="light">☀️ CartoDB Positron</option>
+              </select>
             </div>
+            <button onclick="centerSingaporeMap()" class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 font-medium">
+              <span>🇸🇬</span> Center
+            </button>
+            <button onclick="locateUserPosition()" class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1 font-medium">
+              <span>📍</span> My GPS
+            </button>
+          </div>
 
-            <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
-              <span>2nd Date Conversion: <strong id="gis-conv" class="text-emerald-400">61.4%</strong></span>
-              <span>Expected Fertility: <strong id="gis-kids" class="text-white">1.58 kids</strong></span>
+        </div>
+
+        <!-- Leaflet Map Container -->
+        <div class="relative rounded-xl overflow-hidden border border-slate-800">
+          <div id="leaflet-map" class="w-full"></div>
+        </div>
+
+        <!-- Legend & GIS Data Exports Row matching RTA layout -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 text-[11px] text-slate-400 border-t border-slate-800/80">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+              <span>Top Priority BTO (#1 Punggol, #5 Jurong West)</span>
             </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+              <span>Heartland Young BTO (#2 Woodlands, #3 Tampines, #4 Sengkang, #6 Yishun)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+              <span>Mature RCR Arterials (#7 Toa Payoh, #8 Bedok)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
+              <span>Civil Service Work Hubs (#9 Buona Vista, #10 Treasury)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="inline-block w-4 h-0.5 bg-indigo-400"></span>
+              <span>MRT Transit Grid</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-slate-500 font-semibold">GIS Data Exports:</span>
+            <a href="docs/firstdate_gis_demographic_dashboard.html" target="_blank" class="text-indigo-400 hover:text-indigo-300 hover:underline">Standalone WebGIS ↗</a>
+            <span class="text-slate-700">|</span>
+            <a href="#" onclick="downloadGeoJson(); return false;" class="text-indigo-400 hover:text-indigo-300 hover:underline">Corridors.geojson</a>
+            <span class="text-slate-700">|</span>
+            <a href="#" onclick="downloadHotspotCsv(); return false;" class="text-indigo-400 hover:text-indigo-300 hover:underline">Hotspots.csv</a>
           </div>
         </div>
+
       </div>
+
+      <!-- Detail Inspector Card matching "RANK #1 BLACKSPOT" Card in Screenshot 1 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+        
+        <!-- Header row of the card -->
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <span id="hotspot-badge" class="px-2.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 uppercase tracking-wider">
+            RANK #1 FIRSTDATE HOTSPOT
+          </span>
+          <span id="hotspot-postal" class="text-xs font-mono text-slate-400">
+            Postal Sector 82
+          </span>
+        </div>
+
+        <div>
+          <h3 id="hotspot-title" class="text-xl font-bold text-white tracking-tight">
+            Punggol Field / Northshore BTO Belt
+          </h3>
+          <p id="hotspot-subtitle" class="text-xs text-slate-400 mt-1 leading-relaxed">
+            High density of young unpartnered civil servants (MX13-MX12) and newly completed BTO clusters; highest infant care & Sparkletots proximity islandwide.
+          </p>
+        </div>
+
+        <!-- Metrics Table / List formatted exactly like Screenshot 1 -->
+        <div class="border border-slate-800 rounded-xl divide-y divide-slate-800/80 text-xs bg-slate-950/60">
+          
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">FirstDate Matchmaking Effectiveness (FEI):</span>
+            <span id="hotspot-fei" class="font-bold text-emerald-400 text-sm">
+              89.4 / 100 <span class="text-xs font-normal text-slate-500">(Optimal)</span>
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">HDB 4-Rm Resale Median (2025):</span>
+            <span id="hotspot-hdb" class="font-semibold text-white">
+              S$585,000 – S$640,000
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Civil Service Commute to Buona Vista / Central:</span>
+            <span id="hotspot-commute" class="font-semibold text-emerald-400">
+              34 mins (Direct MRT NEL / Circle Line)
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Proximity Housing Support (PHG):</span>
+            <span id="hotspot-phg" class="font-semibold text-emerald-400">
+              1.08x (High Grandparent Proximity)
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Preschool & Infant Care Density:</span>
+            <span id="hotspot-preschool" class="font-semibold text-white">
+              14.2 centers / km²
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Tuition Reference-Point Outlay:</span>
+            <span id="hotspot-tuition" class="font-semibold text-white">
+              S$480 – S$620 / mo / child
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Projected 2nd Date Conversion Probability:</span>
+            <span id="hotspot-conv" class="font-semibold text-emerald-400">
+              64.2%
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-3">
+            <span class="text-slate-400">Expected Completed Fertility:</span>
+            <span id="hotspot-fertility" class="font-semibold text-white">
+              1.68 children
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Action Button loading simulator directly -->
+        <button onclick="loadSubzoneToSimulator()" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 group">
+          <span>Load Subzone into Real-Time Match Simulator</span>
+          <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+        </button>
+
+      </div>
+
     </section>
 
     <!-- ========================================================================= -->
@@ -864,7 +985,267 @@
   </footer>
 
   <!-- Script for Tab Navigation, GIS Inspector, and Live Simulation -->
+  <!-- Script for Tab Navigation, Leaflet WebGIS, and Live Simulation -->
   <script>
+    // Leaflet State and Layer Handles
+    let map = null;
+    let osmLayer = null, darkLayer = null, lightLayer = null;
+    let heatLayerGroup = null, polyLayerGroup = null, hotspotLayerGroup = null, mrtLayerGroup = null, workLayerGroup = null;
+    let isMapReady = false;
+
+    // Layer Visibility Flags
+    const layerFlags = {
+      heat: true,
+      poly: true,
+      hotspots: true,
+      mrt: true,
+      work: true
+    };
+
+    // 10 Audited Priority Subzones & Corridors Data
+    const hotspotData = {
+      1: {
+        rank: 1,
+        postal: "Postal Sector 82",
+        badge: "RANK #1 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
+        title: "Punggol Field / Northshore BTO Belt",
+        subtitle: "High density of young unpartnered civil servants (MX13-MX12) and newly completed BTO clusters; highest infant care & Sparkletots proximity islandwide.",
+        fei: "89.4",
+        feiLabel: "Optimal",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$585,000 – S$640,000",
+        commute: "34 mins (Direct MRT NEL / Circle Line)",
+        commuteColor: "text-emerald-400",
+        phg: "1.08x (High Grandparent Proximity)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "14.2 centers / km²",
+        tuition: "S$480 – S$620 / mo / child",
+        conv: "64.2%",
+        convColor: "text-emerald-400",
+        fertility: "1.68 children",
+        lat: 1.4050,
+        lng: 103.9020,
+        type: "top"
+      },
+      2: {
+        rank: 2,
+        postal: "Postal Sector 73",
+        badge: "RANK #2 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400",
+        title: "Woodlands Drive / Admiralty Resale Haven",
+        subtitle: "Exceptional entry housing affordability coupled with Thomson-East Coast Line (TEL) rapid connectivity. High multi-generational family support.",
+        fei: "84.1",
+        feiLabel: "Optimal",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$460,000 – S$510,000",
+        commute: "38 mins (Direct TEL / NSL)",
+        commuteColor: "text-emerald-400",
+        phg: "1.05x (Grandparent Co-Location)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "11.8 centers / km²",
+        tuition: "S$420 – S$530 / mo / child",
+        conv: "59.8%",
+        convColor: "text-emerald-400",
+        fertility: "1.54 children",
+        lat: 1.4360,
+        lng: 103.7860,
+        type: "heartland"
+      },
+      3: {
+        rank: 3,
+        postal: "Postal Sector 52",
+        badge: "RANK #3 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400",
+        title: "Tampines East / North BTO Corridor",
+        subtitle: "Major regional employment and transport nexus with strong mature-town amenities, extensive childcare coverage, and high civil service resident density.",
+        fei: "81.6",
+        feiLabel: "Optimal",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$530,000 – S$590,000",
+        commute: "31 mins (EWL / DTL)",
+        commuteColor: "text-emerald-400",
+        phg: "1.04x (High East Amenity)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "12.4 centers / km²",
+        tuition: "S$510 – S$680 / mo / child",
+        conv: "58.2%",
+        convColor: "text-emerald-400",
+        fertility: "1.51 children",
+        lat: 1.3540,
+        lng: 103.9530,
+        type: "heartland"
+      },
+      4: {
+        rank: 4,
+        postal: "Postal Sector 54",
+        badge: "RANK #4 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400",
+        title: "Sengkang Central / Compassvale Arc",
+        subtitle: "Direct North-East Line access to Dhoby Ghaut and Chinatown. Dense cluster of young families and high government school accessibility.",
+        fei: "80.2",
+        feiLabel: "Optimal",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$550,000 – S$610,000",
+        commute: "32 mins (NEL Transit)",
+        commuteColor: "text-emerald-400",
+        phg: "1.06x (Dense Young Parent Enclave)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "13.5 centers / km²",
+        tuition: "S$490 – S$650 / mo / child",
+        conv: "57.6%",
+        convColor: "text-emerald-400",
+        fertility: "1.49 children",
+        lat: 1.3916,
+        lng: 103.8950,
+        type: "heartland"
+      },
+      5: {
+        rank: 5,
+        postal: "Postal Sector 64",
+        badge: "RANK #5 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
+        title: "Jurong West / Boon Lay Gateway",
+        subtitle: "Dense cluster of junior-to-mid executive civil servants (MX13/MX12). Rapid transit access to the Buona Vista education hub minimizes evening exhaustion.",
+        fei: "89.8",
+        feiLabel: "Top Target",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$490,000 – S$550,000",
+        commute: "24 mins (Direct EWL to Buona Vista)",
+        commuteColor: "text-emerald-400",
+        phg: "1.08x (High Grandparent Proximity)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "11.2 centers / km²",
+        tuition: "S$450 – S$600 / mo / child",
+        conv: "61.4%",
+        convColor: "text-emerald-400",
+        fertility: "1.58 children",
+        lat: 1.3400,
+        lng: 103.7050,
+        type: "top"
+      },
+      6: {
+        rank: 6,
+        postal: "Postal Sector 76",
+        badge: "RANK #6 FIRSTDATE HOTSPOT",
+        badgeClass: "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400",
+        title: "Yishun Ring / Central Heartland",
+        subtitle: "High grandparent proximity unlocks the S$30k Proximity Housing Grant; broad community healthcare infrastructure through KTPH and polyclinic networks.",
+        fei: "82.5",
+        feiLabel: "Optimal",
+        feiColor: "text-emerald-400",
+        hdbResale: "S$480,000 – S$530,000",
+        commute: "35 mins (NSL Transit)",
+        commuteColor: "text-emerald-400",
+        phg: "1.07x (Multi-Gen Support)",
+        phgColor: "text-emerald-400",
+        preschoolDensity: "10.9 centers / km²",
+        tuition: "S$430 – S$560 / mo / child",
+        conv: "58.9%",
+        convColor: "text-emerald-400",
+        fertility: "1.52 children",
+        lat: 1.4290,
+        lng: 103.8350,
+        type: "heartland"
+      },
+      7: {
+        rank: 7,
+        postal: "Postal Sector 31",
+        badge: "RANK #7 FIRSTDATE CORRIDOR",
+        badgeClass: "bg-amber-500/10 border border-amber-500/20 text-amber-400",
+        title: "Toa Payoh Central / Lorong 1",
+        subtitle: "Central location with low transit tax, but high mature resale premiums compress young civil servant liquid savings, resulting in delayed childbearing.",
+        fei: "76.4",
+        feiLabel: "Moderate",
+        feiColor: "text-amber-400",
+        hdbResale: "S$720,000 – S$820,000",
+        commute: "18 mins (Direct NSL)",
+        commuteColor: "text-emerald-400",
+        phg: "1.03x (Aging Kinship Support)",
+        phgColor: "text-amber-400",
+        preschoolDensity: "9.8 centers / km²",
+        tuition: "S$650 – S$880 / mo / child",
+        conv: "52.4%",
+        convColor: "text-amber-400",
+        fertility: "1.32 children",
+        lat: 1.3340,
+        lng: 103.8500,
+        type: "mature"
+      },
+      8: {
+        rank: 8,
+        postal: "Postal Sector 46",
+        badge: "RANK #8 FIRSTDATE CORRIDOR",
+        badgeClass: "bg-amber-500/10 border border-amber-500/20 text-amber-400",
+        title: "Bedok North / Reservoir Estate",
+        subtitle: "Established food and community amenities with high grandparent co-location, tempered by aging lease profiles on older 1980s housing stock.",
+        fei: "74.8",
+        feiLabel: "Moderate",
+        feiColor: "text-amber-400",
+        hdbResale: "S$640,000 – S$730,000",
+        commute: "28 mins (EWL / DTL)",
+        commuteColor: "text-emerald-400",
+        phg: "1.04x (Established Heartland)",
+        phgColor: "text-amber-400",
+        preschoolDensity: "9.4 centers / km²",
+        tuition: "S$600 – S$800 / mo / child",
+        conv: "51.1%",
+        convColor: "text-amber-400",
+        fertility: "1.30 children",
+        lat: 1.3240,
+        lng: 103.9270,
+        type: "mature"
+      },
+      9: {
+        rank: 9,
+        postal: "Postal Sector 13",
+        badge: "RANK #9 WORK HUB ANCHOR",
+        badgeClass: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
+        title: "Buona Vista MOE & Biopolis Hub",
+        subtitle: "Major civil service employment node housing MOE Headquarters, A*STAR, and tech agencies. High local housing costs mandate outward commuting to OCR West.",
+        fei: "68.2",
+        feiLabel: "Employment Anchor",
+        feiColor: "text-purple-400",
+        hdbResale: "S$880,000 – S$980,000",
+        commute: "0 mins (Primary Employment Origin)",
+        commuteColor: "text-emerald-400",
+        phg: "0.98x (Low Family Kinship)",
+        phgColor: "text-slate-400",
+        preschoolDensity: "8.5 centers / km²",
+        tuition: "S$850 – S$1,200 / mo / child",
+        conv: "62.0%",
+        convColor: "text-emerald-400",
+        fertility: "1.15 children",
+        lat: 1.3070,
+        lng: 103.7900,
+        type: "work"
+      },
+      10: {
+        rank: 10,
+        postal: "Postal Sector 17",
+        badge: "RANK #10 WORK HUB ANCHOR",
+        badgeClass: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
+        title: "Treasury / Downtown Core (High Street)",
+        subtitle: "Primary ministry headquarters belt (MOF, MTI, PSD, MCCY). High living costs and commercial zoning make it a pure outbound commuter origin.",
+        fei: "46.5",
+        feiLabel: "Central Govt Anchor",
+        feiColor: "text-rose-400",
+        hdbResale: "> S$1,100,000 (Pinnacle/RCR Fringe)",
+        commute: "0 mins (Central Ministries)",
+        commuteColor: "text-emerald-400",
+        phg: "0.92x (Low Family Kinship)",
+        phgColor: "text-rose-400",
+        preschoolDensity: "5.1 centers / km²",
+        tuition: "S$1,100 – S$1,600 / mo / child",
+        conv: "58.5%",
+        convColor: "text-amber-400",
+        fertility: "0.98 children",
+        lat: 1.2890,
+        lng: 103.8500,
+        type: "work"
+      }
+    };
+
     function switchTab(tabId) {
       const tabs = [
         'exec-summary', 'webgis', 'golden-band', 
@@ -882,133 +1263,363 @@
           btn.className = "px-3.5 py-2.5 hover:text-white transition-colors whitespace-nowrap text-slate-400";
         }
       });
-    }
 
-    const gisData = {
-      west: {
-        badge: "OCR Heartland (Top Target)",
-        badgeClass: "bg-emerald-500/20 text-emerald-400",
-        title: "OCR West: Jurong West & CCK",
-        fei: "89.8",
-        feiColor: "text-emerald-400",
-        subzones: "Boon Lay, Jurong Gateway, Gombak",
-        hdb: "S$490,000 – S$550,000",
-        commute: "22 – 32 mins (Low Transit Tax)",
-        commuteColor: "text-emerald-400",
-        phg: "1.08x (High Grandparent Proximity)",
-        phgColor: "text-emerald-400",
-        tuition: "S$450 – S$600 / mo / child",
-        narrative: "Dense cluster of junior-to-mid executive civil servants (MX13/MX12). Close transit proximity to the Buona Vista tech/education belt minimizes evening exhaustion, while high grandparent proximity unlocks the S$30k Proximity Housing Grant and informal childcare.",
-        conv: "61.4%",
-        kids: "1.58 kids"
-      },
-      ne: {
-        badge: "OCR Heartland (High Volume)",
-        badgeClass: "bg-emerald-500/20 text-emerald-400",
-        title: "OCR North-East: Punggol & Sengkang",
-        fei: "88.4",
-        feiColor: "text-emerald-400",
-        subzones: "Punggol Field, Compassvale, Rivervale",
-        hdb: "S$540,000 – S$610,000",
-        commute: "45 – 52 mins (Moderate Commute)",
-        commuteColor: "text-amber-400",
-        phg: "1.05x (Dense Young Parent Enclave)",
-        phgColor: "text-emerald-400",
-        tuition: "S$500 – S$700 / mo / child",
-        narrative: "Dense cluster of newly minted civil servant couples. High availability of government Anchor Operator (AOP) infant-care centres in Punggol and Sengkang eases preschool entry, though a 50-minute evening MRT commute creates infant pickup stress.",
-        conv: "59.2%",
-        kids: "1.54 kids"
-      },
-      north: {
-        badge: "OCR Heartland (Affordable)",
-        badgeClass: "bg-emerald-500/20 text-emerald-400",
-        title: "OCR North: Woodlands & Yishun",
-        fei: "84.6",
-        feiColor: "text-emerald-400",
-        subzones: "Woodlands East, Midview, Khatib",
-        hdb: "S$480,000 – S$530,000",
-        commute: "48 – 56 mins (High Commute Tax)",
-        commuteColor: "text-rose-400",
-        phg: "1.10x (Multi-Gen Support)",
-        phgColor: "text-emerald-400",
-        tuition: "S$420 – S$550 / mo / child",
-        narrative: "Most affordable entry-level resale housing in Singapore. Strong inter-generational co-residence rates where grandparents live nearby. High Malay and Chinese family support buffers childcare fees, despite a 50+ min transit commute to Central CBD.",
-        conv: "57.8%",
-        kids: "1.64 kids"
-      },
-      east: {
-        badge: "OCR Heartland (Established East)",
-        badgeClass: "bg-emerald-500/20 text-emerald-400",
-        title: "OCR East: Tampines & Bedok",
-        fei: "82.5",
-        feiColor: "text-emerald-400",
-        subzones: "Tampines Central, Simei, Bedok North",
-        hdb: "S$530,000 – S$620,000",
-        commute: "38 – 46 mins (Moderate Commute)",
-        commuteColor: "text-amber-400",
-        phg: "1.04x (High East Coast Amenity)",
-        phgColor: "text-emerald-400",
-        tuition: "S$550 – S$750 / mo / child",
-        narrative: "Established residential heartland with extensive community support infrastructure. High stability in housing and school proximity. Solid marriage conversion rates, though slightly older demographic profile compared to Punggol/Sengkang.",
-        conv: "55.4%",
-        kids: "1.49 kids"
-      },
-      rcr: {
-        badge: "RCR Mature Estates (High Barrier)",
-        badgeClass: "bg-amber-500/20 text-amber-400",
-        title: "RCR Mature: Bishan & Toa Payoh",
-        fei: "76.2",
-        feiColor: "text-amber-400",
-        subzones: "Bishan East, Marymount, Toa Payoh",
-        hdb: "S$880,000 – S$1,080,000 (Million-Dollar Resale)",
-        commute: "18 – 24 mins (Fast Transit to Hubs)",
-        commuteColor: "text-emerald-400",
-        phg: "0.94x (Moderate Singlehood Delay)",
-        phgColor: "text-amber-400",
-        tuition: "S$950 – S$1,400 / mo / child",
-        narrative: "Prime central accessibility and elite school catchment zones. However, exorbitant 4-room resale prices (S$900k–S$1.1M) force civil servants to delay marriage until reaching upper-senior grades (MX11/MX11A) to afford home loans, compressing female fertility into the 33–36 cliff window.",
-        conv: "48.6%",
-        kids: "1.26 kids"
-      },
-      ccr: {
-        badge: "CCR Enclave (Hyper-Competitive)",
-        badgeClass: "bg-rose-500/20 text-rose-400",
-        title: "CCR High-SES: Bukit Timah & Tanglin",
-        fei: "41.5",
-        feiColor: "text-rose-400",
-        subzones: "Sixth Avenue, Coronation, Nassim",
-        hdb: "Non-HDB / S$2,200,000+ Condominiums",
-        commute: "12 – 16 mins (Direct CBD Proximity)",
-        commuteColor: "text-emerald-400",
-        phg: "0.82x (High Singlehood & Hypogamy)",
-        phgColor: "text-rose-400",
-        tuition: "S$2,200+ / mo / child (Private Benchmark)",
-        narrative: "Lowest FirstDate effectiveness. Officers raised in CCR enclaves internalize high private consumption benchmarks (Gleneagles delivery, premium preschool, overseas university) that require >S$1.1M per child. Severe educational and lifestyle homogamy expectations lead to extreme rejection rates on blind dates.",
-        conv: "28.5%",
-        kids: "0.88 kids"
+      if (tabId === 'webgis') {
+        if (!isMapReady) {
+          setTimeout(initLeafletMap, 50);
+        } else if (map) {
+          setTimeout(() => { map.invalidateSize(); }, 120);
+        }
       }
-    };
-
-    function loadGisDetail(zone) {
-      const d = gisData[zone];
-      if (!d) return;
-
-      document.getElementById('gis-badge').textContent = d.badge;
-      document.getElementById('gis-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + d.badgeClass;
-      document.getElementById('gis-title').textContent = d.title;
-      document.getElementById('gis-fei').innerHTML = d.fei + ' <span class="text-xs font-normal text-slate-500">/100</span>';
-      document.getElementById('gis-fei').className = "text-2xl font-black " + d.feiColor;
-      document.getElementById('gis-subzones').textContent = d.subzones;
-      document.getElementById('gis-hdb').textContent = d.hdb;
-      document.getElementById('gis-commute').textContent = d.commute;
-      document.getElementById('gis-commute').className = "font-semibold " + d.commuteColor;
-      document.getElementById('gis-phg').textContent = d.phg;
-      document.getElementById('gis-phg').className = "font-semibold " + d.phgColor;
-      document.getElementById('gis-tuition').textContent = d.tuition;
-      document.getElementById('gis-narrative').textContent = d.narrative;
-      document.getElementById('gis-conv').textContent = d.conv;
-      document.getElementById('gis-kids').textContent = d.kids;
     }
+
+    function initLeafletMap() {
+      const container = document.getElementById('leaflet-map');
+      if (!container || isMapReady) return;
+
+      // Base Tile Providers
+      osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      });
+
+      darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+
+      lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+
+      map = L.map('leaflet-map', {
+        center: [1.3521, 103.8198],
+        zoom: 11,
+        minZoom: 10,
+        maxZoom: 16,
+        layers: [osmLayer],
+        zoomControl: true
+      });
+      window.firstDateLeafletMap = map;
+
+      // Initialize Layer Groups
+      heatLayerGroup = L.layerGroup().addTo(map);
+      polyLayerGroup = L.layerGroup().addTo(map);
+      hotspotLayerGroup = L.layerGroup().addTo(map);
+      mrtLayerGroup = L.layerGroup().addTo(map);
+      workLayerGroup = L.layerGroup().addTo(map);
+
+      // 1. Add Planning Region Polygons
+      const regions = [
+        {
+          name: "OCR North-East (Punggol / Sengkang)",
+          coords: [[1.428, 103.875], [1.415, 103.925], [1.385, 103.918], [1.365, 103.875], [1.385, 103.855], [1.420, 103.865]],
+          color: "#10b981",
+          fei: "FEI 89.4 (Optimal)"
+        },
+        {
+          name: "OCR North (Woodlands / Yishun)",
+          coords: [[1.458, 103.775], [1.450, 103.845], [1.415, 103.840], [1.405, 103.775], [1.435, 103.755]],
+          color: "#10b981",
+          fei: "FEI 84.1 (Affordable)"
+        },
+        {
+          name: "OCR West (Jurong West / CCK)",
+          coords: [[1.395, 103.735], [1.385, 103.765], [1.320, 103.770], [1.310, 103.680], [1.345, 103.685], [1.380, 103.715]],
+          color: "#10b981",
+          fei: "FEI 89.8 (Top Target)"
+        },
+        {
+          name: "OCR East (Tampines / Bedok)",
+          coords: [[1.380, 103.935], [1.375, 103.990], [1.335, 103.985], [1.310, 103.935], [1.325, 103.905], [1.365, 103.915]],
+          color: "#10b981",
+          fei: "FEI 81.6 (Established)"
+        },
+        {
+          name: "RCR Mature (Bishan / Toa Payoh)",
+          coords: [[1.365, 103.835], [1.360, 103.880], [1.315, 103.890], [1.295, 103.820], [1.305, 103.795], [1.335, 103.815]],
+          color: "#f59e0b",
+          fei: "FEI 76.4 (Mature Barrier)"
+        },
+        {
+          name: "CCR Core Central (Bt Timah / Tanglin / CBD)",
+          coords: [[1.335, 103.795], [1.325, 103.835], [1.295, 103.860], [1.275, 103.855], [1.280, 103.815]],
+          color: "#f43f5e",
+          fei: "FEI 46.5 (High Outflow)"
+        }
+      ];
+
+      regions.forEach(reg => {
+        const poly = L.polygon(reg.coords, {
+          color: reg.color,
+          weight: 2,
+          fillColor: reg.color,
+          fillOpacity: 0.22,
+          dashArray: '4, 4'
+        }).bindPopup(`<div class="p-1"><strong class="text-white">${reg.name}</strong><br><span class="text-xs text-slate-300">${reg.fei}</span></div>`);
+        polyLayerGroup.addLayer(poly);
+      });
+
+      // 2. Add MRT Lines
+      const mrtLines = [
+        {
+          name: "North-East Line (NEL)",
+          color: "#a855f7",
+          weight: 3.5,
+          coords: [[1.2655, 103.8214], [1.2842, 103.8440], [1.2990, 103.8458], [1.3114, 103.8568], [1.3497, 103.8736], [1.3695, 103.8860], [1.3916, 103.8950], [1.4050, 103.9020]]
+        },
+        {
+          name: "East-West Line (EWL)",
+          color: "#10b981",
+          weight: 3.5,
+          coords: [[1.3730, 103.9493], [1.3540, 103.9530], [1.3200, 103.8900], [1.2930, 103.8520], [1.3070, 103.7900], [1.3330, 103.7420], [1.3400, 103.7050], [1.3200, 103.6360]]
+        },
+        {
+          name: "North-South Line (NSL)",
+          color: "#ef4444",
+          weight: 3.5,
+          coords: [[1.3330, 103.7420], [1.3850, 103.7440], [1.4360, 103.7860], [1.4290, 103.8350], [1.3510, 103.8490], [1.3340, 103.8500], [1.3040, 103.8320], [1.2820, 103.8530]]
+        },
+        {
+          name: "Circle Line (CCL)",
+          color: "#f59e0b",
+          weight: 3.5,
+          coords: [[1.2990, 103.8458], [1.3000, 103.8800], [1.3510, 103.8490], [1.3340, 103.8100], [1.3070, 103.7900], [1.2655, 103.8214]]
+        }
+      ];
+
+      mrtLines.forEach(line => {
+        const polyline = L.polyline(line.coords, {
+          color: line.color,
+          weight: line.weight,
+          opacity: 0.85
+        }).bindPopup(`<div class="p-1"><strong class="text-white">${line.name}</strong><br><span class="text-xs text-slate-300">Direct Civil Service Transit Arterial</span></div>`);
+        mrtLayerGroup.addLayer(polyline);
+      });
+
+      // 3. Add 10 Audited Priority Hotspots
+      Object.keys(hotspotData).forEach(k => {
+        const h = hotspotData[k];
+        let colorClass = "hotspot-green";
+        if (h.type === "top") colorClass = "hotspot-red";
+        else if (h.type === "work") colorClass = "hotspot-purple";
+        else if (h.type === "mature") colorClass = "hotspot-amber";
+
+        const icon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: `<div class="hotspot-div-icon ${colorClass}" style="width: 28px; height: 28px;">${h.rank}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14]
+        });
+
+        const marker = L.marker([h.lat, h.lng], { icon: icon });
+        marker.bindPopup(`
+          <div class="p-1 leading-tight">
+            <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">${h.postal}</span>
+            <div class="font-bold text-white text-sm mt-0.5">#${h.rank} ${h.title}</div>
+            <div class="text-xs text-emerald-400 font-semibold mt-1">FEI Score: ${h.fei} / 100</div>
+            <div class="text-[11px] text-slate-300">4-Rm Median: ${h.hdbResale}</div>
+            <div class="text-[10px] text-indigo-400 mt-1 font-semibold">&darr; Click marker to load detail card</div>
+          </div>
+        `);
+
+        marker.on('click', () => {
+          loadHotspotDetail(h.rank);
+        });
+
+        if (h.type === "work") {
+          workLayerGroup.addLayer(marker);
+        } else {
+          hotspotLayerGroup.addLayer(marker);
+        }
+
+        // Add soft FEI Heat Circle around heartland hotspots
+        if (h.type === "top" || h.type === "heartland") {
+          const heatCircle = L.circle([h.lat, h.lng], {
+            radius: 1600,
+            color: h.type === "top" ? '#ef4444' : '#10b981',
+            fillColor: h.type === "top" ? '#ef4444' : '#10b981',
+            fillOpacity: 0.16,
+            weight: 1,
+            dashArray: '2, 4'
+          });
+          heatLayerGroup.addLayer(heatCircle);
+        }
+      });
+
+      isMapReady = true;
+      setTimeout(() => { map.invalidateSize(); }, 200);
+    }
+
+    function toggleGisLayer(type) {
+      if (!map) return;
+      layerFlags[type] = !layerFlags[type];
+      const isVisible = layerFlags[type];
+      
+      const btn = document.getElementById('btn-toggle-' + type);
+      const labels = {
+        heat: '🔥 FEI Hotspots',
+        poly: '🏘️ BTO Clusters',
+        hotspots: '📍 Hotspots',
+        mrt: '🚇 Transit Lines',
+        work: '🏢 Work Hubs'
+      };
+
+      if (isVisible) {
+        btn.textContent = `${labels[type]} (ON)`;
+        btn.classList.remove('opacity-40', 'line-through');
+      } else {
+        btn.textContent = `${labels[type]} (OFF)`;
+        btn.classList.add('opacity-40', 'line-through');
+      }
+
+      if (type === 'heat') {
+        isVisible ? map.addLayer(heatLayerGroup) : map.removeLayer(heatLayerGroup);
+      } else if (type === 'poly') {
+        isVisible ? map.addLayer(polyLayerGroup) : map.removeLayer(polyLayerGroup);
+      } else if (type === 'hotspots') {
+        isVisible ? map.addLayer(hotspotLayerGroup) : map.removeLayer(hotspotLayerGroup);
+      } else if (type === 'mrt') {
+        isVisible ? map.addLayer(mrtLayerGroup) : map.removeLayer(mrtLayerGroup);
+      } else if (type === 'work') {
+        isVisible ? map.addLayer(workLayerGroup) : map.removeLayer(workLayerGroup);
+      }
+    }
+
+    function switchTileLayer(tileType) {
+      if (!map) return;
+      if (osmLayer) map.removeLayer(osmLayer);
+      if (darkLayer) map.removeLayer(darkLayer);
+      if (lightLayer) map.removeLayer(lightLayer);
+
+      if (tileType === 'dark') {
+        map.addLayer(darkLayer);
+      } else if (tileType === 'light') {
+        map.addLayer(lightLayer);
+      } else {
+        map.addLayer(osmLayer);
+      }
+    }
+
+    function centerSingaporeMap() {
+      if (!map) return;
+      map.setView([1.3521, 103.8198], 11, { animate: true });
+    }
+
+    function locateUserPosition() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          if (!map) return;
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
+          map.setView([userLat, userLng], 14, { animate: true });
+          const userMarker = L.circleMarker([userLat, userLng], {
+            radius: 8,
+            color: '#38bdf8',
+            fillColor: '#0284c7',
+            fillOpacity: 0.9,
+            weight: 2
+          }).bindPopup("<strong class='text-white'>Your Current GPS Location</strong>").addTo(map);
+          userMarker.openPopup();
+        },
+        err => {
+          alert("Unable to retrieve location: " + err.message);
+        }
+      );
+    }
+
+    function loadHotspotDetail(id) {
+      const h = hotspotData[id];
+      if (!h) return;
+
+      document.getElementById('hotspot-badge').className = "px-2.5 py-0.5 text-[10px] font-bold rounded " + h.badgeClass;
+      document.getElementById('hotspot-badge').textContent = h.badge;
+      document.getElementById('hotspot-postal').textContent = h.postal;
+      document.getElementById('hotspot-title').textContent = h.title;
+      document.getElementById('hotspot-subtitle').textContent = h.subtitle;
+
+      document.getElementById('hotspot-fei').innerHTML = `${h.fei} / 100 <span class="text-xs font-normal text-slate-500">(${h.feiLabel})</span>`;
+      document.getElementById('hotspot-fei').className = "font-bold text-sm " + h.feiColor;
+
+      document.getElementById('hotspot-hdb').textContent = h.hdbResale;
+      document.getElementById('hotspot-commute').textContent = h.commute;
+      document.getElementById('hotspot-commute').className = "font-semibold " + h.commuteColor;
+      document.getElementById('hotspot-phg').textContent = h.phg;
+      document.getElementById('hotspot-phg').className = "font-semibold " + h.phgColor;
+      document.getElementById('hotspot-preschool').textContent = h.preschoolDensity;
+      document.getElementById('hotspot-tuition').textContent = h.tuition;
+      document.getElementById('hotspot-conv').textContent = h.conv;
+      document.getElementById('hotspot-conv').className = "font-semibold " + h.convColor;
+      document.getElementById('hotspot-fertility').textContent = h.fertility;
+
+      if (map) {
+        map.setView([h.lat, h.lng], 13, { animate: true });
+      }
+    }
+
+    function loadSubzoneToSimulator() {
+      switchTab('simulator');
+      const badgeText = document.getElementById('hotspot-badge').textContent;
+      const rankMatch = badgeText.match(/RANK #(\d+)/);
+      const currentRank = rankMatch ? parseInt(rankMatch[1]) : 1;
+      const h = hotspotData[currentRank];
+
+      if (h) {
+        if (h.type === "top" || h.type === "heartland") {
+          document.getElementById('sim-tier').value = "OCR_Heartland";
+          document.getElementById('sim-f-age').value = 27;
+          document.getElementById('sim-m-age').value = 29;
+        } else if (h.type === "mature") {
+          document.getElementById('sim-tier').value = "RCR_Mature";
+          document.getElementById('sim-f-age').value = 31;
+          document.getElementById('sim-m-age').value = 33;
+        } else if (h.type === "work") {
+          document.getElementById('sim-tier').value = "CCR_Enclave";
+          document.getElementById('sim-f-age').value = 33;
+          document.getElementById('sim-m-age').value = 35;
+        }
+        if (typeof calculateLiveSimulation === 'function') {
+          calculateLiveSimulation();
+        }
+      }
+
+      const sim = document.getElementById('panel-simulator');
+      if (sim) {
+        sim.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function downloadGeoJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hotspotData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "firstdate_subzone_corridors.geojson");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function downloadHotspotCsv() {
+      let csvContent = "data:text/csv;charset=utf-8,Rank,Postal,Title,FEIScore,HDB4RmMedian,CommuteMins,PHGModifier,PreschoolDensity,SecondDateConv,CompletedFertility\n";
+      Object.keys(hotspotData).forEach(k => {
+        const h = hotspotData[k];
+        csvContent += `"${h.rank}","${h.postal}","${h.title}","${h.fei}","${h.hdbResale}","${h.commute}","${h.phg}","${h.preschoolDensity}","${h.conv}","${h.fertility}"\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "firstdate_hotspots.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
 
     function calculateLiveSimulation() {
       const fAge = parseFloat(document.getElementById('sim-f-age').value) || 27;

@@ -1,9 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="">
+    // Standalone Leaflet Map Implementation
+    let standMap = null;
+    let standOsm = null, standDark = null, standLight = null;
+    let standHeatGroup = null, standPolyGroup = null, standHotspotGroup = null, standMrtGroup = null;
+    const standFlags = { heat: true, poly: true, hotspots: true, mrt: true };
+
+    const hotspotLocations = {
+      1: { name: "Punggol Field", postal: "Sector 82", lat: 1.4050, lng: 103.9020, zoneKey: "ne", rank: 1, type: "top", fei: "89.4" },
+      2: { name: "Woodlands Drive", postal: "Sector 73", lat: 1.4360, lng: 103.7860, zoneKey: "north", rank: 2, type: "heartland", fei: "84.1" },
+      3: { name: "Tampines East", postal: "Sector 52", lat: 1.3540, lng: 103.9530, zoneKey: "east", rank: 3, type: "heartland", fei: "81.6" },
+      4: { name: "Sengkang Central", postal: "Sector 54", lat: 1.3916, lng: 103.8950, zoneKey: "ne", rank: 4, type: "heartland", fei: "80.2" },
+      5: { name: "Jurong West / Boon Lay", postal: "Sector 64", lat: 1.3400, lng: 103.7050, zoneKey: "west", rank: 5, type: "top", fei: "89.8" },
+      6: { name: "Yishun Ring", postal: "Sector 76", lat: 1.4290, lng: 103.8350, zoneKey: "north", rank: 6, type: "heartland", fei: "82.5" },
+      7: { name: "Toa Payoh Central", postal: "Sector 31", lat: 1.3340, lng: 103.8500, zoneKey: "rcr", rank: 7, type: "mature", fei: "76.4" },
+      8: { name: "Bedok North", postal: "Sector 46", lat: 1.3240, lng: 103.9270, zoneKey: "east", rank: 8, type: "mature", fei: "74.8" },
+      9: { name: "Buona Vista MOE Hub", postal: "Sector 13", lat: 1.3070, lng: 103.7900, zoneKey: "rcr", rank: 9, type: "work", fei: "68.2" },
+      10: { name: "Treasury / CBD", postal: "Sector 17", lat: 1.2890, lng: 103.8500, zoneKey: "ccr", rank: 10, type: "work", fei: "46.5" }
+    };
+
+    function initStandaloneMap() {
+      if (standMap) return;
+      const el = document.getElementById('standalone-leaflet-map');
+      if (!el) return;
+
+      standOsm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap'
+      });
+      standDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+      standLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+
+      standMap = L.map('standalone-leaflet-map', {
+        center: [1.3521, 103.8198],
+        zoom: 11,
+        layers: [standOsm]
+      });
+
+      standHeatGroup = L.layerGroup().addTo(standMap);
+      standPolyGroup = L.layerGroup().addTo(standMap);
+      standHotspotGroup = L.layerGroup().addTo(standMap);
+      standMrtGroup = L.layerGroup().addTo(standMap);
+
+      // Add Regions
+      const regions = [
+        { name: "OCR North-East", coords: [[1.428, 103.875], [1.415, 103.925], [1.385, 103.918], [1.365, 103.875], [1.385, 103.855], [1.420, 103.865]], color: "#10b981", key: "ne" },
+        { name: "OCR North", coords: [[1.458, 103.775], [1.450, 103.845], [1.415, 103.840], [1.405, 103.775], [1.435, 103.755]], color: "#10b981", key: "north" },
+        { name: "OCR West", coords: [[1.395, 103.735], [1.385, 103.765], [1.320, 103.770], [1.310, 103.680], [1.345, 103.685], [1.380, 103.715]], color: "#10b981", key: "west" },
+        { name: "OCR East", coords: [[1.380, 103.935], [1.375, 103.990], [1.335, 103.985], [1.310, 103.935], [1.325, 103.905], [1.365, 103.915]], color: "#10b981", key: "east" },
+        { name: "RCR Mature", coords: [[1.365, 103.835], [1.360, 103.880], [1.315, 103.890], [1.295, 103.820], [1.305, 103.795], [1.335, 103.815]], color: "#f59e0b", key: "rcr" },
+        { name: "CCR Core Central", coords: [[1.335, 103.795], [1.325, 103.835], [1.295, 103.860], [1.275, 103.855], [1.280, 103.815]], color: "#f43f5e", key: "ccr" }
+      ];
+
+      regions.forEach(r => {
+        const poly = L.polygon(r.coords, {
+          color: r.color,
+          weight: 2,
+          fillColor: r.color,
+          fillOpacity: 0.22,
+          dashArray: '3, 4'
+        }).bindPopup(`<div class="p-1"><strong>${r.name}</strong><br><span class="text-xs">Click to inspect region stats</span></div>`);
+        poly.on('click', () => { selectZone(r.key); });
+        standPolyGroup.addLayer(poly);
+      });
+
+      // Add MRT Lines
+      const mrtLines = [
+        { name: "North-East Line", color: "#a855f7", coords: [[1.2655, 103.8214], [1.2842, 103.8440], [1.2990, 103.8458], [1.3114, 103.8568], [1.3497, 103.8736], [1.3695, 103.8860], [1.3916, 103.8950], [1.4050, 103.9020]] },
+        { name: "East-West Line", color: "#10b981", coords: [[1.3730, 103.9493], [1.3540, 103.9530], [1.3200, 103.8900], [1.2930, 103.8520], [1.3070, 103.7900], [1.3330, 103.7420], [1.3400, 103.7050], [1.3200, 103.6360]] },
+        { name: "North-South Line", color: "#ef4444", coords: [[1.3330, 103.7420], [1.3850, 103.7440], [1.4360, 103.7860], [1.4290, 103.8350], [1.3510, 103.8490], [1.3340, 103.8500], [1.3040, 103.8320], [1.2820, 103.8530]] }
+      ];
+
+      mrtLines.forEach(m => {
+        standMrtGroup.addLayer(L.polyline(m.coords, { color: m.color, weight: 3, opacity: 0.8 }));
+      });
+
+      // Add Hotspots
+      Object.keys(hotspotLocations).forEach(k => {
+        const h = hotspotLocations[k];
+        let colorClass = "hotspot-green";
+        if (h.type === "top") colorClass = "hotspot-red";
+        else if (h.type === "work") colorClass = "hotspot-purple";
+        else if (h.type === "mature") colorClass = "hotspot-amber";
+
+        const icon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: `<div class="hotspot-div-icon ${colorClass}" style="width: 28px; height: 28px;">${h.rank}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14]
+        });
+
+        const marker = L.marker([h.lat, h.lng], { icon: icon });
+        marker.bindPopup(`<div class="p-1"><strong>#${h.rank} ${h.name}</strong><br><span class="text-xs">FEI: ${h.fei} | ${h.postal}</span></div>`);
+        marker.on('click', () => { selectZone(h.zoneKey); });
+        standHotspotGroup.addLayer(marker);
+
+        if (h.type === "top" || h.type === "heartland") {
+          standHeatGroup.addLayer(L.circle([h.lat, h.lng], {
+            radius: 1600,
+            color: h.type === "top" ? '#ef4444' : '#10b981',
+            fillColor: h.type === "top" ? '#ef4444' : '#10b981',
+            fillOpacity: 0.16,
+            weight: 1,
+            dashArray: '2, 4'
+          }));
+        }
+      });
+    }
+
+    function toggleStandaloneLayer(type) {
+      if (!standMap) return;
+      standFlags[type] = !standFlags[type];
+      const isVisible = standFlags[type];
+      const btn = document.getElementById('btn-stand-' + type);
+      const labels = { heat: '🔥 FEI Hotspots', poly: '🏘️ BTO Clusters', hotspots: '📍 Hotspots', mrt: '🚇 Transit' };
+      if (btn) {
+        btn.textContent = `${labels[type]} (${isVisible ? 'ON' : 'OFF'})`;
+        isVisible ? btn.classList.remove('opacity-40', 'line-through') : btn.classList.add('opacity-40', 'line-through');
+      }
+
+      if (type === 'heat') isVisible ? standMap.addLayer(standHeatGroup) : standMap.removeLayer(standHeatGroup);
+      else if (type === 'poly') isVisible ? standMap.addLayer(standPolyGroup) : standMap.removeLayer(standPolyGroup);
+      else if (type === 'hotspots') isVisible ? standMap.addLayer(standHotspotGroup) : standMap.removeLayer(standHotspotGroup);
+      else if (type === 'mrt') isVisible ? standMap.addLayer(standMrtGroup) : standMap.removeLayer(standMrtGroup);
+    }
+
+    function switchStandaloneTiles(val) {
+      if (!standMap) return;
+      if (standOsm) standMap.removeLayer(standOsm);
+      if (standDark) standMap.removeLayer(standDark);
+      if (standLight) standMap.removeLayer(standLight);
+      if (val === 'dark') standMap.addLayer(standDark);
+      else if (val === 'light') standMap.addLayer(standLight);
+      else standMap.addLayer(standOsm);
+    }
+
+    function centerStandaloneMap() {
+      if (standMap) standMap.setView([1.3521, 103.8198], 11, { animate: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initStandaloneMap, 100);
+    });
+
+  </script>
+
   <meta charset="UTF-8">
   <title>GovTech FirstDate: Singapore WebGIS & Demographic Actuarial Dashboard</title>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js">
+    // Standalone Leaflet Map Implementation
+    let standMap = null;
+    let standOsm = null, standDark = null, standLight = null;
+    let standHeatGroup = null, standPolyGroup = null, standHotspotGroup = null, standMrtGroup = null;
+    const standFlags = { heat: true, poly: true, hotspots: true, mrt: true };
+
+    const hotspotLocations = {
+      1: { name: "Punggol Field", postal: "Sector 82", lat: 1.4050, lng: 103.9020, zoneKey: "ne", rank: 1, type: "top", fei: "89.4" },
+      2: { name: "Woodlands Drive", postal: "Sector 73", lat: 1.4360, lng: 103.7860, zoneKey: "north", rank: 2, type: "heartland", fei: "84.1" },
+      3: { name: "Tampines East", postal: "Sector 52", lat: 1.3540, lng: 103.9530, zoneKey: "east", rank: 3, type: "heartland", fei: "81.6" },
+      4: { name: "Sengkang Central", postal: "Sector 54", lat: 1.3916, lng: 103.8950, zoneKey: "ne", rank: 4, type: "heartland", fei: "80.2" },
+      5: { name: "Jurong West / Boon Lay", postal: "Sector 64", lat: 1.3400, lng: 103.7050, zoneKey: "west", rank: 5, type: "top", fei: "89.8" },
+      6: { name: "Yishun Ring", postal: "Sector 76", lat: 1.4290, lng: 103.8350, zoneKey: "north", rank: 6, type: "heartland", fei: "82.5" },
+      7: { name: "Toa Payoh Central", postal: "Sector 31", lat: 1.3340, lng: 103.8500, zoneKey: "rcr", rank: 7, type: "mature", fei: "76.4" },
+      8: { name: "Bedok North", postal: "Sector 46", lat: 1.3240, lng: 103.9270, zoneKey: "east", rank: 8, type: "mature", fei: "74.8" },
+      9: { name: "Buona Vista MOE Hub", postal: "Sector 13", lat: 1.3070, lng: 103.7900, zoneKey: "rcr", rank: 9, type: "work", fei: "68.2" },
+      10: { name: "Treasury / CBD", postal: "Sector 17", lat: 1.2890, lng: 103.8500, zoneKey: "ccr", rank: 10, type: "work", fei: "46.5" }
+    };
+
+    function initStandaloneMap() {
+      if (standMap) return;
+      const el = document.getElementById('standalone-leaflet-map');
+      if (!el) return;
+
+      standOsm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap'
+      });
+      standDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+      standLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+
+      standMap = L.map('standalone-leaflet-map', {
+        center: [1.3521, 103.8198],
+        zoom: 11,
+        layers: [standOsm]
+      });
+
+      standHeatGroup = L.layerGroup().addTo(standMap);
+      standPolyGroup = L.layerGroup().addTo(standMap);
+      standHotspotGroup = L.layerGroup().addTo(standMap);
+      standMrtGroup = L.layerGroup().addTo(standMap);
+
+      // Add Regions
+      const regions = [
+        { name: "OCR North-East", coords: [[1.428, 103.875], [1.415, 103.925], [1.385, 103.918], [1.365, 103.875], [1.385, 103.855], [1.420, 103.865]], color: "#10b981", key: "ne" },
+        { name: "OCR North", coords: [[1.458, 103.775], [1.450, 103.845], [1.415, 103.840], [1.405, 103.775], [1.435, 103.755]], color: "#10b981", key: "north" },
+        { name: "OCR West", coords: [[1.395, 103.735], [1.385, 103.765], [1.320, 103.770], [1.310, 103.680], [1.345, 103.685], [1.380, 103.715]], color: "#10b981", key: "west" },
+        { name: "OCR East", coords: [[1.380, 103.935], [1.375, 103.990], [1.335, 103.985], [1.310, 103.935], [1.325, 103.905], [1.365, 103.915]], color: "#10b981", key: "east" },
+        { name: "RCR Mature", coords: [[1.365, 103.835], [1.360, 103.880], [1.315, 103.890], [1.295, 103.820], [1.305, 103.795], [1.335, 103.815]], color: "#f59e0b", key: "rcr" },
+        { name: "CCR Core Central", coords: [[1.335, 103.795], [1.325, 103.835], [1.295, 103.860], [1.275, 103.855], [1.280, 103.815]], color: "#f43f5e", key: "ccr" }
+      ];
+
+      regions.forEach(r => {
+        const poly = L.polygon(r.coords, {
+          color: r.color,
+          weight: 2,
+          fillColor: r.color,
+          fillOpacity: 0.22,
+          dashArray: '3, 4'
+        }).bindPopup(`<div class="p-1"><strong>${r.name}</strong><br><span class="text-xs">Click to inspect region stats</span></div>`);
+        poly.on('click', () => { selectZone(r.key); });
+        standPolyGroup.addLayer(poly);
+      });
+
+      // Add MRT Lines
+      const mrtLines = [
+        { name: "North-East Line", color: "#a855f7", coords: [[1.2655, 103.8214], [1.2842, 103.8440], [1.2990, 103.8458], [1.3114, 103.8568], [1.3497, 103.8736], [1.3695, 103.8860], [1.3916, 103.8950], [1.4050, 103.9020]] },
+        { name: "East-West Line", color: "#10b981", coords: [[1.3730, 103.9493], [1.3540, 103.9530], [1.3200, 103.8900], [1.2930, 103.8520], [1.3070, 103.7900], [1.3330, 103.7420], [1.3400, 103.7050], [1.3200, 103.6360]] },
+        { name: "North-South Line", color: "#ef4444", coords: [[1.3330, 103.7420], [1.3850, 103.7440], [1.4360, 103.7860], [1.4290, 103.8350], [1.3510, 103.8490], [1.3340, 103.8500], [1.3040, 103.8320], [1.2820, 103.8530]] }
+      ];
+
+      mrtLines.forEach(m => {
+        standMrtGroup.addLayer(L.polyline(m.coords, { color: m.color, weight: 3, opacity: 0.8 }));
+      });
+
+      // Add Hotspots
+      Object.keys(hotspotLocations).forEach(k => {
+        const h = hotspotLocations[k];
+        let colorClass = "hotspot-green";
+        if (h.type === "top") colorClass = "hotspot-red";
+        else if (h.type === "work") colorClass = "hotspot-purple";
+        else if (h.type === "mature") colorClass = "hotspot-amber";
+
+        const icon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: `<div class="hotspot-div-icon ${colorClass}" style="width: 28px; height: 28px;">${h.rank}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14]
+        });
+
+        const marker = L.marker([h.lat, h.lng], { icon: icon });
+        marker.bindPopup(`<div class="p-1"><strong>#${h.rank} ${h.name}</strong><br><span class="text-xs">FEI: ${h.fei} | ${h.postal}</span></div>`);
+        marker.on('click', () => { selectZone(h.zoneKey); });
+        standHotspotGroup.addLayer(marker);
+
+        if (h.type === "top" || h.type === "heartland") {
+          standHeatGroup.addLayer(L.circle([h.lat, h.lng], {
+            radius: 1600,
+            color: h.type === "top" ? '#ef4444' : '#10b981',
+            fillColor: h.type === "top" ? '#ef4444' : '#10b981',
+            fillOpacity: 0.16,
+            weight: 1,
+            dashArray: '2, 4'
+          }));
+        }
+      });
+    }
+
+    function toggleStandaloneLayer(type) {
+      if (!standMap) return;
+      standFlags[type] = !standFlags[type];
+      const isVisible = standFlags[type];
+      const btn = document.getElementById('btn-stand-' + type);
+      const labels = { heat: '🔥 FEI Hotspots', poly: '🏘️ BTO Clusters', hotspots: '📍 Hotspots', mrt: '🚇 Transit' };
+      if (btn) {
+        btn.textContent = `${labels[type]} (${isVisible ? 'ON' : 'OFF'})`;
+        isVisible ? btn.classList.remove('opacity-40', 'line-through') : btn.classList.add('opacity-40', 'line-through');
+      }
+
+      if (type === 'heat') isVisible ? standMap.addLayer(standHeatGroup) : standMap.removeLayer(standHeatGroup);
+      else if (type === 'poly') isVisible ? standMap.addLayer(standPolyGroup) : standMap.removeLayer(standPolyGroup);
+      else if (type === 'hotspots') isVisible ? standMap.addLayer(standHotspotGroup) : standMap.removeLayer(standHotspotGroup);
+      else if (type === 'mrt') isVisible ? standMap.addLayer(standMrtGroup) : standMap.removeLayer(standMrtGroup);
+    }
+
+    function switchStandaloneTiles(val) {
+      if (!standMap) return;
+      if (standOsm) standMap.removeLayer(standOsm);
+      if (standDark) standMap.removeLayer(standDark);
+      if (standLight) standMap.removeLayer(standLight);
+      if (val === 'dark') standMap.addLayer(standDark);
+      else if (val === 'light') standMap.addLayer(standLight);
+      else standMap.addLayer(standOsm);
+    }
+
+    function centerStandaloneMap() {
+      if (standMap) standMap.setView([1.3521, 103.8198], 11, { animate: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initStandaloneMap, 100);
+    });
+
+  </script>
   <style>
     .zone-hover:hover {
       filter: brightness(1.25);
@@ -18,6 +323,67 @@
       background: var(--border);
       border-radius: 4px;
     }
+  
+    /* Leaflet Map & Custom Markers */
+    #standalone-leaflet-map {
+      width: 100%;
+      height: 480px;
+      border-radius: 0.75rem;
+      z-index: 10;
+    }
+    @media (max-width: 768px) {
+      #standalone-leaflet-map {
+        height: 380px;
+      }
+    }
+    .hotspot-div-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-weight: 800;
+      color: #ffffff;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .hotspot-div-icon:hover {
+      transform: scale(1.3);
+      z-index: 1000 !important;
+    }
+    .hotspot-red {
+      background: radial-gradient(circle, #ef4444 0%, #b91c1c 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.85);
+    }
+    .hotspot-green {
+      background: radial-gradient(circle, #10b981 0%, #047857 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.75);
+    }
+    .hotspot-amber {
+      background: radial-gradient(circle, #f59e0b 0%, #b45309 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.75);
+    }
+    .hotspot-purple {
+      background: radial-gradient(circle, #8b5cf6 0%, #6d28d9 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.75);
+    }
+    .leaflet-popup-content-wrapper {
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      border: 1px solid #334155 !important;
+      border-radius: 0.75rem !important;
+      font-family: inherit !important;
+      font-size: 12px !important;
+    }
+    .leaflet-popup-tip {
+      background: #0f172a !important;
+    }
+
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 custom-scrollbar">
@@ -679,6 +1045,157 @@
       document.getElementById('sim-ivf').className = fConc < 40.0 ? "text-lg font-bold text-emerald-500" : "text-lg font-bold text-rose-500";
       document.getElementById('sim-cost').textContent = netCost;
     }
+  
+    // Standalone Leaflet Map Implementation
+    let standMap = null;
+    let standOsm = null, standDark = null, standLight = null;
+    let standHeatGroup = null, standPolyGroup = null, standHotspotGroup = null, standMrtGroup = null;
+    const standFlags = { heat: true, poly: true, hotspots: true, mrt: true };
+
+    const hotspotLocations = {
+      1: { name: "Punggol Field", postal: "Sector 82", lat: 1.4050, lng: 103.9020, zoneKey: "ne", rank: 1, type: "top", fei: "89.4" },
+      2: { name: "Woodlands Drive", postal: "Sector 73", lat: 1.4360, lng: 103.7860, zoneKey: "north", rank: 2, type: "heartland", fei: "84.1" },
+      3: { name: "Tampines East", postal: "Sector 52", lat: 1.3540, lng: 103.9530, zoneKey: "east", rank: 3, type: "heartland", fei: "81.6" },
+      4: { name: "Sengkang Central", postal: "Sector 54", lat: 1.3916, lng: 103.8950, zoneKey: "ne", rank: 4, type: "heartland", fei: "80.2" },
+      5: { name: "Jurong West / Boon Lay", postal: "Sector 64", lat: 1.3400, lng: 103.7050, zoneKey: "west", rank: 5, type: "top", fei: "89.8" },
+      6: { name: "Yishun Ring", postal: "Sector 76", lat: 1.4290, lng: 103.8350, zoneKey: "north", rank: 6, type: "heartland", fei: "82.5" },
+      7: { name: "Toa Payoh Central", postal: "Sector 31", lat: 1.3340, lng: 103.8500, zoneKey: "rcr", rank: 7, type: "mature", fei: "76.4" },
+      8: { name: "Bedok North", postal: "Sector 46", lat: 1.3240, lng: 103.9270, zoneKey: "east", rank: 8, type: "mature", fei: "74.8" },
+      9: { name: "Buona Vista MOE Hub", postal: "Sector 13", lat: 1.3070, lng: 103.7900, zoneKey: "rcr", rank: 9, type: "work", fei: "68.2" },
+      10: { name: "Treasury / CBD", postal: "Sector 17", lat: 1.2890, lng: 103.8500, zoneKey: "ccr", rank: 10, type: "work", fei: "46.5" }
+    };
+
+    function initStandaloneMap() {
+      if (standMap) return;
+      const el = document.getElementById('standalone-leaflet-map');
+      if (!el) return;
+
+      standOsm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap'
+      });
+      standDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+      standLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        attribution: '&copy; CartoDB'
+      });
+
+      standMap = L.map('standalone-leaflet-map', {
+        center: [1.3521, 103.8198],
+        zoom: 11,
+        layers: [standOsm]
+      });
+
+      standHeatGroup = L.layerGroup().addTo(standMap);
+      standPolyGroup = L.layerGroup().addTo(standMap);
+      standHotspotGroup = L.layerGroup().addTo(standMap);
+      standMrtGroup = L.layerGroup().addTo(standMap);
+
+      // Add Regions
+      const regions = [
+        { name: "OCR North-East", coords: [[1.428, 103.875], [1.415, 103.925], [1.385, 103.918], [1.365, 103.875], [1.385, 103.855], [1.420, 103.865]], color: "#10b981", key: "ne" },
+        { name: "OCR North", coords: [[1.458, 103.775], [1.450, 103.845], [1.415, 103.840], [1.405, 103.775], [1.435, 103.755]], color: "#10b981", key: "north" },
+        { name: "OCR West", coords: [[1.395, 103.735], [1.385, 103.765], [1.320, 103.770], [1.310, 103.680], [1.345, 103.685], [1.380, 103.715]], color: "#10b981", key: "west" },
+        { name: "OCR East", coords: [[1.380, 103.935], [1.375, 103.990], [1.335, 103.985], [1.310, 103.935], [1.325, 103.905], [1.365, 103.915]], color: "#10b981", key: "east" },
+        { name: "RCR Mature", coords: [[1.365, 103.835], [1.360, 103.880], [1.315, 103.890], [1.295, 103.820], [1.305, 103.795], [1.335, 103.815]], color: "#f59e0b", key: "rcr" },
+        { name: "CCR Core Central", coords: [[1.335, 103.795], [1.325, 103.835], [1.295, 103.860], [1.275, 103.855], [1.280, 103.815]], color: "#f43f5e", key: "ccr" }
+      ];
+
+      regions.forEach(r => {
+        const poly = L.polygon(r.coords, {
+          color: r.color,
+          weight: 2,
+          fillColor: r.color,
+          fillOpacity: 0.22,
+          dashArray: '3, 4'
+        }).bindPopup(`<div class="p-1"><strong>${r.name}</strong><br><span class="text-xs">Click to inspect region stats</span></div>`);
+        poly.on('click', () => { selectZone(r.key); });
+        standPolyGroup.addLayer(poly);
+      });
+
+      // Add MRT Lines
+      const mrtLines = [
+        { name: "North-East Line", color: "#a855f7", coords: [[1.2655, 103.8214], [1.2842, 103.8440], [1.2990, 103.8458], [1.3114, 103.8568], [1.3497, 103.8736], [1.3695, 103.8860], [1.3916, 103.8950], [1.4050, 103.9020]] },
+        { name: "East-West Line", color: "#10b981", coords: [[1.3730, 103.9493], [1.3540, 103.9530], [1.3200, 103.8900], [1.2930, 103.8520], [1.3070, 103.7900], [1.3330, 103.7420], [1.3400, 103.7050], [1.3200, 103.6360]] },
+        { name: "North-South Line", color: "#ef4444", coords: [[1.3330, 103.7420], [1.3850, 103.7440], [1.4360, 103.7860], [1.4290, 103.8350], [1.3510, 103.8490], [1.3340, 103.8500], [1.3040, 103.8320], [1.2820, 103.8530]] }
+      ];
+
+      mrtLines.forEach(m => {
+        standMrtGroup.addLayer(L.polyline(m.coords, { color: m.color, weight: 3, opacity: 0.8 }));
+      });
+
+      // Add Hotspots
+      Object.keys(hotspotLocations).forEach(k => {
+        const h = hotspotLocations[k];
+        let colorClass = "hotspot-green";
+        if (h.type === "top") colorClass = "hotspot-red";
+        else if (h.type === "work") colorClass = "hotspot-purple";
+        else if (h.type === "mature") colorClass = "hotspot-amber";
+
+        const icon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: `<div class="hotspot-div-icon ${colorClass}" style="width: 28px; height: 28px;">${h.rank}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14]
+        });
+
+        const marker = L.marker([h.lat, h.lng], { icon: icon });
+        marker.bindPopup(`<div class="p-1"><strong>#${h.rank} ${h.name}</strong><br><span class="text-xs">FEI: ${h.fei} | ${h.postal}</span></div>`);
+        marker.on('click', () => { selectZone(h.zoneKey); });
+        standHotspotGroup.addLayer(marker);
+
+        if (h.type === "top" || h.type === "heartland") {
+          standHeatGroup.addLayer(L.circle([h.lat, h.lng], {
+            radius: 1600,
+            color: h.type === "top" ? '#ef4444' : '#10b981',
+            fillColor: h.type === "top" ? '#ef4444' : '#10b981',
+            fillOpacity: 0.16,
+            weight: 1,
+            dashArray: '2, 4'
+          }));
+        }
+      });
+    }
+
+    function toggleStandaloneLayer(type) {
+      if (!standMap) return;
+      standFlags[type] = !standFlags[type];
+      const isVisible = standFlags[type];
+      const btn = document.getElementById('btn-stand-' + type);
+      const labels = { heat: '🔥 FEI Hotspots', poly: '🏘️ BTO Clusters', hotspots: '📍 Hotspots', mrt: '🚇 Transit' };
+      if (btn) {
+        btn.textContent = `${labels[type]} (${isVisible ? 'ON' : 'OFF'})`;
+        isVisible ? btn.classList.remove('opacity-40', 'line-through') : btn.classList.add('opacity-40', 'line-through');
+      }
+
+      if (type === 'heat') isVisible ? standMap.addLayer(standHeatGroup) : standMap.removeLayer(standHeatGroup);
+      else if (type === 'poly') isVisible ? standMap.addLayer(standPolyGroup) : standMap.removeLayer(standPolyGroup);
+      else if (type === 'hotspots') isVisible ? standMap.addLayer(standHotspotGroup) : standMap.removeLayer(standHotspotGroup);
+      else if (type === 'mrt') isVisible ? standMap.addLayer(standMrtGroup) : standMap.removeLayer(standMrtGroup);
+    }
+
+    function switchStandaloneTiles(val) {
+      if (!standMap) return;
+      if (standOsm) standMap.removeLayer(standOsm);
+      if (standDark) standMap.removeLayer(standDark);
+      if (standLight) standMap.removeLayer(standLight);
+      if (val === 'dark') standMap.addLayer(standDark);
+      else if (val === 'light') standMap.addLayer(standLight);
+      else standMap.addLayer(standOsm);
+    }
+
+    function centerStandaloneMap() {
+      if (standMap) standMap.setView([1.3521, 103.8198], 11, { animate: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initStandaloneMap, 100);
+    });
+
   </script>
 </body>
 </html>
