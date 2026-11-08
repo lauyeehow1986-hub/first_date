@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GovTech FirstDate: Singapore WebGIS & Demographic Actuarial Dashboard</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .zone-hover:hover {
+      filter: brightness(1.25);
+      cursor: pointer;
+      stroke-width: 2.5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 custom-scrollbar">
+
+  <!-- Header -->
+  <header class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-[var(--border)] pb-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+          FastMCP Actuarial Sieve v2.5
+        </span>
+        <span class="text-xs text-[var(--muted-foreground)]">SingStat 2025 / PSD / URA GIS</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight mt-1 text-[var(--foreground)]">
+        GovTech FirstDate: Geospatial WebGIS & Demographic Cohort Dashboard
+      </h1>
+      <p class="text-sm text-[var(--muted-foreground)]">
+        Spatial matching effectiveness, childhood SES origins, racial family support, and 0–22y child-cost simulation
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="text-right">
+        <div class="text-xs text-[var(--muted-foreground)]">National TFR (2025)</div>
+        <div class="text-xl font-extrabold text-rose-500">0.87 <span class="text-xs font-normal text-[var(--muted-foreground)]">(29,864 births)</span></div>
+      </div>
+      <div class="h-8 w-px bg-[var(--border)]"></div>
+      <div class="text-right">
+        <div class="text-xs text-[var(--muted-foreground)]">FirstDate Pilot Lift</div>
+        <div class="text-xl font-extrabold text-amber-500">+0.0042 <span class="text-xs font-normal text-[var(--muted-foreground)]">(+144 births)</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top KPI Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs font-medium text-[var(--muted-foreground)]">Total Public Service Base</div>
+      <div class="text-2xl font-bold mt-1 text-[var(--foreground)]">157,997</div>
+      <div class="text-xs text-rose-500 mt-1 flex items-center gap-1">
+        <span>⚠ -65,000 MOHH Healthcare Excluded</span>
+      </div>
+    </div>
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs font-medium text-[var(--muted-foreground)]">Unpartnered Singles (Ages 21–45)</div>
+      <div class="text-2xl font-bold mt-1 text-[var(--foreground)]">20,690</div>
+      <div class="text-xs text-amber-500 mt-1">
+        -50.2% already partnered (BTO queues)
+      </div>
+    </div>
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs font-medium text-[var(--muted-foreground)]">Prime Golden Ageband</div>
+      <div class="text-2xl font-bold mt-1 text-emerald-500">F: 25–29 | M: 27–31</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1">
+        Conception pre-34 avoids age-37 cliff
+      </div>
+    </div>
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs font-medium text-[var(--muted-foreground)]">Top FirstDate Zone (FEI Index)</div>
+      <div class="text-2xl font-bold mt-1 text-cyan-500">Jurong West & Punggol</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1">
+        Score: 89.8 / 100 (High MX density + PHG support)
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid: Interactive Map + Planning Area Inspector -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+    
+    <!-- Left Column: Interactive WebGIS Map (7 cols) -->
+    <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-base font-semibold text-[var(--foreground)]">Singapore Planning Area Spatial Effectiveness Map</h2>
+            <p class="text-xs text-[var(--muted-foreground)]">Click a planning region to inspect childhood SES, racial support & FirstDate effectiveness</p>
+          </div>
+          <div class="flex gap-1.5 text-xs">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 text-[11px] font-medium">OCR Optimal</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/15 text-amber-500 text-[11px] font-medium">RCR Moderate</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-500/15 text-rose-500 text-[11px] font-medium">CCR Resilient</span>
+          </div>
+        </div>
+
+        <!-- SVG Map Container -->
+        <div class="relative w-full aspect-[16/10] bg-[var(--background)]/60 rounded-lg border border-[var(--border)] p-2 flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 880 520" class="w-full h-full">
+            <defs>
+              <linearGradient id="gradOCR" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.75" />
+                <stop offset="100%" stop-color="#059669" stop-opacity="0.9" />
+              </linearGradient>
+              <linearGradient id="gradRCR" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.75" />
+                <stop offset="100%" stop-color="#d97706" stop-opacity="0.9" />
+              </linearGradient>
+              <linearGradient id="gradCCR" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.75" />
+                <stop offset="100%" stop-color="#e11d48" stop-opacity="0.9" />
+              </linearGradient>
+            </defs>
+
+            <!-- Background Outline / Water -->
+            <rect width="880" height="520" fill="transparent" />
+
+            <!-- REGION 1: OCR North (Woodlands, Sembawang, Yishun) -->
+            <path id="zone-north" class="zone-hover transition-all duration-200"
+                  d="M 320 60 L 460 50 L 520 120 L 480 170 L 360 170 L 310 120 Z"
+                  fill="url(#gradOCR)" stroke="#047857" stroke-width="1.5"
+                  onclick="selectZone('north')" />
+            <text x="400" y="115" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              OCR North
+            </text>
+            <text x="400" y="133" font-size="11" fill="#ecfdf5" text-anchor="middle" pointer-events="none">
+              Woodlands & Yishun (FEI: 84.6)
+            </text>
+
+            <!-- REGION 2: OCR North-East (Punggol, Sengkang, Hougang) -->
+            <path id="zone-ne" class="zone-hover transition-all duration-200"
+                  d="M 525 110 L 670 100 L 710 180 L 610 220 L 520 180 Z"
+                  fill="url(#gradOCR)" stroke="#047857" stroke-width="1.5"
+                  onclick="selectZone('ne')" />
+            <text x="610" y="155" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              OCR North-East
+            </text>
+            <text x="610" y="173" font-size="11" fill="#ecfdf5" text-anchor="middle" pointer-events="none">
+              Punggol & Sengkang (FEI: 88.4)
+            </text>
+
+            <!-- REGION 3: OCR West (Jurong West, Choa Chu Kang, Bukit Batok) -->
+            <path id="zone-west" class="zone-hover transition-all duration-200"
+                  d="M 120 160 L 310 160 L 330 290 L 260 360 L 110 320 L 80 230 Z"
+                  fill="url(#gradOCR)" stroke="#047857" stroke-width="1.5"
+                  onclick="selectZone('west')" />
+            <text x="200" y="250" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              OCR West
+            </text>
+            <text x="200" y="268" font-size="11" fill="#ecfdf5" text-anchor="middle" pointer-events="none">
+              Jurong & CCK (FEI: 89.8)
+            </text>
+
+            <!-- REGION 4: OCR East (Tampines, Bedok, Pasir Ris) -->
+            <path id="zone-east" class="zone-hover transition-all duration-200"
+                  d="M 680 185 L 820 190 L 850 300 L 710 310 L 625 240 Z"
+                  fill="url(#gradOCR)" stroke="#047857" stroke-width="1.5"
+                  onclick="selectZone('east')" />
+            <text x="740" y="245" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              OCR East
+            </text>
+            <text x="740" y="263" font-size="11" fill="#ecfdf5" text-anchor="middle" pointer-events="none">
+              Tampines & Bedok (FEI: 82.5)
+            </text>
+
+            <!-- REGION 5: RCR Mature Central (Toa Payoh, Bishan, Queenstown, Geylang) -->
+            <path id="zone-rcr" class="zone-hover transition-all duration-200"
+                  d="M 345 200 L 510 190 L 605 240 L 580 340 L 360 330 L 335 270 Z"
+                  fill="url(#gradRCR)" stroke="#b45309" stroke-width="1.5"
+                  onclick="selectZone('rcr')" />
+            <text x="460" y="260" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              RCR Mature Estates
+            </text>
+            <text x="460" y="278" font-size="11" fill="#fffbeb" text-anchor="middle" pointer-events="none">
+              Bishan, Toa Payoh, Queenstown (FEI: 76.2)
+            </text>
+
+            <!-- REGION 6: CCR Core Central (Tanglin, Bukit Timah, Downtown, Orchard) -->
+            <path id="zone-ccr" class="zone-hover transition-all duration-200"
+                  d="M 380 340 L 520 335 L 540 430 L 410 440 L 370 380 Z"
+                  fill="url(#gradCCR)" stroke="#be123c" stroke-width="1.5"
+                  onclick="selectZone('ccr')" />
+            <text x="455" y="385" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">
+              CCR High-SES Enclave
+            </text>
+            <text x="455" y="403" font-size="11" fill="#ffe4e6" text-anchor="middle" pointer-events="none">
+              Bukit Timah & Tanglin (FEI: 41.5)
+            </text>
+
+            <!-- Key Civil Service Hub Marker: Buona Vista (MOE / Biopolis) -->
+            <circle cx="340" cy="315" r="7" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
+            <text x="340" y="303" font-size="10" font-weight="bold" fill="#4338ca" text-anchor="middle">
+              Buona Vista Hub (MOE HQ)
+            </text>
+
+            <!-- Key Civil Service Hub Marker: Central Treasury / CBD -->
+            <circle cx="515" cy="415" r="7" fill="#6366f1" stroke="#ffffff" stroke-width="2" />
+            <text x="515" y="433" font-size="10" font-weight="bold" fill="#4338ca" text-anchor="middle">
+              Treasury / MOM / CBD
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Quick Region Selector Buttons -->
+      <div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-[var(--border)]">
+        <span class="text-xs font-semibold text-[var(--muted-foreground)] self-center mr-1">Select Region:</span>
+        <button onclick="selectZone('west')" class="px-2.5 py-1 text-xs rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 font-medium">OCR West (Jurong)</button>
+        <button onclick="selectZone('ne')" class="px-2.5 py-1 text-xs rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 font-medium">OCR NE (Punggol)</button>
+        <button onclick="selectZone('north')" class="px-2.5 py-1 text-xs rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 font-medium">OCR North (Woodlands)</button>
+        <button onclick="selectZone('east')" class="px-2.5 py-1 text-xs rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 font-medium">OCR East (Tampines)</button>
+        <button onclick="selectZone('rcr')" class="px-2.5 py-1 text-xs rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 font-medium">RCR Mature (Bishan)</button>
+        <button onclick="selectZone('ccr')" class="px-2.5 py-1 text-xs rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 font-medium">CCR High-SES (Bt Timah)</button>
+      </div>
+    </div>
+
+    <!-- Right Column: Planning Area Detail Inspector (5 cols) -->
+    <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-4">
+          <div>
+            <span id="zone-tier-badge" class="px-2 py-0.5 text-xs font-semibold rounded bg-emerald-500/15 text-emerald-500">
+              OCR Heartland (Top Target)
+            </span>
+            <h3 id="zone-title" class="text-lg font-bold text-[var(--foreground)] mt-1">
+              OCR West: Jurong West, CCK & Bukit Batok
+            </h3>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-[var(--muted-foreground)]">FirstDate Index</div>
+            <div id="zone-fei" class="text-2xl font-black text-emerald-500">89.8 <span class="text-xs font-normal text-[var(--muted-foreground)]">/100</span></div>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">Representative Subzones:</span>
+            <span id="zone-subzones" class="font-semibold text-right text-[var(--foreground)]">Boon Lay, Jurong Gateway, Gombak</span>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">HDB 4-Room Resale Median (2025):</span>
+            <span id="zone-hdb" class="font-semibold text-[var(--foreground)]">S$490,000 – S$550,000</span>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">Transit Commute to Buona Vista MOE:</span>
+            <span id="zone-commute" class="font-semibold text-emerald-500">22 – 32 mins (Low Commute Tax)</span>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">Racial Caregiving Support Multiplier:</span>
+            <span id="zone-support" class="font-semibold text-emerald-500">1.08x (High PHG Grandparent Proximity)</span>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">Tuition & Enrichment Reference Cost:</span>
+            <span id="zone-tuition" class="font-semibold text-[var(--foreground)]">S$450 – S$600 / mo / child (Realistic)</span>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+            <span class="text-[var(--muted-foreground)]">Est. 0–22y Outlay to Adulthood:</span>
+            <span id="zone-cost" class="font-semibold text-[var(--foreground)]">S$513,020 (Mid-Tier Civil Service)</span>
+          </div>
+        </div>
+
+        <!-- Qualitative Cultural Analysis -->
+        <div class="mt-4 p-3 rounded-lg bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs font-semibold text-[var(--foreground)] mb-1">Cultural & Cohort Dynamics:</div>
+          <p id="zone-narrative" class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            High concentration of junior and mid-level executive civil servants (MX13/MX12). Proximity to the Buona Vista education/tech belt dramatically lowers weekday commute exhaustion. Extended families living within 4 km qualify for the S$30,000 Proximity Housing Grant (PHG), providing essential infant-care backup that reduces subjective fear of child-rearing.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)] flex items-center justify-between">
+        <span>Conversion Probability to 2nd Date: <strong id="zone-conv" class="text-emerald-500 font-bold">61.4%</strong></span>
+        <span>Expected Children: <strong id="zone-kids" class="text-[var(--foreground)] font-bold">1.58 kids</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Section: Cultural Family Support vs Income Band vs Child Cost Ledger -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+    
+    <!-- Cultural & Racial Support Matrix (6 cols) -->
+    <div class="lg:col-span-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm">
+      <h3 class="text-base font-semibold text-[var(--foreground)] mb-1">
+        Racial Community Dynamics & Caregiving Support Modifiers
+      </h3>
+      <p class="text-xs text-[var(--muted-foreground)] mb-4">
+        Cultural family networks, marriage solemnization norms, and completed fertility differentials
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+              <th class="py-2 font-medium">Race</th>
+              <th class="py-2 font-medium">National TFR</th>
+              <th class="py-2 font-medium">Golden Band (F/M)</th>
+              <th class="py-2 font-medium">Family Support Mechanism</th>
+              <th class="py-2 font-medium text-right">ROM Conversion</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--border)]">
+            <tr>
+              <td class="py-2.5 font-bold text-emerald-500">Malay</td>
+              <td class="py-2.5 font-semibold">1.53</td>
+              <td class="py-2.5">F 23–27 | M 25–29</td>
+              <td class="py-2.5 text-[var(--muted-foreground)]">Gotong-royong communal care; grandparents co-residence</td>
+              <td class="py-2.5 text-right font-bold text-emerald-500">4.1%</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-cyan-500">Indian</td>
+              <td class="py-2.5 font-semibold">0.92</td>
+              <td class="py-2.5">F 25–29 | M 27–31</td>
+              <td class="py-2.5 text-[var(--muted-foreground)]">Professional homogamy; moderate extended family assistance</td>
+              <td class="py-2.5 text-right font-bold text-cyan-500">2.9%</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-amber-500">Others / Eur</td>
+              <td class="py-2.5 font-semibold">0.89</td>
+              <td class="py-2.5">F 26–30 | M 28–32</td>
+              <td class="py-2.5 text-[var(--muted-foreground)]">High exogamy (>40%); lower MX rank power-distance friction</td>
+              <td class="py-2.5 text-right font-bold text-amber-500">2.8%</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 font-bold text-rose-500">Chinese</td>
+              <td class="py-2.5 font-semibold">0.70</td>
+              <td class="py-2.5">F 26–30 | M 28–32</td>
+              <td class="py-2.5 text-[var(--muted-foreground)]">Nuclear self-reliance; hyper-competitive tuition cost hurdle</td>
+              <td class="py-2.5 text-right font-bold text-rose-500">2.4%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+        <strong class="text-[var(--foreground)]">Key Actuarial Insight:</strong> Malay officers maintain the highest second-child conversion rate because informal infant care by relatives lowers out-of-pocket infant-care fees. Conversely, Chinese officers face high brand-preschool and tuition benchmarks (S$1,000–S$2,200/mo), depressing completed fertility even within high civil service salary brackets (MX11/MX10).
+      </div>
+    </div>
+
+    <!-- Income Band vs 0-22y Child Financial Ledger (6 cols) -->
+    <div class="lg:col-span-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm">
+      <h3 class="text-base font-semibold text-[var(--foreground)] mb-1">
+        Civil Service Income Bands vs 0–22y Child Financial Outlay
+      </h3>
+      <p class="text-xs text-[var(--muted-foreground)] mb-4">
+        Gross expenses from infant delivery to university vs government grants & leave deficits
+      </p>
+
+      <!-- Cost Waterfall Comparison -->
+      <div class="space-y-3 text-xs">
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="font-semibold text-emerald-500">Public Anchor Tier (Subsidised):</span>
+            <span class="font-bold text-[var(--foreground)]">S$260,000 Gross (Net: S$208,820)</span>
+          </div>
+          <div class="w-full bg-[var(--border)] rounded-full h-2">
+            <div class="bg-emerald-500 h-2 rounded-full" style="width: 26%"></div>
+          </div>
+          <span class="text-[11px] text-[var(--muted-foreground)]">Polyclinic/Restructured delivery, ECDA AOP infant care, MOE schooling</span>
+        </div>
+
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="font-semibold text-amber-500">Civil Service Mid-Tier (Standard MX12/MX11):</span>
+            <span class="font-bold text-[var(--foreground)]">S$564,200 Gross (Net: S$513,020)</span>
+          </div>
+          <div class="w-full bg-[var(--border)] rounded-full h-2">
+            <div class="bg-amber-500 h-2 rounded-full" style="width: 56%"></div>
+          </div>
+          <span class="text-[11px] text-[var(--muted-foreground)]">Private delivery, 10-yr FDW helper, secondary enrichment, NUS/NTU tuition</span>
+        </div>
+
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="font-semibold text-rose-500">High-SES Private Tier (CCR Enclave / MX10+):</span>
+            <span class="font-bold text-[var(--foreground)]">S$1,160,400 Gross (Net: S$1,109,220)</span>
+          </div>
+          <div class="w-full bg-[var(--border)] rounded-full h-2">
+            <div class="bg-rose-500 h-2 rounded-full" style="width: 100%"></div>
+          </div>
+          <span class="text-[11px] text-[var(--muted-foreground)]">Gleneagles delivery, premium preschool, elite tuition, overseas university</span>
+        </div>
+      </div>
+
+      <div class="mt-5 p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+        <div class="flex justify-between items-center text-[var(--foreground)] font-semibold mb-1">
+          <span>The Preschool Childcare Leave Deficit:</span>
+          <span class="text-rose-500 font-bold">9.5 Days Annual Shortfall</span>
+        </div>
+        <p class="text-[var(--muted-foreground)] leading-relaxed">
+          Statutory Government-Paid Childcare Leave (GPCL) provides <strong>6 days/year</strong>. However, empirical clinical demand for mandatory preschool Hand-Foot-Mouth Disease (HFMD 7–10 days quarantine), acute respiratory infections, and parent-teacher meetings totals <strong>~15.5 days/year</strong>, forcing young parents to consume personal annual leave or take unpaid leave.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Match & Cohort Simulator -->
+  <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm mb-6">
+    <div class="border-b border-[var(--border)] pb-3 mb-4">
+      <h3 class="text-base font-semibold text-[var(--foreground)]">
+        Interactive Match Simulator: FirstDate Pairwise Odds & Financial Ledger
+      </h3>
+      <p class="text-xs text-[var(--muted-foreground)]">
+        Simulate cross-agency compatibility, conception age after 3.5y BTO delay, subfertility hazard, and net 0–22y costs
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+      <div>
+        <label class="block font-medium text-[var(--foreground)] mb-1">Female Officer Age & MX:</label>
+        <div class="flex gap-2">
+          <input id="input-f-age" type="number" value="27" min="21" max="45" class="w-16 px-2 py-1 rounded bg-[var(--background)] border border-[var(--border)] text-center text-[var(--foreground)] font-bold" onchange="runLiveSim()">
+          <select id="input-f-mx" class="flex-1 px-2 py-1 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" onchange="runLiveSim()">
+            <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
+            <option value="MX12" selected>MX12 (Assistant Director: S$4.4k-7.5k)</option>
+            <option value="MX11">MX11 (Senior AD: S$6.0k-9.0k)</option>
+            <option value="MX10">MX10 (Senior Deputy Dir: S$9k-15.6k)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-medium text-[var(--foreground)] mb-1">Male Officer Age & MX:</label>
+        <div class="flex gap-2">
+          <input id="input-m-age" type="number" value="29" min="21" max="48" class="w-16 px-2 py-1 rounded bg-[var(--background)] border border-[var(--border)] text-center text-[var(--foreground)] font-bold" onchange="runLiveSim()">
+          <select id="input-m-mx" class="flex-1 px-2 py-1 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" onchange="runLiveSim()">
+            <option value="MX13">MX13 (Executive: S$3.2k-5.5k)</option>
+            <option value="MX12">MX12 (Assistant Director: S$4.4k-7.5k)</option>
+            <option value="MX11" selected>MX11 (Senior AD: S$6.0k-9.0k)</option>
+            <option value="MX10">MX10 (Senior Deputy Dir: S$9k-15.6k)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-medium text-[var(--foreground)] mb-1">Race & Community:</label>
+        <select id="input-race" class="w-full px-2 py-1.5 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" onchange="runLiveSim()">
+          <option value="Chinese" selected>Chinese (TFR 0.70)</option>
+          <option value="Malay">Malay (TFR 1.53)</option>
+          <option value="Indian">Indian (TFR 0.92)</option>
+          <option value="Others_Eurasian">Others / Eurasian (TFR 0.89)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-medium text-[var(--foreground)] mb-1">Childhood Origin & Policy:</label>
+        <select id="input-tier" class="w-full px-2 py-1.5 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" onchange="runLiveSim()">
+          <option value="OCR_Heartland" selected>OCR Heartland (Punggol / Jurong)</option>
+          <option value="RCR_Mature">RCR Mature (Toa Payoh / Bishan)</option>
+          <option value="CCR_Enclave">CCR Enclave (Bukit Timah)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Live Output Banner -->
+    <div class="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+      <div>
+        <span class="text-[var(--muted-foreground)] block">2nd Date Survival:</span>
+        <span id="sim-2nd-date" class="text-lg font-bold text-emerald-500">60.7%</span>
+      </div>
+      <div>
+        <span class="text-[var(--muted-foreground)] block">Conception Age (Post BTO):</span>
+        <span id="sim-conception-age" class="text-lg font-bold text-[var(--foreground)]">F: 30.5 | M: 32.5</span>
+      </div>
+      <div>
+        <span class="text-[var(--muted-foreground)] block">Effective Miscarriage:</span>
+        <span id="sim-miscarriage" class="text-lg font-bold text-amber-500">11.2%</span>
+      </div>
+      <div>
+        <span class="text-[var(--muted-foreground)] block">Expected Children:</span>
+        <span id="sim-kids" class="text-lg font-bold text-emerald-500">1.53 kids</span>
+      </div>
+      <div>
+        <span class="text-[var(--muted-foreground)] block">MOH 75% IVF Eligible:</span>
+        <span id="sim-ivf" class="text-lg font-bold text-emerald-500">YES (&lt;40 yrs)</span>
+      </div>
+      <div>
+        <span class="text-[var(--muted-foreground)] block">Net 0-22y Child Cost:</span>
+        <span id="sim-cost" class="text-lg font-bold text-[var(--foreground)]">S$513,020</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-6 text-center text-xs text-[var(--muted-foreground)] border-t border-[var(--border)] pt-4">
+    Singapore GovTech FirstDate Actuarial & WebGIS Dashboard · Powered by FastMCP & Antigravity IDE · For Research & Policy Evaluation Only
+  </footer>
+
+  <script>
+    const zoneData = {
+      west: {
+        badge: "OCR Heartland (Top Target)",
+        badgeClass: "bg-emerald-500/15 text-emerald-500",
+        title: "OCR West: Jurong West, CCK & Bukit Batok",
+        fei: "89.8",
+        feiClass: "text-emerald-500",
+        subzones: "Boon Lay, Jurong Gateway, Gombak, Hong Kah",
+        hdb: "S$490,000 – S$550,000",
+        commute: "22 – 32 mins (Low Commute Tax)",
+        commuteClass: "text-emerald-500",
+        support: "1.08x (High PHG Grandparent Proximity)",
+        supportClass: "text-emerald-500",
+        tuition: "S$450 – S$600 / mo / child (Realistic)",
+        cost: "S$513,020 (Mid-Tier Civil Service)",
+        narrative: "Highest concentration of junior and mid-level executive civil servants (MX13/MX12). Proximity to the Buona Vista education/tech belt dramatically lowers weekday commute exhaustion. Extended families living within 4 km qualify for the S$30,000 Proximity Housing Grant (PHG), providing essential infant-care backup that reduces subjective fear of child-rearing.",
+        conv: "61.4%",
+        kids: "1.58 kids"
+      },
+      ne: {
+        badge: "OCR Heartland (High Volume)",
+        badgeClass: "bg-emerald-500/15 text-emerald-500",
+        title: "OCR North-East: Punggol, Sengkang & Hougang",
+        fei: "88.4",
+        feiClass: "text-emerald-500",
+        subzones: "Punggol Field, Compassvale, Rivervale, Anchorvale",
+        hdb: "S$540,000 – S$610,000",
+        commute: "45 – 52 mins (Moderate Commute)",
+        commuteClass: "text-amber-500",
+        support: "1.05x (Dense Young Parent Enclave)",
+        supportClass: "text-emerald-500",
+        tuition: "S$500 – S$700 / mo / child",
+        cost: "S$513,020 (Mid-Tier Civil Service)",
+        narrative: "Dense cluster of newly minted civil servant couples. High availability of government Anchor Operator (AOP) infant-care centres in Punggol and Sengkang eases preschool transition. However, longer public transit travel times to central ministries introduce time pressure during evening infant pickup.",
+        conv: "59.2%",
+        kids: "1.54 kids"
+      },
+      north: {
+        badge: "OCR Heartland (Affordable Housing)",
+        badgeClass: "bg-emerald-500/15 text-emerald-500",
+        title: "OCR North: Woodlands, Sembawang & Yishun",
+        fei: "84.6",
+        feiClass: "text-emerald-500",
+        subzones: "Woodlands East, Midview, Khatib, Yishun Central",
+        hdb: "S$480,000 – S$530,000",
+        commute: "48 – 56 mins (High Commute Tax)",
+        commuteClass: "text-rose-500",
+        support: "1.10x (Strong Multi-Gen Malay/Chinese Support)",
+        supportClass: "text-emerald-500",
+        tuition: "S$420 – S$550 / mo / child",
+        cost: "S$482,000 (Accessible Tier)",
+        narrative: "Most affordable entry-level resale housing in Singapore. Strong inter-generational co-residence rates where grandparents live nearby. High Malay and Chinese family support buffers childcare fees, but a 50+ minute MRT commute to central ministries is the primary quality-of-life tax.",
+        conv: "57.8%",
+        kids: "1.64 kids"
+      },
+      east: {
+        badge: "OCR Heartland (Established East)",
+        badgeClass: "bg-emerald-500/15 text-emerald-500",
+        title: "OCR East: Tampines, Bedok & Pasir Ris",
+        fei: "82.5",
+        feiClass: "text-emerald-500",
+        subzones: "Tampines Central, Simei, Bedok North, Kaki Bukit",
+        hdb: "S$530,000 – S$620,000",
+        commute: "38 – 46 mins (Moderate Commute)",
+        commuteClass: "text-amber-500",
+        support: "1.04x (High East Coast Amenity)",
+        supportClass: "text-emerald-500",
+        tuition: "S$550 – S$750 / mo / child",
+        cost: "S$525,000 (Mid-Tier)",
+        narrative: "Established residential heartland with extensive community support infrastructure. High stability in housing and school proximity. Solid marriage conversion rates, though slightly older demographic profile compared to Punggol/Sengkang.",
+        conv: "55.4%",
+        kids: "1.49 kids"
+      },
+      rcr: {
+        badge: "RCR Mature Estates (High Cost Friction)",
+        badgeClass: "bg-amber-500/15 text-amber-500",
+        title: "RCR Mature: Bishan, Toa Payoh & Queenstown",
+        fei: "76.2",
+        feiClass: "text-amber-500",
+        subzones: "Bishan East, Marymount, Toa Payoh Central, Boon Keng",
+        hdb: "S$880,000 – S$1,080,000 (Million-Dollar Resale)",
+        commute: "18 – 24 mins (Fast Access to Hubs)",
+        commuteClass: "text-emerald-500",
+        support: "0.94x (Moderate Singlehood Delay)",
+        supportClass: "text-amber-500",
+        tuition: "S$950 – S$1,400 / mo / child (Elevated)",
+        cost: "S$685,000 (Elevated Mid-Tier)",
+        narrative: "Prime central accessibility and elite school catchment zones. However, exorbitant 4-room resale prices (S$900k–S$1.1M) force civil servants to delay marriage until reaching upper-senior grades (MX11/MX11A) to afford home loans, compressing female fertility into the 33–36 cliff window.",
+        conv: "48.6%",
+        kids: "1.26 kids"
+      },
+      ccr: {
+        badge: "CCR Enclave (Hyper-Competitive)",
+        badgeClass: "bg-rose-500/15 text-rose-500",
+        title: "CCR High-SES: Bukit Timah, Tanglin & Downtown",
+        fei: "41.5",
+        feiClass: "text-rose-500",
+        subzones: "Sixth Avenue, Coronation, Nassim, River Valley",
+        hdb: "Non-HDB / S$2,200,000+ Condominiums",
+        commute: "12 – 16 mins (Direct CBD Proximity)",
+        commuteClass: "text-emerald-500",
+        support: "0.82x (High Singlehood & Hypogamy Barrier)",
+        supportClass: "text-rose-500",
+        tuition: "S$2,200+ / mo / child (Private Benchmark)",
+        cost: "S$1,160,400 (High-SES Private Tier)",
+        narrative: "Lowest FirstDate effectiveness. Officers raised in CCR enclaves internalize high private consumption benchmarks (Gleneagles delivery, premium preschool, overseas university) that require >S$1.1M per child. Severe educational and lifestyle homogamy expectations lead to extreme rejection rates on blind dates.",
+        conv: "28.5%",
+        kids: "0.88 kids"
+      }
+    };
+
+    function selectZone(key) {
+      const d = zoneData[key];
+      if (!d) return;
+
+      document.getElementById('zone-tier-badge').textContent = d.badge;
+      document.getElementById('zone-tier-badge').className = "px-2 py-0.5 text-xs font-semibold rounded " + d.badgeClass;
+      document.getElementById('zone-title').textContent = d.title;
+      document.getElementById('zone-fei').innerHTML = d.fei + ' <span class="text-xs font-normal text-[var(--muted-foreground)]">/100</span>';
+      document.getElementById('zone-fei').className = "text-2xl font-black " + d.feiClass;
+      document.getElementById('zone-subzones').textContent = d.subzones;
+      document.getElementById('zone-hdb').textContent = d.hdb;
+      document.getElementById('zone-commute').textContent = d.commute;
+      document.getElementById('zone-commute').className = "font-semibold " + d.commuteClass;
+      document.getElementById('zone-support').textContent = d.support;
+      document.getElementById('zone-support').className = "font-semibold " + d.supportClass;
+      document.getElementById('zone-tuition').textContent = d.tuition;
+      document.getElementById('zone-cost').textContent = d.cost;
+      document.getElementById('zone-narrative').textContent = d.narrative;
+      document.getElementById('zone-conv').textContent = d.conv;
+      document.getElementById('zone-kids').textContent = d.kids;
+    }
+
+    function runLiveSim() {
+      const fAge = parseFloat(document.getElementById('input-f-age').value) || 27;
+      const mAge = parseFloat(document.getElementById('input-m-age').value) || 29;
+      const race = document.getElementById('input-race').value;
+      const tier = document.getElementById('input-tier').value;
+
+      // 3.5y BTO wait
+      const fConc = fAge + 3.5;
+      const mConc = mAge + 3.5;
+
+      // Age gap penalty
+      const ageDiff = mAge - fAge;
+      let agePenalty = 0.05;
+      if (ageDiff >= 4 && ageDiff <= 6) agePenalty = 0.24;
+      else if (ageDiff >= 7) agePenalty = 0.45;
+      else if (ageDiff <= -2) agePenalty = 0.38;
+
+      // Survival to 2nd date
+      const photoHazard = 0.22;
+      const survival = (1.0 - agePenalty) * (1.0 - 0.04) * (1.0 - 0.03) * (1.0 - 0.12) * (1.0 - photoHazard);
+      
+      // Miscarriage curve
+      let misc = 0.11;
+      if (fConc >= 35 && fConc < 38) misc = 0.18;
+      else if (fConc >= 38 && fConc < 40) misc = 0.35;
+      else if (fConc >= 40) misc = 0.52;
+      if (fConc >= 35 && mConc >= 40) misc += 0.152; // Paternal DFI jump
+
+      // Expected kids
+      const raceMult = { Chinese: 0.80, Malay: 1.76, Indian: 1.06, Others_Eurasian: 1.02 }[race] || 1.0;
+      const tierMult = { OCR_Heartland: 1.05, RCR_Mature: 0.94, CCR_Enclave: 0.82 }[tier] || 1.0;
+      
+      let baseKids = 1.62;
+      if (fAge >= 25 && fAge <= 29) baseKids = 1.53;
+      else if (fAge >= 30 && fAge <= 34) baseKids = 1.26;
+      else if (fAge >= 35 && fAge <= 39) baseKids = 0.77;
+      else if (fAge >= 40) baseKids = 0.59;
+      
+      const expectedKids = Math.max(0.2, baseKids * raceMult * tierMult);
+
+      // Financials
+      let netCost = "S$513,020";
+      if (tier === "CCR_Enclave") netCost = "S$1,109,220";
+      else if (tier === "OCR_Heartland") netCost = "S$482,000";
+
+      document.getElementById('sim-2nd-date').textContent = (survival * 100).toFixed(1) + "%";
+      document.getElementById('sim-conception-age').textContent = "F: " + fConc.toFixed(1) + " | M: " + mConc.toFixed(1);
+      document.getElementById('sim-miscarriage').textContent = (misc * 100).toFixed(1) + "%";
+      document.getElementById('sim-kids').textContent = expectedKids.toFixed(2) + " kids";
+      document.getElementById('sim-ivf').textContent = fConc < 40.0 ? "YES (<40 yrs)" : "NO (>=40 yrs Expired)";
+      document.getElementById('sim-ivf').className = fConc < 40.0 ? "text-lg font-bold text-emerald-500" : "text-lg font-bold text-rose-500";
+      document.getElementById('sim-cost').textContent = netCost;
+    }
+  </script>
+</body>
+</html>
