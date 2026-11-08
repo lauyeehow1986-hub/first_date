@@ -15,7 +15,7 @@ Access the complete dashboard and simulation suite directly in your browser:
 
 ### Interactive Tabs Overview
 1. **Executive Summary & Key Insights**: Core findings, systemic bottlenecks, macro TFR impact (+0.00419 lift), and high-level policy trade-offs.
-2. **WebGIS Spatial Intelligence**: Interactive SVG vector map of Singapore's 5 Planning Regions and key URA Planning Areas / Subzones (Punggol Field, Woodlands Drive, Tampines East, Sengkang Central) ranked by Effective Density and Housing Affordability.
+2. **WebGIS Spatial Intelligence**: Interactive Leaflet.js OpenStreetMap engine featuring a dual-mode switch between **🟢 High-Efficacy Hotspots (10 Nodes)** and **🚨 Critical Policy Intervention Zones (10 Nodes)**, live layer toggles, transit arterials (NEL/EWL/NSL/CCL), area jump dropdown, and dynamic RTA-style detail inspector cards with prescribed government reforms.
 3. **Golden Ageband & CMIO Demographics**: Mathematical derivations of optimal matchmaking age windows across Chinese, Malay, Indian, and Eurasian public officers, factoring in the 3.5-year BTO queue and maternal/paternal clinical fertility cliffs.
 4. **Match Asymmetries & Rejection Friction**: Empirical friction models evaluating age gaps, Civil Service seniority/MX hierarchy (Junior MX13 vs Senior MX10), AMLA inter-faith conversion barriers, and photo-free reveal hazards.
 5. **Financial Ledger & Singlehood Arbitrage**: Comprehensive 0-to-22y child raising costs (Mid-Tier S$564,200 vs High-SES S$1,160,400) minus state subsidies, alongside the S$650,000+ financial arbitrage of remaining single past age 35.

@@ -104,6 +104,18 @@
       border: 2px solid #ffffff;
       box-shadow: 0 0 10px rgba(245, 158, 11, 0.75);
     }
+    
+    .hotspot-orange {
+      background: radial-gradient(circle, #f97316 0%, #c2410c 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.75);
+    }
+    .hotspot-cyan {
+      background: radial-gradient(circle, #06b6d4 0%, #0e7490 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.75);
+    }
+
     .hotspot-purple {
       background: radial-gradient(circle, #8b5cf6 0%, #6d28d9 100%);
       border: 2px solid #ffffff;
@@ -308,32 +320,60 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="text-base font-bold text-white">Singapore High-Efficacy Corridors & Subzone Hotspots</h2>
+              <h2 id="gis-main-heading" class="text-base font-bold text-white">Singapore High-Efficacy Corridors & Subzone Hotspots</h2>
             </div>
-            <p class="text-xs text-slate-400 mt-0.5">Click hotspot nodes to inspect annual BTO delivery, MX grade density, PHG grandparent proximity, and childcare access</p>
+            <p id="gis-main-subtext" class="text-xs text-slate-400 mt-0.5">Click hotspot nodes to inspect annual BTO delivery, MX grade density, PHG grandparent proximity, and childcare access</p>
           </div>
           <div>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400 whitespace-nowrap">
-              <span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+            <span id="gis-counter-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 whitespace-nowrap">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               10 Audited Priority Corridors
             </span>
           </div>
         </div>
 
-        <!-- Controls Toolbar matching RTA layout -->
+        <!-- NEW: Mode Switch & Area Dropdown Filter Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-xs">
+          
+          <!-- Mode Toggle Switch -->
+          <div class="flex items-center gap-2">
+            <span class="text-slate-400 font-semibold shrink-0">Analysis Mode:</span>
+            <div class="inline-flex p-0.5 rounded-lg bg-slate-900 border border-slate-800">
+              <button id="btn-mode-hotspots" onclick="setGisMode('hotspots')" class="px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                <span>🟢</span>
+                <span>High-Efficacy Hotspots (10)</span>
+              </button>
+              <button id="btn-mode-interventions" onclick="setGisMode('interventions')" class="px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-rose-300 hover:bg-slate-800/80 flex items-center gap-1.5">
+                <span>🚨</span>
+                <span>Critical Intervention Zones (10)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Jump Dropdown -->
+          <div class="flex items-center gap-2">
+            <label for="gis-zone-dropdown" class="text-slate-400 font-semibold whitespace-nowrap">Jump to Area:</label>
+            <select id="gis-zone-dropdown" onchange="onZoneDropdownSelect(this.value)" class="bg-slate-900 border border-slate-700 text-slate-200 rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none w-full sm:w-auto font-medium">
+              <!-- Populated dynamically via JS -->
+            </select>
+          </div>
+
+        </div>
+
+        <!-- GIS Layer Controls Toolbar matching RTA layout -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-xs">
           
           <!-- Layer Toggles -->
           <div class="flex flex-wrap items-center gap-1.5">
             <span class="text-slate-400 font-semibold mr-1">GIS Layers:</span>
             <button id="btn-toggle-heat" onclick="toggleGisLayer('heat')" class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium hover:bg-rose-500/30 transition-all">
-              🔥 FEI Hotspots (ON)
+              🔥 Halo / Plumes (ON)
             </button>
             <button id="btn-toggle-poly" onclick="toggleGisLayer('poly')" class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium hover:bg-emerald-500/30 transition-all">
-              🏘️ BTO Clusters (ON)
+              🏘️ Region Zones (ON)
             </button>
             <button id="btn-toggle-hotspots" onclick="toggleGisLayer('hotspots')" class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium hover:bg-amber-500/30 transition-all">
-              📍 Hotspots (ON)
+              📍 Map Pins (ON)
             </button>
             <button id="btn-toggle-mrt" onclick="toggleGisLayer('mrt')" class="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium hover:bg-indigo-500/30 transition-all">
               🚇 Transit Lines (ON)
@@ -369,27 +409,8 @@
 
         <!-- Legend & GIS Data Exports Row matching RTA layout -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 text-[11px] text-slate-400 border-t border-slate-800/80">
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-1.5">
-              <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
-              <span>Top Priority BTO (#1 Punggol, #5 Jurong West)</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-              <span>Heartland Young BTO (#2 Woodlands, #3 Tampines, #4 Sengkang, #6 Yishun)</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
-              <span>Mature RCR Arterials (#7 Toa Payoh, #8 Bedok)</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
-              <span>Civil Service Work Hubs (#9 Buona Vista, #10 Treasury)</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="inline-block w-4 h-0.5 bg-indigo-400"></span>
-              <span>MRT Transit Grid</span>
-            </div>
+          <div id="gis-legend-container" class="flex flex-wrap items-center gap-3">
+            <!-- Populated dynamically via JS according to active mode -->
           </div>
 
           <div class="flex items-center gap-2 shrink-0">
@@ -430,56 +451,56 @@
         <div class="border border-slate-800 rounded-xl divide-y divide-slate-800/80 text-xs bg-slate-950/60">
           
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">FirstDate Matchmaking Effectiveness (FEI):</span>
+            <span id="label-metric-1" class="text-slate-400">FirstDate Matchmaking Effectiveness (FEI):</span>
             <span id="hotspot-fei" class="font-bold text-emerald-400 text-sm">
               89.4 / 100 <span class="text-xs font-normal text-slate-500">(Optimal)</span>
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">HDB 4-Rm Resale Median (2025):</span>
+            <span id="label-metric-2" class="text-slate-400">HDB 4-Rm Resale Median (2025):</span>
             <span id="hotspot-hdb" class="font-semibold text-white">
               S$585,000 – S$640,000
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Civil Service Commute to Buona Vista / Central:</span>
+            <span id="label-metric-3" class="text-slate-400">Civil Service Commute to Buona Vista / Central:</span>
             <span id="hotspot-commute" class="font-semibold text-emerald-400">
               34 mins (Direct MRT NEL / Circle Line)
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Proximity Housing Support (PHG):</span>
+            <span id="label-metric-4" class="text-slate-400">Proximity Housing Support (PHG):</span>
             <span id="hotspot-phg" class="font-semibold text-emerald-400">
               1.08x (High Grandparent Proximity)
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Preschool & Infant Care Density:</span>
+            <span id="label-metric-5" class="text-slate-400">Preschool & Infant Care Density:</span>
             <span id="hotspot-preschool" class="font-semibold text-white">
               14.2 centers / km²
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Tuition Reference-Point Outlay:</span>
+            <span id="label-metric-6" class="text-slate-400">Tuition Reference-Point Outlay:</span>
             <span id="hotspot-tuition" class="font-semibold text-white">
               S$480 – S$620 / mo / child
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Projected 2nd Date Conversion Probability:</span>
+            <span id="label-metric-7" class="text-slate-400">Projected 2nd Date Conversion Probability:</span>
             <span id="hotspot-conv" class="font-semibold text-emerald-400">
               64.2%
             </span>
           </div>
 
           <div class="flex items-center justify-between p-3">
-            <span class="text-slate-400">Expected Completed Fertility:</span>
+            <span id="label-metric-8" class="text-slate-400">Expected Completed Fertility:</span>
             <span id="hotspot-fertility" class="font-semibold text-white">
               1.68 children
             </span>
@@ -487,9 +508,23 @@
 
         </div>
 
+        <!-- NEW: Prescribed Government Intervention Callout Box (visible in both modes, highlights policy solution) -->
+        <div id="hotspot-policy-box" class="p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+              <span>🏛️</span>
+              <span id="policy-box-title">Prescribed Government Policy Intervention</span>
+            </span>
+            <span id="policy-box-yield" class="text-[11px] font-mono font-bold text-emerald-400">+0.22 TFR Recovery Yield</span>
+          </div>
+          <p id="policy-box-desc" class="text-xs text-slate-300 leading-relaxed">
+            Statutory pre-nuptial asset ringfencing under Women's Charter Section 112 to lower divorce asset forfeiture risks for high-earning female civil servants; remove the S$50,000 WMCR ceiling to preserve high-income career continuity.
+          </p>
+        </div>
+
         <!-- Action Button loading simulator directly -->
-        <button onclick="loadSubzoneToSimulator()" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 group">
-          <span>Load Subzone into Real-Time Match Simulator</span>
+        <button id="btn-load-sim" onclick="loadSubzoneToSimulator()" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-xs sm:text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 group">
+          <span id="btn-load-sim-text">Load Subzone into Real-Time Match Simulator</span>
           <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
         </button>
 
@@ -986,12 +1021,15 @@
 
   <!-- Script for Tab Navigation, GIS Inspector, and Live Simulation -->
   <!-- Script for Tab Navigation, Leaflet WebGIS, and Live Simulation -->
+  <!-- Script for Tab Navigation, Leaflet WebGIS, Dynamic Mode Switching, and Simulation -->
   <script>
     // Leaflet State and Layer Handles
     let map = null;
     let osmLayer = null, darkLayer = null, lightLayer = null;
     let heatLayerGroup = null, polyLayerGroup = null, hotspotLayerGroup = null, mrtLayerGroup = null, workLayerGroup = null;
+    let interventionLayerGroup = null;
     let isMapReady = false;
+    let currentGisMode = 'hotspots'; // 'hotspots' or 'interventions'
 
     // Layer Visibility Flags
     const layerFlags = {
@@ -1002,7 +1040,7 @@
       work: true
     };
 
-    // 10 Audited Priority Subzones & Corridors Data
+    // 1. DATASET A: 10 Audited Priority High-Efficacy Hotspots
     const hotspotData = {
       1: {
         rank: 1,
@@ -1024,6 +1062,9 @@
         conv: "64.2%",
         convColor: "text-emerald-400",
         fertility: "1.68 children",
+        policyTitle: "BTO Parenthood Fast-Track Guarantee",
+        policyDesc: "Guarantee provisional BTO allocation within 90 days of FirstDate formal engagement to compress relationship-to-conception latency from 3.5 years down to 1.5 years.",
+        policyYield: "+0.18 TFR Points",
         lat: 1.4050,
         lng: 103.9020,
         type: "top"
@@ -1048,6 +1089,9 @@
         conv: "59.8%",
         convColor: "text-emerald-400",
         fertility: "1.54 children",
+        policyTitle: "Enhanced Multi-Gen Proximity Grant",
+        policyDesc: "Elevate PHG grant from S$30,000 to S$45,000 for couples purchasing within 4 km of parents in non-mature OCR towns.",
+        policyYield: "+0.15 TFR Points",
         lat: 1.4360,
         lng: 103.7860,
         type: "heartland"
@@ -1072,6 +1116,9 @@
         conv: "58.2%",
         convColor: "text-emerald-400",
         fertility: "1.51 children",
+        policyTitle: "Regional Government Agency Hot-Desking",
+        policyDesc: "Allow East-resident civil servants 2 days/week hot-desking at Tampines Hub to eliminate 40 mins of daily CBD transit friction.",
+        policyYield: "+0.12 TFR Points",
         lat: 1.3540,
         lng: 103.9530,
         type: "heartland"
@@ -1096,6 +1143,9 @@
         conv: "57.6%",
         convColor: "text-emerald-400",
         fertility: "1.49 children",
+        policyTitle: "Extended Infant-Care Operating Window",
+        policyDesc: "Extend Anchor Operator infant-care closing from 7:00 PM to 8:00 PM to remove commute anxiety for parents returning via NEL.",
+        policyYield: "+0.14 TFR Points",
         lat: 1.3916,
         lng: 103.8950,
         type: "heartland"
@@ -1120,6 +1170,9 @@
         conv: "61.4%",
         convColor: "text-emerald-400",
         fertility: "1.58 children",
+        policyTitle: "West Tech-Education Cohousing Vouchers",
+        policyDesc: "Provide rental co-housing subsidies near Jurong Gateway for newly engaged public sector engineers and teachers.",
+        policyYield: "+0.16 TFR Points",
         lat: 1.3400,
         lng: 103.7050,
         type: "top"
@@ -1144,6 +1197,9 @@
         conv: "58.9%",
         convColor: "text-emerald-400",
         fertility: "1.52 children",
+        policyTitle: "Polyclinic Fast-Track Pediatric Sieve",
+        policyDesc: "Dedicated green-lane appointments for civil servant toddlers at Yishun Polyclinic to minimize work-leave burnout.",
+        policyYield: "+0.11 TFR Points",
         lat: 1.4290,
         lng: 103.8350,
         type: "heartland"
@@ -1168,6 +1224,9 @@
         conv: "52.4%",
         convColor: "text-amber-400",
         fertility: "1.32 children",
+        policyTitle: "Mature Estate First-Timer Equity Loan",
+        policyDesc: "Offer interest-free deferred equity downpayment loans for civil servants buying in mature estates within 2 km of parents.",
+        policyYield: "+0.15 TFR Points",
         lat: 1.3340,
         lng: 103.8500,
         type: "mature"
@@ -1192,6 +1251,9 @@
         conv: "51.1%",
         convColor: "text-amber-400",
         fertility: "1.30 children",
+        policyTitle: "Lease Top-Up & Renovations Grant",
+        policyDesc: "Allow CPF-OA withdrawal for essential modernization of aging parental homes to accommodate co-residing grandchildren.",
+        policyYield: "+0.13 TFR Points",
         lat: 1.3240,
         lng: 103.9270,
         type: "mature"
@@ -1216,6 +1278,9 @@
         conv: "62.0%",
         convColor: "text-emerald-400",
         fertility: "1.15 children",
+        policyTitle: "On-Site Ministry Workplace Childcare",
+        policyDesc: "Double the capacity of the MOE and Biopolis workplace infant-care centers to eliminate morning daycare transit detours.",
+        policyYield: "+0.19 TFR Points",
         lat: 1.3070,
         lng: 103.7900,
         type: "work"
@@ -1240,9 +1305,286 @@
         conv: "58.5%",
         convColor: "text-amber-400",
         fertility: "0.98 children",
+        policyTitle: "Central Civil Service Telecommuting Directive",
+        policyDesc: "Formalize 2-day work-from-home entitlement across all central ministries to lower weekday transit burn.",
+        policyYield: "+0.14 TFR Points",
         lat: 1.2890,
         lng: 103.8500,
         type: "work"
+      }
+    };
+
+    // 2. DATASET B: 10 Critical Policy Intervention Zones
+    const interventionData = {
+      1: {
+        id: 1,
+        code: "I-1",
+        postal: "Postal Sector 58",
+        badge: "CRITICAL INTERVENTION #1",
+        badgeClass: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
+        title: "Bukit Timah / Sixth Ave — High-SES Consumption Trap",
+        subtitle: "Severe educational homogamy barriers and private benchmark child costs (>S$1.16M). Female singlehood exceeds 44% at age 35, with 72% of blind dates aborted due to lifestyle status mismatch.",
+        ipi: "94.2",
+        ipiLabel: "Critical Deficit",
+        ipiColor: "text-rose-400",
+        bottleneck: "Private Benchmarks & Homogamy Rejection",
+        barrier: "S$2,200,000+ Condos (0 BTO Supply)",
+        commute: "14 mins (Direct CBD Proximity)",
+        singlehood: "44.8% (Extreme Singlehood Arbitrage)",
+        childcare: "Private Nurseries (S$2,200+/mo)",
+        tuition: "S$2,200+ / mo / child (Private Benchmark)",
+        conv: "28.5%",
+        convColor: "text-rose-400",
+        fertility: "0.88 children",
+        policyTitle: "Statutory Pre-Nuptial Ringfencing & WMCR Cap Removal",
+        policyDesc: "Enact statutory pre-nuptial asset ringfencing under Women's Charter Section 112 to eliminate divorce asset forfeiture fears for high-earning female officers; remove the S$50,000 WMCR cap to retain high-income talent post-birth.",
+        policyYield: "+0.22 TFR Recovery Yield",
+        lat: 1.3290,
+        lng: 103.7920,
+        type: "trap"
+      },
+      2: {
+        id: 2,
+        code: "I-2",
+        postal: "Postal Sector 14",
+        badge: "CRITICAL INTERVENTION #2",
+        badgeClass: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
+        title: "Queenstown / Dawson — Million-Dollar Resale Wall & PLH Lock-in",
+        subtitle: "4-room resale median S$980k–S$1.18M. Prime Location Housing (PLH) 10-year MOP forces young civil servants to delay ROM until reaching upper-senior grades (MX11 at age 33–36), compressing female fertility.",
+        ipi: "91.5",
+        ipiLabel: "Critical Deficit",
+        ipiColor: "text-rose-400",
+        bottleneck: "Capital Barrier & 10-Year PLH Lock-in",
+        barrier: "S$980,000 – S$1,180,000 (Million-Dollar Resale)",
+        commute: "16 mins (EWL Transit)",
+        singlehood: "39.2% (Delayed Marriage for MX11)",
+        childcare: "Waitlist >10 Months (High Demand)",
+        tuition: "S$950 – S$1,300 / mo / child",
+        conv: "38.2%",
+        convColor: "text-rose-400",
+        fertility: "1.04 children",
+        policyTitle: "PLH 5-Year MOP Abatement for Parenthood & Priority Grants",
+        policyDesc: "Waive the 10-year MOP down to 5 years upon the birth of a second child; offer S$80,000 Priority Resale Parental Grant for young civil servants within 5 km of central ministries.",
+        policyYield: "+0.28 TFR Recovery Yield",
+        lat: 1.2980,
+        lng: 103.8050,
+        type: "wall"
+      },
+      3: {
+        id: 3,
+        code: "I-3",
+        postal: "Postal Sector 68",
+        badge: "HIGH INTERVENTION #3",
+        badgeClass: "bg-orange-500/10 border border-orange-500/20 text-orange-400",
+        title: "Choa Chu Kang / Keat Hong — Evening Transit Exhaustion Belt",
+        subtitle: "Commutes exceed 55 mins each way to central ministries / Buona Vista. Evening exhaustion leads to 41% weekday date cancellations and acute stress regarding 7:00 PM infant-care pickup cutoffs.",
+        ipi: "86.4",
+        ipiLabel: "High Urgency",
+        ipiColor: "text-orange-400",
+        bottleneck: "Commute Exhaustion & 7 PM Pickup Panic",
+        barrier: "S$480,000 – S$540,000 (Low Financial Barrier)",
+        commute: "54 mins (2 Transfers / High Strain)",
+        singlehood: "35.4% (Dating Energy Deficit)",
+        childcare: "Severe 7 PM Pickup Squeeze",
+        tuition: "S$420 – S$550 / mo / child",
+        conv: "46.5%",
+        convColor: "text-amber-400",
+        fertility: "1.38 children",
+        policyTitle: "Civil Service Express Shuttles & 3 PM Family Fridays",
+        policyDesc: "Deploy dedicated point-to-point peak-hour shuttles from Buona Vista & Treasury to CCK/Keat Hong; institute a 3:00 PM Family Friday work-from-home policy to unlock dating and childcare bandwidth.",
+        policyYield: "+0.18 TFR Recovery Yield",
+        lat: 1.3840,
+        lng: 103.7470,
+        type: "transit"
+      },
+      4: {
+        id: 4,
+        code: "I-4",
+        postal: "Postal Sector 69",
+        badge: "HIGH INTERVENTION #4",
+        badgeClass: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
+        title: "Tengah New Town (Park & Garden) — Infant Care Lag Desert",
+        subtitle: "Massive delivery of new BTOs, but severe Anchor Operator infant care lag (waitlists >14 months). Centralized cooling teething issues cause newlywed couples to postpone conceiving.",
+        ipi: "88.7",
+        ipiLabel: "High Urgency",
+        ipiColor: "text-purple-400",
+        bottleneck: "Infant Care Slot Deficit & Amenities Lag",
+        barrier: "S$380,000 – S$450,000 (BTO Subsidized)",
+        commute: "44 mins (JRL Upcoming)",
+        singlehood: "28.1% (High Marriage, Delayed Baby)",
+        childcare: "Zero Slots / Waitlist >14 Months",
+        tuition: "S$480 – S$650 / mo / child",
+        conv: "56.8%",
+        convColor: "text-emerald-400",
+        fertility: "1.22 children",
+        policyTitle: "Zero Infant-Care Lag Guarantee & S$600 Nanny Subsidies",
+        policyDesc: "Mandate ECDA Anchor Operator infant-care centers open concurrently with BTO block key collection; provide interim S$600/month mobile nanny vouchers during the initial move-in phase.",
+        policyYield: "+0.31 TFR Recovery Yield",
+        lat: 1.3620,
+        lng: 103.7310,
+        type: "desert"
+      },
+      5: {
+        id: 5,
+        code: "I-5",
+        postal: "Postal Sector 57",
+        badge: "HIGH INTERVENTION #5",
+        badgeClass: "bg-amber-500/10 border border-amber-500/20 text-amber-400",
+        title: "Bishan Central / Marymount — Mature Resale & Tuition Stress",
+        subtitle: "4-room resale median S$880k–S$1.05M. School catchment anxiety (Catholic High / RI) inflates expected child tuition to >S$1,100/mo, causing young officers to feel financially unready for children.",
+        ipi: "83.2",
+        ipiLabel: "High Urgency",
+        ipiColor: "text-amber-400",
+        bottleneck: "Housing Premium & Elite School Anxiety",
+        barrier: "S$880,000 – S$1,050,000 (Million-Dollar Resale)",
+        commute: "20 mins (Direct NSL/CCL)",
+        singlehood: "38.6% (Financial Inadequacy Delay)",
+        childcare: "Heavily Subscribed",
+        tuition: "S$1,100 – S$1,600 / mo / child",
+        conv: "45.0%",
+        convColor: "text-amber-400",
+        fertility: "1.18 children",
+        policyTitle: "Shared-Equity Civil Service Housing & School De-Clustering",
+        policyDesc: "Introduce a Shared-Equity Housing Scheme where the government co-owns 30% of mature estate resale flats, lowering upfront purchase costs to S$550k for young couples committing to 2+ children.",
+        policyYield: "+0.24 TFR Recovery Yield",
+        lat: 1.3510,
+        lng: 103.8490,
+        type: "wall"
+      },
+      6: {
+        id: 6,
+        code: "I-6",
+        postal: "Postal Sector 24",
+        badge: "MODERATE INTERVENTION #6",
+        badgeClass: "bg-rose-500/10 border border-rose-500/20 text-rose-400",
+        title: "Tanglin / Nassim — Extreme Lifestyle Homogamy Barrier",
+        subtitle: "Ultra-affluent enclave. Civil service officers from this zone exhibit a 76% second-date rejection rate when paired with heartland officers due to stark differences in discretionary spending norms.",
+        ipi: "79.5",
+        ipiLabel: "Moderate Priority",
+        ipiColor: "text-rose-400",
+        bottleneck: "Cross-SES Social Distance & Hypergamy Wall",
+        barrier: "S$2,800,000+ Landed & Condominiums",
+        commute: "12 mins (Central)",
+        singlehood: "46.2% (High Lifelong Singlehood)",
+        childcare: "Private Nurseries (S$2,500+/mo)",
+        tuition: "S$2,500+ / mo / child",
+        conv: "24.0%",
+        convColor: "text-rose-400",
+        fertility: "0.78 children",
+        policyTitle: "Value-Aligned Algorithmic Matching & Public Service Mixers",
+        policyDesc: "Incorporate psychometric lifestyle alignment in FirstDate instead of blind geographic pairing; sponsor structured cross-ministry social mixers.",
+        policyYield: "+0.14 TFR Recovery Yield",
+        lat: 1.3080,
+        lng: 103.8210,
+        type: "trap"
+      },
+      7: {
+        id: 7,
+        code: "I-7",
+        postal: "Postal Sector 75",
+        badge: "MODERATE INTERVENTION #7",
+        badgeClass: "bg-orange-500/10 border border-orange-500/20 text-orange-400",
+        title: "Sembawang / Canberra — Pediatric Night Care Void",
+        subtitle: "Long travel distance to pediatric emergency centers (KKH/NUH). Lack of night clinic coverage creates severe anxiety for working mothers during acute infant illness episodes.",
+        ipi: "82.0",
+        ipiLabel: "Moderate Priority",
+        ipiColor: "text-orange-400",
+        bottleneck: "Pediatric Healthcare Distance & Night Void",
+        barrier: "S$490,000 – S$540,000 (Affordable Housing)",
+        commute: "42 mins (NSL)",
+        singlehood: "32.1% (Kinship Buffered)",
+        childcare: "Moderate Infant Capacity",
+        tuition: "S$450 – S$580 / mo / child",
+        conv: "52.3%",
+        convColor: "text-emerald-400",
+        fertility: "1.42 children",
+        policyTitle: "24/7 Tele-Pediatric Care & GPCL Leave Expansion to 15 Days",
+        policyDesc: "Establish a 24/7 Civil Service Tele-Pediatric hotline with subsidized direct medication dispatch; expand GPCL from 6 to 15 days with dedicated HFMD quarantine days.",
+        policyYield: "+0.19 TFR Recovery Yield",
+        lat: 1.4480,
+        lng: 103.8300,
+        type: "transit"
+      },
+      8: {
+        id: 8,
+        code: "I-8",
+        postal: "Postal Sector 36",
+        badge: "HIGH INTERVENTION #8",
+        badgeClass: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
+        title: "Bidadari / Woodleigh — Preschool Capacity Choke",
+        subtitle: "High density of young double-income civil service couples. Anchor Operator preschool slots are overwhelmed; private preschool tuition surges to S$1,600/mo, eroding infant care savings.",
+        ipi: "84.9",
+        ipiLabel: "High Urgency",
+        ipiColor: "text-purple-400",
+        bottleneck: "Preschool Slot Choke & Fee Inflation",
+        barrier: "S$680,000 – S$810,000 (Plus Model BTO)",
+        commute: "22 mins (NEL Transit)",
+        singlehood: "31.5% (High Marriage Conversion)",
+        childcare: "Overbooked / Private Fee Squeeze",
+        tuition: "S$1,200 – S$1,600 / mo / child",
+        conv: "54.1%",
+        convColor: "text-emerald-400",
+        fertility: "1.28 children",
+        policyTitle: "Partner Operator (POP) Fee Cap Subsidies to Match Anchor Rates",
+        policyDesc: "Subsidize Partner Operator preschools in high-density new estates so fees match Anchor Operator levels (S$640/month net after subsidies) for public sector parents.",
+        policyYield: "+0.21 TFR Recovery Yield",
+        lat: 1.3390,
+        lng: 103.8680,
+        type: "desert"
+      },
+      9: {
+        id: 9,
+        code: "I-9",
+        postal: "Postal Sector 56",
+        badge: "HIGH INTERVENTION #9",
+        badgeClass: "bg-cyan-500/10 border border-cyan-500/20 text-cyan-400",
+        title: "Ang Mo Kio / Kebun Baru — Sandwich Eldercare & Lease Squeeze",
+        subtitle: "Young single officers caring for aging parents in 1970s/80s flats face caregiver burnout and lack privacy for dating or bringing a partner home.",
+        ipi: "85.6",
+        ipiLabel: "High Urgency",
+        ipiColor: "text-cyan-400",
+        bottleneck: "Sandwich Caregiver Burnout & Cohabitation Void",
+        barrier: "S$520,000 – S$640,000 (Lease Decay Concern)",
+        commute: "30 mins (NSL/TEL)",
+        singlehood: "41.2% (Caregiver Lock-in)",
+        childcare: "Adequate (Older Town)",
+        tuition: "S$550 – S$750 / mo / child",
+        conv: "42.5%",
+        convColor: "text-amber-400",
+        fertility: "1.16 children",
+        policyTitle: "Sandwich Generation Housing Grant (S$40k) & Daycare Vouchers",
+        policyDesc: "Offer a S$40,000 Sandwich Generation Grant for 3-Gen flat purchases and provide S$800/month subsidized elder daycare vouchers to relieve filial burden and unlock dating time.",
+        policyYield: "+0.26 TFR Recovery Yield",
+        lat: 1.3690,
+        lng: 103.8450,
+        type: "squeeze"
+      },
+      10: {
+        id: 10,
+        code: "I-10",
+        postal: "Postal Sector 40",
+        badge: "HIGH INTERVENTION #10",
+        badgeClass: "bg-cyan-500/10 border border-cyan-500/20 text-cyan-400",
+        title: "Geylang Serai / Eunos — Spatial Multi-Gen Overcrowding",
+        subtitle: "High cultural family support, but severe spatial overcrowding in older flats where siblings and elderly relatives co-reside delays romantic intimacy and marriage progression.",
+        ipi: "81.4",
+        ipiLabel: "Moderate Priority",
+        ipiColor: "text-cyan-400",
+        bottleneck: "Spatial Overcrowding & Cohabitation Delay",
+        barrier: "S$510,000 – S$610,000 (Resale Flats)",
+        commute: "25 mins (EWL Transit)",
+        singlehood: "33.8% (Privacy Deficit)",
+        childcare: "Moderate Availability",
+        tuition: "S$480 – S$650 / mo / child",
+        conv: "49.0%",
+        convColor: "text-emerald-400",
+        fertility: "1.45 children",
+        policyTitle: "PPHS Pre-Key Rental Quotas for Engaged Officers",
+        policyDesc: "Provide subsidized PPHS interim rental units to engaged civil service couples from high-density multi-gen households immediately upon filing Notice of Marriage.",
+        policyYield: "+0.23 TFR Recovery Yield",
+        lat: 1.3180,
+        lng: 103.8980,
+        type: "squeeze"
       }
     };
 
@@ -1309,6 +1651,7 @@
       hotspotLayerGroup = L.layerGroup().addTo(map);
       mrtLayerGroup = L.layerGroup().addTo(map);
       workLayerGroup = L.layerGroup().addTo(map);
+      interventionLayerGroup = L.layerGroup(); // Added when mode === 'interventions'
 
       // 1. Add Planning Region Polygons
       const regions = [
@@ -1398,7 +1741,7 @@
         mrtLayerGroup.addLayer(polyline);
       });
 
-      // 3. Add 10 Audited Priority Hotspots
+      // 3. Populate Dataset A: 10 Hotspots
       Object.keys(hotspotData).forEach(k => {
         const h = hotspotData[k];
         let colorClass = "hotspot-green";
@@ -1435,7 +1778,6 @@
           hotspotLayerGroup.addLayer(marker);
         }
 
-        // Add soft FEI Heat Circle around heartland hotspots
         if (h.type === "top" || h.type === "heartland") {
           const heatCircle = L.circle([h.lat, h.lng], {
             radius: 1600,
@@ -1449,8 +1791,210 @@
         }
       });
 
+      // 4. Populate Dataset B: 10 Critical Intervention Areas
+      Object.keys(interventionData).forEach(k => {
+        const item = interventionData[k];
+        let colorClass = "hotspot-red";
+        let circleColor = "#ef4444";
+
+        if (item.type === "wall") {
+          colorClass = "hotspot-amber";
+          circleColor = "#f59e0b";
+        } else if (item.type === "transit") {
+          colorClass = "hotspot-orange";
+          circleColor = "#f97316";
+        } else if (item.type === "desert") {
+          colorClass = "hotspot-purple";
+          circleColor = "#8b5cf6";
+        } else if (item.type === "squeeze") {
+          colorClass = "hotspot-cyan";
+          circleColor = "#06b6d4";
+        }
+
+        const icon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: `<div class="hotspot-div-icon ${colorClass}" style="width: 32px; height: 32px; font-size: 10px;">${item.code}</div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16]
+        });
+
+        const marker = L.marker([item.lat, item.lng], { icon: icon });
+        marker.bindPopup(`
+          <div class="p-1 leading-tight">
+            <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">${item.badge}</span>
+            <div class="font-bold text-white text-sm mt-0.5">${item.title}</div>
+            <div class="text-xs text-rose-400 font-semibold mt-1">Priority Index (IPI): ${item.ipi} / 100 (${item.ipiLabel})</div>
+            <div class="text-[11px] text-amber-300">Bottleneck: ${item.bottleneck}</div>
+            <div class="text-[10px] text-indigo-400 mt-1 font-semibold">&darr; Click marker to inspect policy prescription</div>
+          </div>
+        `);
+
+        marker.on('click', () => {
+          loadInterventionDetail(item.id);
+        });
+
+        interventionLayerGroup.addLayer(marker);
+
+        // Add Hazard Plume Circle
+        const hazardCircle = L.circle([item.lat, item.lng], {
+          radius: 1700,
+          color: circleColor,
+          fillColor: circleColor,
+          fillOpacity: 0.22,
+          weight: 1.5,
+          dashArray: '3, 5'
+        });
+        interventionLayerGroup.addLayer(hazardCircle);
+      });
+
+      // Default Initialization
+      updateLegendToHotspots();
+      populateSubzoneDropdown('hotspots');
+      loadHotspotDetail(1);
+
       isMapReady = true;
       setTimeout(() => { map.invalidateSize(); }, 200);
+    }
+
+    // Toggle between High-Efficacy Hotspots and Critical Intervention Areas
+    function setGisMode(mode) {
+      currentGisMode = mode;
+      const btnHot = document.getElementById('btn-mode-hotspots');
+      const btnInt = document.getElementById('btn-mode-interventions');
+      const counterBadge = document.getElementById('gis-counter-badge');
+      const mainHeading = document.getElementById('gis-main-heading');
+      const mainSubtext = document.getElementById('gis-main-subtext');
+
+      if (mode === 'hotspots') {
+        btnHot.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm";
+        btnInt.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-rose-300 hover:bg-slate-800/80 flex items-center gap-1.5";
+        counterBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 whitespace-nowrap";
+        counterBadge.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 10 Audited Priority Corridors';
+        mainHeading.textContent = "Singapore High-Efficacy Corridors & Subzone Hotspots";
+        mainSubtext.textContent = "Click hotspot nodes to inspect annual BTO delivery, MX grade density, PHG grandparent proximity, and childcare access";
+
+        if (map) {
+          if (interventionLayerGroup) map.removeLayer(interventionLayerGroup);
+          if (layerFlags.hotspots && hotspotLayerGroup) map.addLayer(hotspotLayerGroup);
+          if (layerFlags.work && workLayerGroup) map.addLayer(workLayerGroup);
+          if (layerFlags.heat && heatLayerGroup) map.addLayer(heatLayerGroup);
+        }
+
+        updateLegendToHotspots();
+        populateSubzoneDropdown('hotspots');
+        loadHotspotDetail(1);
+
+      } else {
+        btnInt.className = "px-3 py-1.5 rounded-md font-bold transition-all text-rose-400 bg-rose-500/15 border border-rose-500/30 flex items-center gap-1.5 shadow-sm";
+        btnHot.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80 flex items-center gap-1.5";
+        counterBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-400 whitespace-nowrap";
+        counterBadge.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span> 10 Critical Intervention Hotspots Identified';
+        mainHeading.textContent = "Singapore Critical Policy Intervention Zones & Deficit Hotspots";
+        mainSubtext.textContent = "Click intervention nodes to inspect structural bottlenecks, marriage latency, singlehood arbitrage, and prescribed government policy levers";
+
+        if (map) {
+          if (hotspotLayerGroup) map.removeLayer(hotspotLayerGroup);
+          if (workLayerGroup) map.removeLayer(workLayerGroup);
+          if (heatLayerGroup) map.removeLayer(heatLayerGroup);
+          if (interventionLayerGroup) map.addLayer(interventionLayerGroup);
+        }
+
+        updateLegendToInterventions();
+        populateSubzoneDropdown('interventions');
+        loadInterventionDetail(1);
+      }
+    }
+
+    // Populate Dropdown Options
+    function populateSubzoneDropdown(mode) {
+      const select = document.getElementById('gis-zone-dropdown');
+      if (!select) return;
+      select.innerHTML = '';
+
+      if (mode === 'hotspots') {
+        Object.keys(hotspotData).forEach(k => {
+          const h = hotspotData[k];
+          const opt = document.createElement('option');
+          opt.value = h.rank;
+          opt.textContent = `#${h.rank} ${h.title.split('—')[0]} (FEI: ${h.fei})`;
+          select.appendChild(opt);
+        });
+      } else {
+        Object.keys(interventionData).forEach(k => {
+          const item = interventionData[k];
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `[${item.code}] ${item.title.split('—')[0]} (IPI: ${item.ipi})`;
+          select.appendChild(opt);
+        });
+      }
+    }
+
+    // Handle Dropdown Selection
+    function onZoneDropdownSelect(val) {
+      const id = parseInt(val);
+      if (currentGisMode === 'hotspots') {
+        loadHotspotDetail(id);
+      } else {
+        loadInterventionDetail(id);
+      }
+    }
+
+    // Update Legend Bar for High-Efficacy Hotspots
+    function updateLegendToHotspots() {
+      const el = document.getElementById('gis-legend-container');
+      if (!el) return;
+      el.innerHTML = `
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+          <span>Top Priority BTO (#1 Punggol, #5 Jurong West)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+          <span>Heartland Young BTO (#2 Woodlands, #3 Tampines, #4 Sengkang, #6 Yishun)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+          <span>Mature RCR Arterials (#7 Toa Payoh, #8 Bedok)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
+          <span>Civil Service Work Hubs (#9 Buona Vista, #10 Treasury)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-4 h-0.5 bg-indigo-400"></span>
+          <span>MRT Transit Grid</span>
+        </div>
+      `;
+    }
+
+    // Update Legend Bar for Critical Intervention Areas
+    function updateLegendToInterventions() {
+      const el = document.getElementById('gis-legend-container');
+      if (!el) return;
+      el.innerHTML = `
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+          <span>High-SES Consumption Trap (#I-1, #I-6)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+          <span>Million-Dollar Resale Wall (#I-2, #I-5)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-orange-500"></span>
+          <span>Transit Exhaustion Belt (#I-3, #I-7)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span>
+          <span>Infant-Care & BTO Lag Desert (#I-4, #I-8)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2.5 w-2.5 rounded-full bg-cyan-500"></span>
+          <span>Sandwich Eldercare Squeeze (#I-9, #I-10)</span>
+        </div>
+      `;
     }
 
     function toggleGisLayer(type) {
@@ -1460,9 +2004,9 @@
       
       const btn = document.getElementById('btn-toggle-' + type);
       const labels = {
-        heat: '🔥 FEI Hotspots',
-        poly: '🏘️ BTO Clusters',
-        hotspots: '📍 Hotspots',
+        heat: '🔥 Halo / Plumes',
+        poly: '🏘️ Region Zones',
+        hotspots: '📍 Map Pins',
         mrt: '🚇 Transit Lines',
         work: '🏢 Work Hubs'
       };
@@ -1476,11 +2020,17 @@
       }
 
       if (type === 'heat') {
-        isVisible ? map.addLayer(heatLayerGroup) : map.removeLayer(heatLayerGroup);
+        if (currentGisMode === 'hotspots') {
+          isVisible ? map.addLayer(heatLayerGroup) : map.removeLayer(heatLayerGroup);
+        }
       } else if (type === 'poly') {
         isVisible ? map.addLayer(polyLayerGroup) : map.removeLayer(polyLayerGroup);
       } else if (type === 'hotspots') {
-        isVisible ? map.addLayer(hotspotLayerGroup) : map.removeLayer(hotspotLayerGroup);
+        if (currentGisMode === 'hotspots') {
+          isVisible ? map.addLayer(hotspotLayerGroup) : map.removeLayer(hotspotLayerGroup);
+        } else {
+          isVisible ? map.addLayer(interventionLayerGroup) : map.removeLayer(interventionLayerGroup);
+        }
       } else if (type === 'mrt') {
         isVisible ? map.addLayer(mrtLayerGroup) : map.removeLayer(mrtLayerGroup);
       } else if (type === 'work') {
@@ -1534,6 +2084,7 @@
       );
     }
 
+    // Populate Detail Card for High-Efficacy Hotspots
     function loadHotspotDetail(id) {
       const h = hotspotData[id];
       if (!h) return;
@@ -1544,49 +2095,151 @@
       document.getElementById('hotspot-title').textContent = h.title;
       document.getElementById('hotspot-subtitle').textContent = h.subtitle;
 
+      document.getElementById('label-metric-1').textContent = "FirstDate Matchmaking Effectiveness (FEI):";
       document.getElementById('hotspot-fei').innerHTML = `${h.fei} / 100 <span class="text-xs font-normal text-slate-500">(${h.feiLabel})</span>`;
       document.getElementById('hotspot-fei').className = "font-bold text-sm " + h.feiColor;
 
+      document.getElementById('label-metric-2').textContent = "HDB 4-Rm Resale Median (2025):";
       document.getElementById('hotspot-hdb').textContent = h.hdbResale;
+
+      document.getElementById('label-metric-3').textContent = "Civil Service Commute to Buona Vista / Central:";
       document.getElementById('hotspot-commute').textContent = h.commute;
       document.getElementById('hotspot-commute').className = "font-semibold " + h.commuteColor;
+
+      document.getElementById('label-metric-4').textContent = "Proximity Housing Support (PHG):";
       document.getElementById('hotspot-phg').textContent = h.phg;
       document.getElementById('hotspot-phg').className = "font-semibold " + h.phgColor;
+
+      document.getElementById('label-metric-5').textContent = "Preschool & Infant Care Density:";
       document.getElementById('hotspot-preschool').textContent = h.preschoolDensity;
+
+      document.getElementById('label-metric-6').textContent = "Tuition Reference-Point Outlay:";
       document.getElementById('hotspot-tuition').textContent = h.tuition;
+
+      document.getElementById('label-metric-7').textContent = "Projected 2nd Date Conversion Probability:";
       document.getElementById('hotspot-conv').textContent = h.conv;
       document.getElementById('hotspot-conv').className = "font-semibold " + h.convColor;
+
+      document.getElementById('label-metric-8').textContent = "Expected Completed Fertility:";
       document.getElementById('hotspot-fertility').textContent = h.fertility;
+
+      // Policy Box
+      document.getElementById('policy-box-title').textContent = h.policyTitle;
+      document.getElementById('policy-box-yield').textContent = h.policyYield;
+      document.getElementById('policy-box-desc').textContent = h.policyDesc;
+
+      document.getElementById('btn-load-sim-text').textContent = "Load Subzone into Real-Time Match Simulator";
+
+      const select = document.getElementById('gis-zone-dropdown');
+      if (select && select.value != id) select.value = id;
 
       if (map) {
         map.setView([h.lat, h.lng], 13, { animate: true });
       }
     }
 
+    // Populate Detail Card for Critical Intervention Areas
+    function loadInterventionDetail(id) {
+      const item = interventionData[id];
+      if (!item) return;
+
+      document.getElementById('hotspot-badge').className = "px-2.5 py-0.5 text-[10px] font-bold rounded " + item.badgeClass;
+      document.getElementById('hotspot-badge').textContent = item.badge;
+      document.getElementById('hotspot-postal').textContent = item.postal;
+      document.getElementById('hotspot-title').textContent = item.title;
+      document.getElementById('hotspot-subtitle').textContent = item.subtitle;
+
+      document.getElementById('label-metric-1').textContent = "Intervention Priority Index (IPI):";
+      document.getElementById('hotspot-fei').innerHTML = `${item.ipi} / 100 <span class="text-xs font-normal text-rose-300">(${item.ipiLabel})</span>`;
+      document.getElementById('hotspot-fei').className = "font-bold text-sm " + item.ipiColor;
+
+      document.getElementById('label-metric-2').textContent = "Housing / Capital Entry Barrier:";
+      document.getElementById('hotspot-hdb').textContent = item.barrier;
+
+      document.getElementById('label-metric-3').textContent = "Transit & Commute Friction Profile:";
+      document.getElementById('hotspot-commute').textContent = item.commute;
+      document.getElementById('hotspot-commute').className = "font-semibold text-white";
+
+      document.getElementById('label-metric-4').textContent = "Root Demographic Bottleneck:";
+      document.getElementById('hotspot-phg').textContent = item.bottleneck;
+      document.getElementById('hotspot-phg').className = "font-semibold text-rose-400";
+
+      document.getElementById('label-metric-5').textContent = "Singlehood Rate (Age 35 Arbitrage):";
+      document.getElementById('hotspot-preschool').textContent = item.singlehood;
+
+      document.getElementById('label-metric-6').textContent = "Preschool & Infant Care Availability:";
+      document.getElementById('hotspot-tuition').textContent = item.childcare;
+
+      document.getElementById('label-metric-7').textContent = "Projected 2nd Date Conversion Probability:";
+      document.getElementById('hotspot-conv').textContent = item.conv;
+      document.getElementById('hotspot-conv').className = "font-semibold " + item.convColor;
+
+      document.getElementById('label-metric-8').textContent = "Completed Fertility (Unassisted):";
+      document.getElementById('hotspot-fertility').textContent = item.fertility;
+
+      // Policy Box
+      document.getElementById('policy-box-title').textContent = "Prescribed Government Reform: " + item.policyTitle;
+      document.getElementById('policy-box-yield').textContent = item.policyYield;
+      document.getElementById('policy-box-desc').textContent = item.policyDesc;
+
+      document.getElementById('btn-load-sim-text').textContent = "Simulate Policy Intervention Impact in Simulator";
+
+      const select = document.getElementById('gis-zone-dropdown');
+      if (select && select.value != id) select.value = id;
+
+      if (map) {
+        map.setView([item.lat, item.lng], 13, { animate: true });
+      }
+    }
+
     function loadSubzoneToSimulator() {
       switchTab('simulator');
-      const badgeText = document.getElementById('hotspot-badge').textContent;
-      const rankMatch = badgeText.match(/RANK #(\d+)/);
-      const currentRank = rankMatch ? parseInt(rankMatch[1]) : 1;
-      const h = hotspotData[currentRank];
 
-      if (h) {
-        if (h.type === "top" || h.type === "heartland") {
-          document.getElementById('sim-tier').value = "OCR_Heartland";
-          document.getElementById('sim-f-age').value = 27;
-          document.getElementById('sim-m-age').value = 29;
-        } else if (h.type === "mature") {
-          document.getElementById('sim-tier').value = "RCR_Mature";
-          document.getElementById('sim-f-age').value = 31;
-          document.getElementById('sim-m-age').value = 33;
-        } else if (h.type === "work") {
-          document.getElementById('sim-tier').value = "CCR_Enclave";
-          document.getElementById('sim-f-age').value = 33;
-          document.getElementById('sim-m-age').value = 35;
+      if (currentGisMode === 'hotspots') {
+        const select = document.getElementById('gis-zone-dropdown');
+        const currentRank = select ? parseInt(select.value) : 1;
+        const h = hotspotData[currentRank];
+
+        if (h) {
+          if (h.type === "top" || h.type === "heartland") {
+            document.getElementById('sim-tier').value = "OCR_Heartland";
+            document.getElementById('sim-f-age').value = 27;
+            document.getElementById('sim-m-age').value = 29;
+          } else if (h.type === "mature") {
+            document.getElementById('sim-tier').value = "RCR_Mature";
+            document.getElementById('sim-f-age').value = 31;
+            document.getElementById('sim-m-age').value = 33;
+          } else if (h.type === "work") {
+            document.getElementById('sim-tier').value = "CCR_Enclave";
+            document.getElementById('sim-f-age').value = 33;
+            document.getElementById('sim-m-age').value = 35;
+          }
         }
-        if (typeof calculateLiveSimulation === 'function') {
-          calculateLiveSimulation();
+      } else {
+        // In Intervention mode: simulate policy intervention applied!
+        const select = document.getElementById('gis-zone-dropdown');
+        const currentId = select ? parseInt(select.value) : 1;
+        const item = interventionData[currentId];
+
+        if (item) {
+          if (item.type === "trap") {
+            document.getElementById('sim-tier').value = "CCR_Enclave";
+            document.getElementById('sim-f-age').value = 29; // policy compresses latency
+            document.getElementById('sim-m-age').value = 31;
+          } else if (item.type === "wall" || item.type === "squeeze") {
+            document.getElementById('sim-tier').value = "RCR_Mature";
+            document.getElementById('sim-f-age').value = 28;
+            document.getElementById('sim-m-age').value = 30;
+          } else {
+            document.getElementById('sim-tier').value = "OCR_Heartland";
+            document.getElementById('sim-f-age').value = 26;
+            document.getElementById('sim-m-age').value = 28;
+          }
         }
+      }
+
+      if (typeof calculateLiveSimulation === 'function') {
+        calculateLiveSimulation();
       }
 
       const sim = document.getElementById('panel-simulator');
@@ -1596,25 +2249,35 @@
     }
 
     function downloadGeoJson() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hotspotData, null, 2));
+      const dataToExport = currentGisMode === 'hotspots' ? hotspotData : interventionData;
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "firstdate_subzone_corridors.geojson");
+      downloadAnchor.setAttribute("download", `firstdate_${currentGisMode}_export.geojson`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
     }
 
     function downloadHotspotCsv() {
-      let csvContent = "data:text/csv;charset=utf-8,Rank,Postal,Title,FEIScore,HDB4RmMedian,CommuteMins,PHGModifier,PreschoolDensity,SecondDateConv,CompletedFertility\n";
-      Object.keys(hotspotData).forEach(k => {
-        const h = hotspotData[k];
-        csvContent += `"${h.rank}","${h.postal}","${h.title}","${h.fei}","${h.hdbResale}","${h.commute}","${h.phg}","${h.preschoolDensity}","${h.conv}","${h.fertility}"\n`;
-      });
+      let csvContent = "";
+      if (currentGisMode === 'hotspots') {
+        csvContent = "data:text/csv;charset=utf-8,Rank,Postal,Title,FEIScore,HDB4RmMedian,CommuteMins,PHGModifier,PreschoolDensity,SecondDateConv,CompletedFertility,PolicyReform\n";
+        Object.keys(hotspotData).forEach(k => {
+          const h = hotspotData[k];
+          csvContent += `"${h.rank}","${h.postal}","${h.title}","${h.fei}","${h.hdbResale}","${h.commute}","${h.phg}","${h.preschoolDensity}","${h.conv}","${h.fertility}","${h.policyTitle}"\n`;
+        });
+      } else {
+        csvContent = "data:text/csv;charset=utf-8,Code,Postal,Title,IPIScore,Bottleneck,EntryBarrier,CommuteFriction,SinglehoodRateAge35,PreschoolChildcare,SecondDateConv,CompletedFertility,PolicyPrescription\n";
+        Object.keys(interventionData).forEach(k => {
+          const item = interventionData[k];
+          csvContent += `"${item.code}","${item.postal}","${item.title}","${item.ipi}","${item.bottleneck}","${item.barrier}","${item.commute}","${item.singlehood}","${item.childcare}","${item.conv}","${item.fertility}","${item.policyTitle}"\n`;
+        });
+      }
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "firstdate_hotspots.csv");
+      link.setAttribute("download", `firstdate_${currentGisMode}_export.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
