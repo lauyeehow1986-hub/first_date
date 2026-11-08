@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-3">
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-[var(--border)] pb-2 mb-3">
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-emerald-500/15 text-emerald-500">FastMCP Spatial Index</span>
+          <span class="text-xs text-[var(--muted-foreground)]">55 Planning Areas / 332 Subzones</span>
+        </div>
+        <h3 class="text-sm font-bold text-[var(--foreground)] mt-0.5">GovTech FirstDate: Spatial Effectiveness Inspector</h3>
+      </div>
+      <div class="text-right">
+        <span class="text-[11px] text-[var(--muted-foreground)] block">Zone FEI Score</span>
+        <span id="widget-fei" class="text-lg font-black text-emerald-500">89.8 <span class="text-xs font-normal text-[var(--muted-foreground)]">/100</span></span>
+      </div>
+    </div>
+
+    <!-- Quick Pill Buttons -->
+    <div class="flex flex-wrap gap-1.5 mb-3 text-xs">
+      <button onclick="setTab('west')" id="btn-west" class="px-2 py-1 rounded font-medium bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">OCR West (Jurong)</button>
+      <button onclick="setTab('ne')" id="btn-ne" class="px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]">OCR NE (Punggol)</button>
+      <button onclick="setTab('north')" id="btn-north" class="px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]">OCR North (Yishun)</button>
+      <button onclick="setTab('east')" id="btn-east" class="px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]">OCR East (Tampines)</button>
+      <button onclick="setTab('rcr')" id="btn-rcr" class="px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]">RCR (Bishan)</button>
+      <button onclick="setTab('ccr')" id="btn-ccr" class="px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]">CCR (Bt Timah)</button>
+    </div>
+
+    <!-- Detail Box -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-xs">
+      <div class="p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+        <span class="text-[var(--muted-foreground)] block text-[11px]">HDB 4-Rm Resale:</span>
+        <span id="widget-hdb" class="font-bold text-[var(--foreground)]">S$490k – S$550k</span>
+      </div>
+      <div class="p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+        <span class="text-[var(--muted-foreground)] block text-[11px]">Transit to Buona Vista:</span>
+        <span id="widget-commute" class="font-bold text-emerald-500">22 – 32 mins (Low)</span>
+      </div>
+      <div class="p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+        <span class="text-[var(--muted-foreground)] block text-[11px]">Racial Care Support:</span>
+        <span id="widget-support" class="font-bold text-emerald-500">1.08x (High PHG)</span>
+      </div>
+      <div class="p-2 rounded bg-[var(--background)] border border-[var(--border)]">
+        <span class="text-[var(--muted-foreground)] block text-[11px]">2nd Date Conversion:</span>
+        <span id="widget-conv" class="font-bold text-emerald-500">61.4% (Optimal)</span>
+      </div>
+    </div>
+
+    <!-- Narrative Summary -->
+    <p id="widget-desc" class="text-xs text-[var(--muted-foreground)] leading-relaxed p-2.5 rounded bg-[var(--background)] border border-[var(--border)] mb-2">
+      <strong>Optimal Matchmaking Cluster:</strong> Jurong West, CCK, and Bukit Batok feature dense junior-to-mid executive civil servant cohorts (MX13/MX12). Close transit proximity to Buona Vista (MOE/Biopolis) and abundant nearby grandparent housing (PHG S$30k grant) minimize weekday commute taxes and infant-care friction.
+    </p>
+
+    <div class="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] pt-1 border-t border-[var(--border)]">
+      <span>Subzones: <strong id="widget-subzones" class="text-[var(--foreground)]">Boon Lay, Jurong Gateway, Gombak</strong></span>
+      <span>0-22y Outlay: <strong id="widget-cost" class="text-[var(--foreground)]">S$513k (Mid-Tier)</strong></span>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      west: {
+        fei: "89.8",
+        feiColor: "text-emerald-500",
+        hdb: "S$490k – S$550k",
+        commute: "22 – 32 mins (Low)",
+        commuteColor: "text-emerald-500",
+        support: "1.08x (High PHG)",
+        supportColor: "text-emerald-500",
+        conv: "61.4% (Optimal)",
+        convColor: "text-emerald-500",
+        subzones: "Boon Lay, Jurong Gateway, Gombak",
+        cost: "S$513k (Mid-Tier)",
+        desc: "<strong>Optimal Matchmaking Cluster:</strong> Jurong West, CCK, and Bukit Batok feature dense junior-to-mid executive civil servant cohorts (MX13/MX12). Close transit proximity to Buona Vista (MOE/Biopolis) and abundant nearby grandparent housing (PHG S$30k grant) minimize weekday commute taxes and infant-care friction."
+      },
+      ne: {
+        fei: "88.4",
+        feiColor: "text-emerald-500",
+        hdb: "S$540k – S$610k",
+        commute: "45 – 52 mins (Mod)",
+        commuteColor: "text-amber-500",
+        support: "1.05x (Dense AOP)",
+        supportColor: "text-emerald-500",
+        conv: "59.2% (Strong)",
+        convColor: "text-emerald-500",
+        subzones: "Punggol Field, Compassvale, Rivervale",
+        cost: "S$513k (Mid-Tier)",
+        desc: "<strong>High-Density Heartland:</strong> Punggol and Sengkang host Singapore's highest concentration of young civil servants. Government Anchor Operator (AOP) infant-care centres in every precinct lower entry costs, though 50-minute evening MRT trips create infant-care pickup pressure."
+      },
+      north: {
+        fei: "84.6",
+        feiColor: "text-emerald-500",
+        hdb: "S$480k – S$530k",
+        commute: "48 – 56 mins (High)",
+        commuteColor: "text-rose-500",
+        support: "1.10x (Multi-Gen)",
+        supportColor: "text-emerald-500",
+        conv: "57.8% (Good)",
+        convColor: "text-emerald-500",
+        subzones: "Woodlands East, Midview, Khatib",
+        cost: "S$482k (Accessible)",
+        desc: "<strong>Affordable Resale Base:</strong> Woodlands and Yishun provide the lowest barrier to entry for 4-room resale flats. High Malay and Chinese multi-generational family networks buffer childcare outlays, despite a 50+ min transit commute to Central CBD."
+      },
+      east: {
+        fei: "82.5",
+        feiColor: "text-emerald-500",
+        hdb: "S$530k – S$620k",
+        commute: "38 – 46 mins (Mod)",
+        commuteColor: "text-amber-500",
+        support: "1.04x (Stable)",
+        supportColor: "text-emerald-500",
+        conv: "55.4% (Good)",
+        convColor: "text-emerald-500",
+        subzones: "Tampines Central, Simei, Bedok North",
+        cost: "S$525k (Mid-Tier)",
+        desc: "<strong>Established Family Heartland:</strong> Tampines and Bedok offer deep community amenities and balanced school networks. Marriage rates are steady, but average cohort age is ~1.5 years older than Punggol."
+      },
+      rcr: {
+        fei: "76.2",
+        feiColor: "text-amber-500",
+        hdb: "S$880k – S$1.1M (High)",
+        commute: "18 – 24 mins (Fast)",
+        commuteColor: "text-emerald-500",
+        support: "0.94x (Delay)",
+        supportColor: "text-amber-500",
+        conv: "48.6% (Friction)",
+        convColor: "text-amber-500",
+        subzones: "Bishan East, Marymount, Toa Payoh",
+        cost: "S$685k (Elevated)",
+        desc: "<strong>Mature Estate Housing Barrier:</strong> While Bishan and Toa Payoh offer prime 20-min transit to CBD, million-dollar HDB resale costs compel officers to delay marriage until reaching upper-senior grades (MX11/MX11A), compressing female fertility."
+      },
+      ccr: {
+        fei: "41.5",
+        feiColor: "text-rose-500",
+        hdb: "S$2.2M+ Condominium",
+        commute: "12 – 16 mins (Direct)",
+        commuteColor: "text-emerald-500",
+        support: "0.82x (Low/Single)",
+        supportColor: "text-rose-500",
+        conv: "28.5% (Low)",
+        convColor: "text-rose-500",
+        subzones: "Sixth Avenue, Coronation, Nassim",
+        cost: "S$1.16M (Private Tier)",
+        desc: "<strong>Hyper-Competitive Enclave:</strong> Bukit Timah and Tanglin officers internalize high private consumption benchmarks (Gleneagles delivery, overseas universities >S$1.1M/child). Severe lifestyle and educational homogamy demands create high blind-date drop-off."
+      }
+    };
+
+    function setTab(key) {
+      const d = data[key];
+      if (!d) return;
+
+      document.getElementById('widget-fei').innerHTML = d.fei + ' <span class="text-xs font-normal text-[var(--muted-foreground)]">/100</span>';
+      document.getElementById('widget-fei').className = "text-lg font-black " + d.feiColor;
+      document.getElementById('widget-hdb').textContent = d.hdb;
+      document.getElementById('widget-commute').textContent = d.commute;
+      document.getElementById('widget-commute').className = "font-bold " + d.commuteColor;
+      document.getElementById('widget-support').textContent = d.support;
+      document.getElementById('widget-support').className = "font-bold " + d.supportColor;
+      document.getElementById('widget-conv').textContent = d.conv;
+      document.getElementById('widget-conv').className = "font-bold " + d.convColor;
+      document.getElementById('widget-subzones').textContent = d.subzones;
+      document.getElementById('widget-cost').textContent = d.cost;
+      document.getElementById('widget-desc').innerHTML = d.desc;
+
+      const keys = ['west', 'ne', 'north', 'east', 'rcr', 'ccr'];
+      keys.forEach(k => {
+        const btn = document.getElementById('btn-' + k);
+        if (k === key) {
+          btn.className = "px-2 py-1 rounded font-medium bg-emerald-500/20 text-emerald-500 border border-emerald-500/30";
+        } else {
+          btn.className = "px-2 py-1 rounded font-medium bg-[var(--background)] hover:bg-[var(--border)] text-[var(--muted-foreground)] border border-[var(--border)]";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
