@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "model": "gemini-3.8-flash",
+  "reasoning_effort": "high",
+  "hooks": {
+    "pre_task": [
+      {
+        "name": "verify_cohort_and_graph_capacity",
+        "command": "python mcp-servers/firstdate_graph_agent_loop.py",
+        "description": "Run Turan multipartite cross-agency capacity check and cohort refactoring funnel before synthesis."
+      }
+    ],
+    "post_response_audit": [
+      {
+        "name": "audit_singstat_and_clinical_bounds",
+        "checks": [
+          "Ensure partnered singles (~50% per NPTD MPS 2021) are refactored out of legal singles",
+          "Ensure ~65,000 MOH Holdings public healthcare cluster workers are excluded from FirstDate baseline",
+          "Ensure +3.5y dating/BTO wait is added to match age before evaluating maternal age-37 follicular cliff and paternal >=40 DFI miscarriage jump"
+        ]
+      }
+    ]
+  }
+}
