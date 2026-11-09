@@ -30,7 +30,8 @@ Access the complete dashboard and simulation suite directly in your browser:
 | Metric | Empirical Figure | Actuarial & Demographic Significance |
 | :--- | :---: | :--- |
 | **Total Public Service Headcount** | **157,997** | 88,664 in 16 Ministries (55.5% F) + 69,333 in >50 Stat Boards (51.3% M) |
-| **Healthcare Cluster Exclusion** | **~65,000** | SingHealth, NHG, NUHS under MOH Holdings excluded by Clause 6.1.1 |
+| **Frontline & Operational Exclusion (Internal)** | **-65,000** | 18.5k Home Team, ~25k SAF combatants, and 21.5k ops/daily-rated excluded from pilot Specified Entities (leaving 92,997) |
+| **Healthcare Cluster Exclusion (External)** | **~65,000** | SingHealth, NHG, NUHS under MOH Holdings (separate corporatized sector outside the 158k Public Service) locked out by Clause 6.1.1 |
 | **Pre-Partnered Singles** | **50.2% - 53.8%** | Legal singles already attached/in BTO queues; true addressable single pool = **20,690** |
 | **Turan Cross-Agency Edge Loss** | **-12.57%** | Forbidding intra-agency matches ($a(u) \neq a(v)$) leaves 88.08% network capacity |
 | **FirstDate Pilot Annual Births** | **+143.8 births/yr** | Across entire Civil Service at full 100% adoption |
