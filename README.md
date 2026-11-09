@@ -36,8 +36,8 @@ The dashboard grounds its analysis in the official **157,997 Public Service work
 | **Courtship Cohort (Ages 21–45)** | **88,500** | 56.0% of the Public Service falls within prime marriageable and reproductive age bands (PSD Age Profile) |
 | **Legally Single Public Officers** | **41,600** | 47.0% never-married baseline weighted by SingStat Table M810681 citizen singlehood proportions |
 | **Unpartnered Singles (Addressable Pool)** | **20,700** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
-| **Turan Bipartite Matching Capacity** | **96.40%** | Cross-agency edge retention across Ministries & Stat Boards (only 3.6% loss under $a(u) 
-eq a(v)$ rule) |
+| **Turán Graph Edge Retention** | **85.21%** | 14.79% network collision loss ($\sum p_k^2 = 0.14791$) under anti-conflict rule $a(u) \neq a(v)$ across 11 agency clusters |
+| **Bipartite Pairing Yield** | **96.40%** | 6,226 valid cross-agency pairs formed from 6,458 active singles (MHA males counterbalance MOE female surplus across 85.2% surviving edges) |
 | **Annual Active Target Pool** | **6,458 users** | Onboarded FormSG / Singpass cohort at 31.2% annual adoption rate |
 | **Annual Completed Live Births** | **+267.6 births/yr** | Projected annual live births from solemnized marriages following dating progression |
 | **National TFR Lift** | **+0.00793 points** | Yields less than 16% of the minimum policy significance threshold (+0.0500) |
