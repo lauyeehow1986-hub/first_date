@@ -32,7 +32,7 @@ The live dashboard features an interactive **Dual Scope Switcher** on Tab 1 comp
 | Metric | 🌟 Full Statutory Reality (158k) | 🏛 Scoped Civilian Pilot (93k) | Actuarial & Demographic Significance |
 | :--- | :---: | :---: | :--- |
 | **Gross Eligible Public Service Base** | **157,997** | **92,997** | 100% of Ministries (88.7k) + Stat Boards (69.3k) vs civilian-only pilot |
-| **Uniformed Personnel Eligibility** | **Included (+18.5k MHA, +25k SAF)** | Excluded | Home Team (Police, SCDF, Prisons, CNB) & SAF regulars are legally eligible via Singpass |
+| **Uniformed Personnel Eligibility** | **Included (+18.5k MHA Home Team)** | Excluded | Home Team (Police, SCDF, Prisons, CNB on Budget Head P p. 135) are eligible via Singpass. (Note: MINDEF Head J p. 113 lists only 70 civilian HQ staff; SAF military personnel are classified under Code 2900 Defence Block Vote) |
 | **Public Healthcare Clusters Exclusion** | **~65,000 (SingStat Public)** | **~65,000 (SingStat Public)** | SingStat Registered Health Personnel tracks ~65k staff in public clusters (SingHealth/NUHS/NHG under MOHH: 11.2k doctors, 32.1k nurses, 9.2k allied/pharmacists + admin); part of 200k+ wider national Health & Social Services sector (MOM SSIC Q) |
 | **Unpartnered Singles (Ages 21–45)** | **20,700** | **12,250** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
 | **Turan Bipartite Matching Capacity** | **96.40%** | **88.08%** | **Uniformed male influx neutralizes the MOE female teacher squeeze!** (Only 3.6% loss vs 12.6%) |
