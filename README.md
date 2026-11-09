@@ -196,5 +196,5 @@ A central methodological requirement of FirstDate's actuarial evaluation is ensu
 3. **Reconciling the 92,997 FirstDate Specified Entities Baseline**:
    $$egin{aligned}
    	ext{FirstDate Specified Entities (92,997)} &= 	ext{Civilian Civil Servants (MOE 20.5k, MHA Civ/ICA 8.8k, MINDEF DXO 6.0k, MSF/MOM/Others 16.9k)} \
-   &\quad + 	ext{Core Civilian Statutory Boards (Infra 15.3k, Finance 10.7k, Community 9.7k, Tech 5.1k)}
+   &\quad + 	ext{Core Civilian Statutory Boards (Infra 15.3k executive tier [out of ~21.5k gross staff in HDB/LTA/NEA/PUB/BCA/URA Annual Reports], Finance 10.7k, Community 9.7k, Tech 5.1k)}
    \end{aligned}$$
