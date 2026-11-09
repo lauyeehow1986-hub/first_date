@@ -211,6 +211,29 @@
     <!-- TAB 1: EXECUTIVE SUMMARY & STRATEGIC INSIGHTS -->
     <!-- ========================================================================= -->
     <section id="panel-exec-summary" class="space-y-6">
+      <!-- Scope Selector Toggle Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl shadow-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="text-base">⚖️</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Analysis Scope:</span>
+              <span id="scope-status-pill" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">🌟 Full Statutory Reality (158k)</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Per FirstDate terms, all public officers in ministries & stat boards (including Home Team & SAF uniformed personnel) are eligible via Singpass:</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
+          <button id="scope-btn-full" onclick="setDashboardScope('full')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-sm transition-all flex items-center gap-1.5">
+            <span>🌟 Full 158k Scope</span>
+            <span class="text-[10px] opacity-75 font-mono">(Uniformed+Civ)</span>
+          </button>
+          <button id="scope-btn-pilot" onclick="setDashboardScope('pilot')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5">
+            <span>🏛 93k Pilot Baseline</span>
+            <span class="text-[10px] opacity-75 font-mono">(Civilian Only)</span>
+          </button>
+        </div>
+      </div>
       
       <!-- Top Banner Callout -->
       <div class="bg-gradient-to-r from-rose-950/40 via-slate-900 to-indigo-950/40 border border-rose-900/30 rounded-2xl p-5 shadow-sm">
@@ -221,7 +244,7 @@
           <div>
             <h2 class="text-base font-bold text-white">Macro Verdict: GovTech FirstDate Cannot Reverse Singapore's TFR on Its Own</h2>
             <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-              While GovTech FirstDate successfully mitigates online identity fraud and informational asymmetry through Singpass employment verification, our FastMCP actuarial audit proves it operates on an addressable pool that accounts for only <strong>2.3% of the single population</strong>. At baseline, the pilot yields approximately <strong>+143.8 live births annually</strong>, lifting national TFR by just <strong>+0.00419 points</strong>—less than 8.4% of the minimum policy significance threshold (+0.0500).
+              While GovTech FirstDate successfully mitigates online identity fraud and informational asymmetry through Singpass employment verification, our FastMCP actuarial audit proves it operates on an addressable pool that accounts for <strong id="verdict-pool-pct">3.9% of the single population</strong>. Under <span id="verdict-scope-label" class="text-indigo-300 font-semibold">Full Statutory Reality (158k)</span>, the platform yields approximately <strong id="verdict-births" class="text-white">+267.6 live births annually</strong>, lifting national TFR by <strong id="verdict-tfr" class="text-emerald-400">+0.00793 points</strong> (vs +143.8 births / +0.0042 in conservative civilian pilot).
             </p>
           </div>
         </div>
@@ -231,13 +254,13 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Gross Public Service Base</div>
-          <div class="text-2xl font-black text-white mt-1">157,997</div>
-          <div class="text-xs text-rose-400 mt-1 font-mono">-65,000 Frontline & Ops Excluded</div>
+          <div id="kpi-base-val" class="text-2xl font-black text-white mt-1">157,997</div>
+          <div id="kpi-base-sub" class="text-xs text-indigo-400 mt-1 font-mono">100% Eligible (88.7k Ministries + 69.3k Stat Boards)</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Unpartnered Singles (Ages 21–45)</div>
-          <div class="text-2xl font-black text-amber-400 mt-1">12,250</div>
-          <div class="text-xs text-slate-400 mt-1">24.6k legal singles - 50.2% attached (NPTD)</div>
+          <div id="kpi-singles-val" class="text-2xl font-black text-amber-400 mt-1">20,700</div>
+          <div id="kpi-singles-sub" class="text-xs text-slate-400 mt-1">41.6k legal singles - 50.2% attached (NPTD)</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Prime Golden Ageband</div>
@@ -246,8 +269,8 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Turan Bipartite Capacity</div>
-          <div class="text-2xl font-black text-indigo-400 mt-1">88.08%</div>
-          <div class="text-xs text-slate-400 mt-1">-12.57% intra-agency collision loss</div>
+          <div id="kpi-capacity-val" class="text-2xl font-black text-indigo-400 mt-1">96.40%</div>
+          <div id="kpi-capacity-sub" class="text-xs text-emerald-400 mt-1 font-medium">Uniformed males absorb MOE female surplus</div>
         </div>
       </div>
 
@@ -264,8 +287,8 @@
             </p>
           </div>
           <div class="shrink-0">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400">
-              Only 2.1% Retained to Active Pool
+            <span id="flow-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+              4.1% Retained to Active Pool (Balanced)
             </span>
           </div>
         </div>
@@ -273,99 +296,99 @@
         <!-- 6-Stage Waterfall / Flowchart Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
           
-          <!-- Node 1: Total Public Service Base -->
+          <!-- Node 1 -->
           <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-slate-500">STAGE 1</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">100%</span>
+                <span id="flow-node-1-num" class="text-[10px] font-mono font-bold text-slate-500">STAGE 1</span>
+                <span id="flow-node-1-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">100%</span>
               </div>
-              <div class="text-xl font-black text-white font-mono">157,997</div>
-              <div class="text-xs font-semibold text-slate-200 mt-0.5">Total Public Officers</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">Ministries (88.7k) + Stat Boards (69.3k)</div>
+              <div id="flow-node-1-val" class="text-xl font-black text-white font-mono">157,997</div>
+              <div id="flow-node-1-title" class="text-xs font-semibold text-slate-200 mt-0.5">Total Public Officers</div>
+              <div id="flow-node-1-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">Ministries (88.7k) + Stat Boards (69.3k)</div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
-              <span class="font-bold">➔ Gate 1:</span> Excludes -65,000 Frontline & Ops (Home Team 18.5k, SAF 25k, Ops 21.5k; +65k Healthcare separate)
+            <div id="flow-node-1-gate" class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-indigo-400 font-medium">
+              <span class="font-bold">➔ Gate 1:</span> 56.0% in courtship ages 21–45 (PSD)
             </div>
           </div>
 
-          <!-- Node 2: Eligible Specified Entities -->
+          <!-- Node 2 -->
           <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-slate-500">STAGE 2</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">58.9%</span>
+                <span id="flow-node-2-num" class="text-[10px] font-mono font-bold text-slate-500">STAGE 2</span>
+                <span id="flow-node-2-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">56.0%</span>
               </div>
-              <div class="text-xl font-black text-indigo-300 font-mono">92,997</div>
-              <div class="text-xs font-semibold text-slate-200 mt-0.5">Specified Entities</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">Civilian Civil Servants + Core Civilian Stat Boards</div>
+              <div id="flow-node-2-val" class="text-xl font-black text-indigo-300 font-mono">88,500</div>
+              <div id="flow-node-2-title" class="text-xs font-semibold text-slate-200 mt-0.5">Courtship Age 21–45</div>
+              <div id="flow-node-2-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">All eligible civilian + uniformed personnel</div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
-              <span class="font-bold">➔ Gate 2:</span> Removes -40.6k outside ages 21–45
+            <div id="flow-node-2-gate" class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
+              <span class="font-bold">➔ Gate 2:</span> Filters out -46.9k married officers (53%)
             </div>
           </div>
 
-          <!-- Node 3: Eligible Age Band -->
+          <!-- Node 3 -->
           <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-slate-500">STAGE 3</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">33.2%</span>
+                <span id="flow-node-3-num" class="text-[10px] font-mono font-bold text-slate-500">STAGE 3</span>
+                <span id="flow-node-3-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">26.3%</span>
               </div>
-              <div class="text-xl font-black text-cyan-300 font-mono">52,400</div>
-              <div class="text-xs font-semibold text-slate-200 mt-0.5">Courtship Age 21–45</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">PSD establishment age distribution</div>
+              <div id="flow-node-3-val" class="text-xl font-black text-cyan-300 font-mono">41,600</div>
+              <div id="flow-node-3-title" class="text-xs font-semibold text-slate-200 mt-0.5">Legally Single</div>
+              <div id="flow-node-3-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">Never married on SingStat M810681 (47.0%)</div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
-              <span class="font-bold">➔ Gate 3:</span> Filters out -27.8k legally married (53%)
+            <div id="flow-node-3-gate" class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
+              <span class="font-bold">➔ Gate 3:</span> -50.2% already attached (NPTD Survey)
             </div>
           </div>
 
-          <!-- Node 4: Legally Single -->
-          <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-slate-500">STAGE 4</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">15.6%</span>
-              </div>
-              <div class="text-xl font-black text-amber-300 font-mono">24,600</div>
-              <div class="text-xs font-semibold text-slate-200 mt-0.5">Legally Single</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">Never married on SingStat M810681</div>
-            </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-rose-400 font-medium">
-              <span class="font-bold">➔ Gate 4:</span> -50.2% already attached (NPTD Survey)
-            </div>
-          </div>
-
-          <!-- Node 5: Genuine Unpartnered Singles -->
+          <!-- Node 4 -->
           <div class="relative bg-slate-950 border border-amber-500/30 bg-amber-500/5 rounded-xl p-3.5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-amber-400">STAGE 5</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">7.8%</span>
+                <span id="flow-node-4-num" class="text-[10px] font-mono font-bold text-amber-400">STAGE 4</span>
+                <span id="flow-node-4-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">13.1%</span>
               </div>
-              <div class="text-xl font-black text-amber-400 font-mono">12,250</div>
-              <div class="text-xs font-semibold text-amber-200 mt-0.5">Unpartnered Singles</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">Genuine unattached addressable target pool</div>
+              <div id="flow-node-4-val" class="text-xl font-black text-amber-400 font-mono">20,700</div>
+              <div id="flow-node-4-title" class="text-xs font-semibold text-amber-200 mt-0.5">Unpartnered Singles</div>
+              <div id="flow-node-4-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">Genuine unattached addressable target pool</div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-amber-500/20 text-[10px] text-amber-400 font-medium">
-              <span class="font-bold">➔ Gate 5:</span> 31.2% annual active opt-in adoption
+            <div id="flow-node-4-gate" class="mt-3 pt-2.5 border-t border-amber-500/20 text-[10px] text-amber-400 font-medium">
+              <span class="font-bold">➔ Gate 4:</span> 31.2% annual active opt-in adoption
             </div>
           </div>
 
-          <!-- Node 6: Active FirstDate Registered Cohort -->
+          <!-- Node 5 -->
           <div class="relative bg-slate-950 border border-emerald-500/40 bg-emerald-500/5 rounded-xl p-3.5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[10px] font-mono font-bold text-emerald-400">STAGE 6</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">2.4%</span>
+                <span id="flow-node-5-num" class="text-[10px] font-mono font-bold text-emerald-400">STAGE 5</span>
+                <span id="flow-node-5-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">4.1%</span>
               </div>
-              <div class="text-xl font-black text-emerald-400 font-mono">3,828</div>
-              <div class="text-xs font-semibold text-emerald-200 mt-0.5">Active Target Pool</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-tight">Annual onboarded FormSG/Singpass users</div>
+              <div id="flow-node-5-val" class="text-xl font-black text-emerald-400 font-mono">6,458</div>
+              <div id="flow-node-5-title" class="text-xs font-semibold text-emerald-200 mt-0.5">Active Target Pool</div>
+              <div id="flow-node-5-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">Annual onboarded FormSG/Singpass users</div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-emerald-500/20 text-[10px] text-emerald-400 font-medium">
-              <span class="font-bold">➔ Match Pool:</span> 3,350 valid cross-agency pairs
+            <div id="flow-node-5-gate" class="mt-3 pt-2.5 border-t border-emerald-500/20 text-[10px] text-emerald-400 font-medium">
+              <span class="font-bold">➔ Match Pool:</span> 6,226 valid cross-agency pairs
+            </div>
+          </div>
+
+          <!-- Node 6 -->
+          <div class="relative bg-slate-950 border border-indigo-500/40 bg-indigo-500/5 rounded-xl p-3.5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span id="flow-node-6-num" class="text-[10px] font-mono font-bold text-indigo-400">STAGE 6</span>
+                <span id="flow-node-6-pct" class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">96.4%</span>
+              </div>
+              <div id="flow-node-6-val" class="text-xl font-black text-indigo-300 font-mono">6,226</div>
+              <div id="flow-node-6-title" class="text-xs font-semibold text-indigo-200 mt-0.5">Valid Bipartite Pairs</div>
+              <div id="flow-node-6-sub" class="text-[11px] text-slate-400 mt-1 leading-tight">Home Team/SAF males neutralize MOE surplus</div>
+            </div>
+            <div id="flow-node-6-gate" class="mt-3 pt-2.5 border-t border-indigo-500/20 text-[10px] text-indigo-400 font-medium">
+              <span class="font-bold">➔ Final Yield:</span> 267.6 Live Births / yr (+0.0079 TFR)
             </div>
           </div>
 
@@ -375,10 +398,10 @@
         <div class="flex items-center justify-between text-[11px] text-slate-400 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
           <div class="flex items-center gap-2">
             <span class="text-indigo-400 font-bold">Flow Pipeline:</span>
-            <span>These <strong>3,828 active registered users</strong> (yielding 3,350 valid cross-agency pairs) then feed directly into the courtship, marriage, and birth attrition funnel below:</span>
+            <span id="flow-pipeline-text">These <strong>6,458 active registered users</strong> (yielding 6,226 valid cross-agency pairs) then feed directly into the courtship, marriage, and birth attrition funnel below:</span>
           </div>
-          <div class="hidden sm:inline-block font-mono text-emerald-400 font-bold">
-            3,828 Users ➔ 143.8 Births/yr (+0.0042 TFR)
+          <div id="flow-pipeline-badge" class="hidden sm:inline-block font-mono text-emerald-400 font-bold">
+            6,458 Users ➔ 267.6 Births/yr (+0.0079 TFR)
           </div>
         </div>
       </div>
@@ -390,31 +413,31 @@
 
         <div class="grid grid-cols-1 md:grid-cols-7 gap-2 text-center text-xs">
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-indigo-400">3,828</div>
+            <div id="funnel-step-1" class="font-bold text-indigo-400">6,458</div>
             <div class="text-[10px] text-slate-400 mt-1">Annual Active Registered Pool</div>
           </div>
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-amber-400">3,350</div>
-            <div class="text-[10px] text-slate-400 mt-1">Valid Cross-Agency Pairs (-12.6%)</div>
+            <div id="funnel-step-2" class="font-bold text-amber-400">6,226</div>
+            <div class="text-[10px] text-slate-400 mt-1">Valid Cross-Agency Pairs (-3.6%)</div>
           </div>
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-amber-400">2,613</div>
+            <div id="funnel-step-3" class="font-bold text-amber-400">4,856</div>
             <div class="text-[10px] text-slate-400 mt-1">In-Person Dates (-22% Photo Hazard)</div>
           </div>
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-emerald-400">1,288</div>
-            <div class="text-[10px] text-slate-400 mt-1">2nd Date Progressions (38.4%)</div>
+            <div id="funnel-step-4" class="font-bold text-emerald-400">2,394</div>
+            <div class="text-[10px] text-slate-400 mt-1">2nd Date Progressions (49.3%)</div>
           </div>
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-emerald-400">386</div>
+            <div id="funnel-step-5" class="font-bold text-emerald-400">718</div>
             <div class="text-[10px] text-slate-400 mt-1">Committed Courtships (1.2 yrs)</div>
           </div>
           <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="font-bold text-indigo-300">104.2</div>
+            <div id="funnel-step-6" class="font-bold text-indigo-300">193.9</div>
             <div class="text-[10px] text-slate-400 mt-1">ROM Solemnizations (2.7% Funnel)</div>
           </div>
           <div class="bg-slate-950 border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-3">
-            <div class="font-bold text-emerald-400">143.8</div>
+            <div id="funnel-step-7" class="font-bold text-emerald-400">267.6</div>
             <div class="text-[10px] text-slate-400 mt-1">Completed Live Births (Post BTO)</div>
           </div>
         </div>
@@ -3899,6 +3922,124 @@
       populateAgencyTable();
     }
 
-  </script>
+  
+
+    // Dual Scope Switcher for Tab 1 (Full 158k Statutory Reality vs 93k Scoped Pilot)
+    const scopeData = {
+      full: {
+        pillText: '🌟 Full Statutory Reality (158k)',
+        pillClass: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+        kpiBase: '157,997',
+        kpiBaseSub: '100% Eligible (88.7k Ministries + 69.3k Stat Boards)',
+        kpiSingles: '20,700',
+        kpiSinglesSub: '41.6k legal singles - 50.2% attached (NPTD)',
+        kpiCapacity: '96.40%',
+        kpiCapacitySub: 'Uniformed males absorb MOE female surplus',
+        flowBadge: '4.1% Retained to Active Pool (Balanced)',
+        flowBadgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+        verdictBirths: '+267.6 live births annually',
+        verdictTFR: '+0.00793 points',
+        verdictPool: '3.9% of the single population',
+        verdictScope: 'Full Statutory Reality (158k)',
+        stages: [
+          { num: 'STAGE 1', pct: '100%', val: '157,997', title: 'Total Public Officers', sub: 'Ministries (88.7k) + Stat Boards (69.3k)', gate: '➔ Gate 1: 56.0% in courtship ages 21–45 (PSD)' },
+          { num: 'STAGE 2', pct: '56.0%', val: '88,500', title: 'Courtship Age 21–45', sub: 'All eligible civilian + uniformed personnel', gate: '➔ Gate 2: Filters out -46.9k married officers (53%)' },
+          { num: 'STAGE 3', pct: '26.3%', val: '41,600', title: 'Legally Single', sub: 'Never married on SingStat M810681 (47.0%)', gate: '➔ Gate 3: -50.2% already attached (NPTD Survey)' },
+          { num: 'STAGE 4', pct: '13.1%', val: '20,700', title: 'Unpartnered Singles', sub: 'Genuine unattached addressable target pool', gate: '➔ Gate 4: 31.2% annual active opt-in adoption' },
+          { num: 'STAGE 5', pct: '4.1%', val: '6,458', title: 'Active Target Pool', sub: 'Annual onboarded FormSG/Singpass users', gate: '➔ Match Pool: 6,226 valid cross-agency pairs' },
+          { num: 'STAGE 6', pct: '96.4%', val: '6,226', title: 'Valid Bipartite Pairs', sub: 'Home Team/SAF males neutralize MOE surplus', gate: '➔ Final Yield: 267.6 Live Births / yr (+0.0079 TFR)' }
+        ],
+        funnel: ['6,458', '6,226', '4,856', '2,394', '718', '193.9', '267.6'],
+        pipelineText: 'These <strong>6,458 active registered users</strong> (yielding 6,226 valid cross-agency pairs) then feed directly into the courtship, marriage, and birth attrition funnel below:',
+        pipelineBadge: '6,458 Users ➔ 267.6 Births/yr (+0.0079 TFR)'
+      },
+      pilot: {
+        pillText: '🏛 Scoped Civilian Pilot (93k)',
+        pillClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+        kpiBase: '92,997',
+        kpiBaseSub: 'Civilian Management Executives & Core Stat Boards',
+        kpiSingles: '12,250',
+        kpiSinglesSub: '24.6k legal singles - 50.2% attached (NPTD)',
+        kpiCapacity: '88.08%',
+        kpiCapacitySub: '-12.57% intra-agency collision loss (MOE squeeze)',
+        flowBadge: 'Only 2.1% Retained to Active Pool',
+        flowBadgeClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
+        verdictBirths: '+143.8 live births annually',
+        verdictTFR: '+0.00419 points',
+        verdictPool: '2.3% of the single population',
+        verdictScope: 'Scoped Civilian Pilot (93k)',
+        stages: [
+          { num: 'STAGE 1', pct: '100%', val: '92,997', title: 'Specified Entities (Pilot)', sub: 'Civilian Civil Servants + Core Civilian Stat Boards', gate: '➔ Gate 1: Removes -40.6k outside ages 21–45' },
+          { num: 'STAGE 2', pct: '56.3%', val: '52,400', title: 'Courtship Age 21–45', sub: 'Civilian establishment age distribution', gate: '➔ Gate 2: Filters out -27.8k legally married (53%)' },
+          { num: 'STAGE 3', pct: '26.5%', val: '24,600', title: 'Legally Single', sub: 'Never married on SingStat M810681', gate: '➔ Gate 3: -50.2% already attached (NPTD Survey)' },
+          { num: 'STAGE 4', pct: '13.2%', val: '12,250', title: 'Unpartnered Singles', sub: 'Genuine unattached addressable target pool', gate: '➔ Gate 4: 31.2% annual active opt-in adoption' },
+          { num: 'STAGE 5', pct: '4.1%', val: '3,828', title: 'Active Target Pool', sub: 'Annual onboarded FormSG/Singpass users', gate: '➔ Match Pool: 3,350 valid cross-agency pairs' },
+          { num: 'STAGE 6', pct: '88.1%', val: '3,350', title: 'Valid Bipartite Pairs', sub: 'MOE female teacher squeeze limits capacity', gate: '➔ Final Yield: 143.8 Live Births / yr (+0.0042 TFR)' }
+        ],
+        funnel: ['3,828', '3,350', '2,613', '1,288', '386', '104.2', '143.8'],
+        pipelineText: 'These <strong>3,828 active registered users</strong> (yielding 3,350 valid cross-agency pairs) then feed directly into the courtship, marriage, and birth attrition funnel below:',
+        pipelineBadge: '3,828 Users ➔ 143.8 Births/yr (+0.0042 TFR)'
+      }
+    };
+
+    function setDashboardScope(mode) {
+      const d = scopeData[mode];
+      if (!d) return;
+
+      const btnFull = document.getElementById('scope-btn-full');
+      const btnPilot = document.getElementById('scope-btn-pilot');
+      const pill = document.getElementById('scope-status-pill');
+
+      if (mode === 'full') {
+        btnFull.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-sm transition-all flex items-center gap-1.5";
+        btnPilot.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5";
+      } else {
+        btnFull.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5";
+        btnPilot.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-600 text-white shadow-sm transition-all flex items-center gap-1.5";
+      }
+
+      pill.textContent = d.pillText;
+      pill.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${d.pillClass}`;
+
+      // Verdict
+      document.getElementById('verdict-pool-pct').textContent = d.verdictPool;
+      document.getElementById('verdict-scope-label').textContent = d.verdictScope;
+      document.getElementById('verdict-births').textContent = d.verdictBirths;
+      document.getElementById('verdict-tfr').textContent = d.verdictTFR;
+
+      // KPIs
+      document.getElementById('kpi-base-val').textContent = d.kpiBase;
+      document.getElementById('kpi-base-sub').textContent = d.kpiBaseSub;
+      document.getElementById('kpi-singles-val').textContent = d.kpiSingles;
+      document.getElementById('kpi-singles-sub').textContent = d.kpiSinglesSub;
+      document.getElementById('kpi-capacity-val').textContent = d.kpiCapacity;
+      document.getElementById('kpi-capacity-sub').textContent = d.kpiCapacitySub;
+
+      // Flowchart
+      const flowBadge = document.getElementById('flow-badge');
+      flowBadge.textContent = d.flowBadge;
+      flowBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono font-bold border ${d.flowBadgeClass}`;
+
+      for (let i = 1; i <= 6; i++) {
+        const s = d.stages[i - 1];
+        document.getElementById(`flow-node-${i}-num`).textContent = s.num;
+        document.getElementById(`flow-node-${i}-pct`).textContent = s.pct;
+        document.getElementById(`flow-node-${i}-val`).textContent = s.val;
+        document.getElementById(`flow-node-${i}-title`).textContent = s.title;
+        document.getElementById(`flow-node-${i}-sub`).textContent = s.sub;
+        document.getElementById(`flow-node-${i}-gate`).innerHTML = `<span class="font-bold">${s.gate.split(':')[0]}:</span>${s.gate.split(':')[1]}`;
+      }
+
+      // Pipeline bar
+      document.getElementById('flow-pipeline-text').innerHTML = d.pipelineText;
+      document.getElementById('flow-pipeline-badge').textContent = d.pipelineBadge;
+
+      // Funnel boxes
+      for (let j = 1; j <= 7; j++) {
+        document.getElementById(`funnel-step-${j}`).textContent = d.funnel[j - 1];
+      }
+    }
+
+</script>
 </body>
 </html>

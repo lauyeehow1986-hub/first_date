@@ -25,20 +25,22 @@ Access the complete dashboard and simulation suite directly in your browser:
 
 ---
 
-## 📊 Core Empirical Findings
+## 📊 Core Empirical Findings: Dual Scope Analysis
 
-| Metric | Empirical Figure | Actuarial & Demographic Significance |
-| :--- | :---: | :--- |
-| **Total Public Service Headcount** | **157,997** | 88,664 in 16 Ministries (55.5% F) + 69,333 in >50 Stat Boards (51.3% M) |
-| **Frontline & Operational Exclusion (Internal)** | **-65,000** | 18.5k Home Team, ~25k SAF combatants, and 21.5k ops/daily-rated excluded from pilot Specified Entities (leaving 92,997) |
-| **Healthcare Cluster Exclusion (External)** | **~65,000** | SingHealth, NHG, NUHS under MOH Holdings (separate corporatized sector outside the 158k Public Service) locked out by Clause 6.1.1 |
-| **Pre-Partnered Singles** | **50.2% - 53.8%** | Legal singles already attached/in BTO queues; true addressable single pool = **20,690** |
-| **Turan Cross-Agency Edge Loss** | **-12.57%** | Forbidding intra-agency matches ($a(u) \neq a(v)$) leaves 88.08% network capacity |
-| **FirstDate Pilot Annual Births** | **+143.8 births/yr** | Across entire Civil Service at full 100% adoption |
-| **Net TFR Lift** | **+0.00419** | **Fails the +0.05 policy significance threshold by an order of magnitude (12x short)** |
-| **Golden Ageband (Female)** | **25 – 29** | Conception at 28.5–32.5 post-BTO queue; precedes age-37 ovarian follicle cliff (<25,000) |
-| **Golden Ageband (Male)** | **27 – 31** | Avoids age 40+ Paternal Sperm DNA Fragmentation (+15.2% miscarriage hazard) |
-| **The Singlehood Arbitrage (Age 35)** | **> S$650,000** | Retained net worth via single 2-room Flexi BTO + S$115k grants vs wedding/child/divorce costs |
+The live dashboard features an interactive **Dual Scope Switcher** on Tab 1 comparing the legal statutory scope against the conservative civilian pilot baseline:
+
+| Metric | 🌟 Full Statutory Reality (158k) | 🏛 Scoped Civilian Pilot (93k) | Actuarial & Demographic Significance |
+| :--- | :---: | :---: | :--- |
+| **Gross Eligible Public Service Base** | **157,997** | **92,997** | 100% of Ministries (88.7k) + Stat Boards (69.3k) vs civilian-only pilot |
+| **Uniformed Personnel Eligibility** | **Included (+18.5k MHA, +25k SAF)** | Excluded | Home Team (Police, SCDF, Prisons, CNB) & SAF regulars are legally eligible via Singpass |
+| **Public Healthcare Exclusion** | **~65,000 (External)** | **~65,000 (External)** | SingHealth/NUHS/NHG under MOH Holdings are corporatized Pte Ltds outside the 158k pool |
+| **Unpartnered Singles (Ages 21–45)** | **20,700** | **12,250** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
+| **Turan Bipartite Matching Capacity** | **96.40%** | **88.08%** | **Uniformed male influx neutralizes the MOE female teacher squeeze!** (Only 3.6% loss vs 12.6%) |
+| **Annual Active Target Pool** | **6,458 users** | **3,828 users** | Onboarded FormSG / Singpass cohort at 31.2% adoption |
+| **Annual Completed Live Births** | **+267.6 births/yr** | **+143.8 births/yr** | **+68.7% higher birth yield** under full statutory participation |
+| **National TFR Lift** | **+0.00793 points** | **+0.00419 points** | Meaningfully increases demographic impact, though still below +0.05 threshold |
+| **Prime Golden Ageband** | **F: 25–29 \| M: 27–31** | **F: 25–29 \| M: 27–31** | Conception pre-34 avoids ovarian cliff; paternal pre-35 avoids sperm DNA fragmentation |
+| **The Singlehood Arbitrage (Age 35)** | **> S$650,000** | **> S$650,000** | Retained net worth via single 2-room Flexi BTO + S$115k grants vs wedding/child/divorce costs |
 
 ---
 
