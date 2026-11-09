@@ -1437,10 +1437,16 @@
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
           <div>
-            <h3 class="text-sm font-bold text-white">Full Cross-Agency Master Matrix (PSD 2025 Headcount Calibrated)</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Audit of headcount shares, gender skews, self-collision penalties, and liquidity classifications across all 11 public sector clusters:</p>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-white">FirstDate Cross-Agency Simulation Matrix</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">Simulation Model</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Actuarial simulation model evaluating matching liquidity across 11 public sector clusters (calibrated to PSD macro envelopes):</p>
           </div>
-          <span class="text-[11px] font-mono text-slate-400">Total Analyzed: 92,997 Officers</span>
+          <div class="text-right">
+            <span class="text-[11px] font-mono text-slate-400 block">Total Analyzed: 92,997 Officers</span>
+            <span class="text-[10px] text-amber-400/90 font-sans">Simulated Pilot Scope · Not Official PSD Table</span>
+          </div>
         </div>
 
         <div class="overflow-x-auto custom-scrollbar">
@@ -1467,7 +1473,7 @@
         <div class="mt-4 p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 space-y-2">
           <div class="font-bold text-slate-200 flex items-center space-x-2">
             <span class="text-indigo-400">📊</span>
-            <span>Official Data Sources for Agency Headcounts & Gender Ratios</span>
+            <span>Data Grounding: Official PSD Macro Records vs Cluster Simulation Proxies</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] leading-relaxed pt-1">
             <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
