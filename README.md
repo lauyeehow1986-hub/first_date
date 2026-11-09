@@ -33,7 +33,7 @@ The live dashboard features an interactive **Dual Scope Switcher** on Tab 1 comp
 | :--- | :---: | :---: | :--- |
 | **Gross Eligible Public Service Base** | **157,997** | **92,997** | 100% of Ministries (88.7k) + Stat Boards (69.3k) vs civilian-only pilot |
 | **Uniformed Personnel Eligibility** | **Included (+18.5k MHA, +25k SAF)** | Excluded | Home Team (Police, SCDF, Prisons, CNB) & SAF regulars are legally eligible via Singpass |
-| **Public Healthcare Exclusion** | **~65,000 (External)** | **~65,000 (External)** | SingHealth/NUHS/NHG under MOH Holdings are corporatized Pte Ltds outside the 158k pool |
+| **Public Healthcare Clusters Exclusion** | **~65,000 (SingStat Public)** | **~65,000 (SingStat Public)** | SingStat Registered Health Personnel tracks ~65k staff in public clusters (SingHealth/NUHS/NHG under MOHH: 11.2k doctors, 32.1k nurses, 9.2k allied/pharmacists + admin); part of 200k+ wider national Health & Social Services sector (MOM SSIC Q) |
 | **Unpartnered Singles (Ages 21–45)** | **20,700** | **12,250** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
 | **Turan Bipartite Matching Capacity** | **96.40%** | **88.08%** | **Uniformed male influx neutralizes the MOE female teacher squeeze!** (Only 3.6% loss vs 12.6%) |
 | **Annual Active Target Pool** | **6,458 users** | **3,828 users** | Onboarded FormSG / Singpass cohort at 31.2% adoption |
