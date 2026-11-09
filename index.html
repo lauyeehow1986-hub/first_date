@@ -3,972 +3,12 @@
 <head>
   <!-- Leaflet GIS Map Assets -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="">
-    // =========================================================================
-    // TAB 8: CROSS-AGENCY GRAPH & BOTTLENECK DATA & LOGIC
-    // =========================================================================
-    const agencyClusterData = {
-      'MOE': {
-        name: 'Ministry of Education (MOE)',
-        entities: 'Primary & Secondary Schools, JCs, Curriculum Planning, NIE, HQ',
-        type: 'Ministry',
-        headcount: 20460,
-        share: 0.220,
-        femaleRatio: 0.68,
-        maleRatio: 0.32,
-        femaleCount: 13913,
-        maleCount: 6547,
-        collisionProb: 0.04840,
-        lossShare: 38.49,
-        badgeClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        statusLabel: '🚨 Severe Female Squeeze',
-        imbalance: '-7,366 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 36040,
-        extFemales: 36497,
-        topSources: ['GovTech / Digital (62% M)', 'MINDEF DXO (58% M)', 'MHA Civilian (56% M)'],
-        routingDesc: 'High female surplus creates acute external competition. Dispatch algorithm must deploy asymmetric priority routing toward male-surplus Tech and Infrastructure statutory boards.',
-        policyFix: 'Exempt cross-school matching. A teacher in Woodlands has zero supervisory conflict with a teacher in Jurong, immediately eliminating 90% of internal friction.',
-        priorityBadge: 'P1 (Critical Priority)',
-        priorityClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        liquidityRating: '🚨 Severe Asymmetric Squeeze for Female Teachers',
-        liquidityClass: 'text-rose-400'
-      },
-      'INFRA': {
-        name: 'Infrastructure Statutory Boards',
-        entities: 'HDB, URA, LTA, NEA, PUB, BCA',
-        type: 'Stat Board',
-        headcount: 15345,
-        share: 0.165,
-        femaleRatio: 0.46,
-        maleRatio: 0.54,
-        femaleCount: 7059,
-        maleCount: 8286,
-        collisionProb: 0.02723,
-        lossShare: 21.65,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Volume Collision Loss',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 34301,
-        extFemales: 43351,
-        topSources: ['MOE Education (68% F)', 'MSF Social Policy (66% F)', 'MOH HQ (62% F)'],
-        routingDesc: 'Slight male surplus with large engineering and town planning corps. Strong natural matches with MOE educators and finance officers.',
-        policyFix: 'Permit inter-board pairings between separate statutory boards (e.g., LTA transit engineer with HDB architect) with standard declaration.',
-        priorityBadge: 'P2 (High Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Balanced External Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'FINANCE': {
-        name: 'Finance & Economic Statutory Boards',
-        entities: 'CPF Board, IRAS, MAS, EDB, EnterpriseSG',
-        type: 'Stat Board',
-        headcount: 10695,
-        share: 0.115,
-        femaleRatio: 0.54,
-        maleRatio: 0.46,
-        femaleCount: 5775,
-        maleCount: 4920,
-        collisionProb: 0.01323,
-        lossShare: 10.52,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 High Equilibrium',
-        imbalance: '-855 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37667,
-        extFemales: 44635,
-        topSources: ['Central Policy Ministries', 'Infra Boards (HDB/URA)', 'Tech Boards (GovTech)'],
-        routingDesc: 'Strong professional parity with balanced sex ratios. High educational homogamy makes this cluster the most stable cross-matching group.',
-        policyFix: 'Maintain current cross-agency rule. High internal mobility ensures healthy external matchmaking.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Excellent Liquidity & High Professional Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'COMMUNITY': {
-        name: 'Community & Culture Statutory Boards',
-        entities: 'People’s Association (PA), NParks, SportSG, NLB, NHB',
-        type: 'Stat Board',
-        headcount: 9670,
-        share: 0.104,
-        femaleRatio: 0.52,
-        maleRatio: 0.48,
-        femaleCount: 5028,
-        maleCount: 4642,
-        collisionProb: 0.01082,
-        lossShare: 8.60,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Demographic',
-        imbalance: '-386 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37945,
-        extFemales: 45382,
-        topSources: ['Central Policy Ministries', 'MHA Civilian', 'MOE Education'],
-        routingDesc: 'Near 1:1 gender balance with high community and ground-engagement presence across heartland CCs and parks.',
-        policyFix: 'Permit PA constituency directors to match with central ministry officers across different GRCs.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MHA': {
-        name: 'Ministry of Home Affairs (MHA Civilian)',
-        entities: 'Home Team HQ, ICA Civilian, SPS Civilian, HTX',
-        type: 'Ministry',
-        headcount: 8835,
-        share: 0.095,
-        femaleRatio: 0.44,
-        maleRatio: 0.56,
-        femaleCount: 3887,
-        maleCount: 4948,
-        collisionProb: 0.00903,
-        lossShare: 7.18,
-        badgeClass: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-        statusLabel: '🟢 Net Male Exporter',
-        imbalance: '+1,061 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 37639,
-        extFemales: 46523,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (IRAS/CPF)'],
-        routingDesc: 'Civilians in Home Team provide a vital source of male partners for female-surplus education and healthcare clusters.',
-        policyFix: 'Cross-agency rule is beneficial; maintains complete operational barrier between Home Team civilian staff and other ministries.',
-        priorityBadge: 'P2 (High Net Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Male Export Liquidity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'POLICY': {
-        name: 'Central Policy Ministries',
-        entities: 'MND, MOT, MTI, MOF, MCCY, MSE, PSD',
-        type: 'Ministry',
-        headcount: 7440,
-        share: 0.080,
-        femaleRatio: 0.51,
-        maleRatio: 0.49,
-        femaleCount: 3794,
-        maleCount: 3646,
-        collisionProb: 0.00640,
-        lossShare: 5.09,
-        badgeClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        statusLabel: '🟢 Near-Perfect Parity',
-        imbalance: '-148 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 38941,
-        extFemales: 46616,
-        topSources: ['Economic Stat Boards (EDB/MAS)', 'Infra Boards (URA/LTA)', 'GovTech Tech'],
-        routingDesc: 'Policy analysts and economists with high educational homogamy and near 1:1 sex ratio.',
-        policyFix: 'Cross-ministry pairing across Treasury and surrounding ministry clusters functions smoothly.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Ideal Matching Parity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MINDEF': {
-        name: 'MINDEF (Defence Executive Officers / DXO)',
-        entities: 'Defence Policy, Logistics, C4I Civilian, DSTA Admin',
-        type: 'Ministry',
-        headcount: 6045,
-        share: 0.065,
-        femaleRatio: 0.42,
-        maleRatio: 0.58,
-        femaleCount: 2539,
-        maleCount: 3506,
-        collisionProb: 0.00423,
-        lossShare: 3.36,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Male Windfall Cluster',
-        imbalance: '+967 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39081,
-        extFemales: 47871,
-        topSources: ['MOE Education (68% F)', 'MOH HQ (62% F)', 'MSF Family Services'],
-        routingDesc: 'Only 0.42% collision loss. Male DXO officers experience exceptionally high match availability across civilian ministries.',
-        policyFix: 'Encourage direct matching pipelines into MOE and MSF.',
-        priorityBadge: 'P2 (Male Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Male Windfall',
-        liquidityClass: 'text-emerald-400'
-      },
-      'TECH': {
-        name: 'Tech & Digital Statutory Boards',
-        entities: 'GovTech, Cyber Security Agency (CSA), IMDA',
-        type: 'Stat Board',
-        headcount: 5115,
-        share: 0.055,
-        femaleRatio: 0.38,
-        maleRatio: 0.62,
-        femaleCount: 1944,
-        maleCount: 3171,
-        collisionProb: 0.00302,
-        lossShare: 2.40,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Maximum Male Windfall',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39416,
-        extFemales: 48466,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (MAS/IRAS)'],
-        routingDesc: 'With 62% male software engineers and cybersecurity specialists, internal collision loss is almost zero (0.3%). Enjoys massive external female choice.',
-        policyFix: 'Pair GovTech engineers directly with MOE teachers to relieve the education sector bottleneck.',
-        priorityBadge: 'P2 (High Male Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 Optimal Liquidity / Highest Choice Density',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MOH': {
-        name: 'Ministry of Health (MOH HQ Civil Service)',
-        entities: 'Healthcare Policy, Communicable Diseases, Ageing Planning',
-        type: 'Ministry',
-        headcount: 3255,
-        share: 0.035,
-        femaleRatio: 0.62,
-        maleRatio: 0.38,
-        femaleCount: 2018,
-        maleCount: 1237,
-        collisionProb: 0.00123,
-        lossShare: 0.98,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Mild Female Squeeze',
-        imbalance: '-781 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41350,
-        extFemales: 48392,
-        topSources: ['Tech Boards (GovTech/CSA)', 'Infra Boards (HDB/PUB)', 'MHA Civilian'],
-        routingDesc: 'Small total size prevents heavy collision loss, but high female ratio creates mild external dependency for male partners.',
-        policyFix: 'Incorporate public hospital clusters (SingHealth/NUHS) to create a massive balanced healthcare network.',
-        priorityBadge: 'P2 (Moderate Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ Moderate Female Surplus Dependency',
-        liquidityClass: 'text-amber-400'
-      },
-      'MOM': {
-        name: 'Ministry of Manpower (MOM)',
-        entities: 'Workplace Safety, Labour Policy, Employment Passes, CPFB Liaison',
-        type: 'Ministry',
-        headcount: 3160,
-        share: 0.034,
-        femaleRatio: 0.56,
-        maleRatio: 0.44,
-        femaleCount: 1770,
-        maleCount: 1390,
-        collisionProb: 0.00116,
-        lossShare: 0.92,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Mobility',
-        imbalance: '-380 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 41197,
-        extFemales: 48640,
-        topSources: ['Economic Stat Boards (EnterpriseSG)', 'MHA Civilian', 'Infra Boards'],
-        routingDesc: 'Compact policy ministry with near-frictionless cross-agency matching.',
-        policyFix: 'Maintain standard cross-agency matching protocol.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MSF': {
-        name: 'Ministry of Social and Family Development (MSF)',
-        entities: 'Family Policy, Early Childhood (ECDA), Social Service Offices',
-        type: 'Ministry',
-        headcount: 2975,
-        share: 0.032,
-        femaleRatio: 0.66,
-        maleRatio: 0.34,
-        femaleCount: 1964,
-        maleCount: 1011,
-        collisionProb: 0.00102,
-        lossShare: 0.81,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Female Surplus Squeeze',
-        imbalance: '-953 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41576,
-        extFemales: 48446,
-        topSources: ['Infra Boards (HDB/URA)', 'Tech Boards (GovTech)', 'Central Policy (MND/MOF)'],
-        routingDesc: 'High female concentration in social services and family development creates high reliance on male officers from external technical boards.',
-        policyFix: 'Prioritize matchmaking linkages between MSF social policy officers and male civil servants in engineering/tech sectors.',
-        priorityBadge: 'P2 (Female Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ High External Sourcing Dependency',
-        liquidityClass: 'text-amber-400'
-      }
-    };
-
-    function populateAgencyTable() {
-      const tbody = document.getElementById('agency-table-body');
-      const dropdown = document.getElementById('agency-inspector-dropdown');
-      if (!tbody || !dropdown) return;
-
-      tbody.innerHTML = '';
-      dropdown.innerHTML = '';
-
-      Object.keys(agencyClusterData).forEach(key => {
-        const a = agencyClusterData[key];
-        
-        // Add option to dropdown
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = `${a.name} (${(a.share * 100).toFixed(1)}%)`;
-        dropdown.appendChild(opt);
-
-        // Add row to table
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 transition-colors cursor-pointer';
-        tr.onclick = () => {
-          dropdown.value = key;
-          loadAgencyInspector(key);
-        };
-
-        const fPct = Math.round(a.femaleRatio * 100);
-        const mPct = 100 - fPct;
-
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 font-sans font-bold text-white">
-            ${a.name}
-            <div class="text-[10px] font-normal text-slate-400 font-sans">${a.entities.substring(0, 42)}...</div>
-          </td>
-          <td class="py-2.5 px-3 text-slate-300 font-sans">${a.type}</td>
-          <td class="py-2.5 px-3 font-mono font-bold text-slate-200">
-            ${a.headcount.toLocaleString()}
-            <span class="text-[10px] text-slate-400 font-normal">(${(a.share * 100).toFixed(1)}%)</span>
-          </td>
-          <td class="py-2.5 px-3">
-            <div class="flex items-center gap-1.5">
-              <span class="text-rose-300 font-bold">${fPct}% F</span>
-              <span class="text-slate-600">/</span>
-              <span class="text-cyan-300 font-bold">${mPct}% M</span>
-            </div>
-          </td>
-          <td class="py-2.5 px-3 font-mono text-slate-300">${a.collisionProb.toFixed(5)}</td>
-          <td class="py-2.5 px-3 font-mono font-bold ${a.lossShare > 20 ? 'text-rose-400' : 'text-slate-300'}">
-            ${a.lossShare.toFixed(2)}%
-          </td>
-          <td class="py-2.5 px-3 font-sans text-xs ${a.imbalanceColor}">
-            ${a.imbalance}
-          </td>
-          <td class="py-2.5 px-3">
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${a.badgeClass} whitespace-nowrap">
-              ${a.statusLabel}
-            </span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Load initial inspector for MOE
-      loadAgencyInspector('MOE');
-    }
-
-    function loadAgencyInspector(key) {
-      const a = agencyClusterData[key];
-      if (!a) return;
-
-      document.getElementById('insp-agency-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + a.badgeClass;
-      document.getElementById('insp-agency-badge').textContent = a.type;
-      document.getElementById('insp-agency-share').textContent = `${(a.share * 100).toFixed(1)}% of Civil Service`;
-      document.getElementById('insp-agency-name').textContent = a.name;
-      document.getElementById('insp-agency-entities').textContent = a.entities;
-
-      document.getElementById('insp-headcount').textContent = a.headcount.toLocaleString();
-      document.getElementById('insp-gender-ratio').textContent = `${Math.round(a.femaleRatio * 100)}% F / ${Math.round(a.maleRatio * 100)}% M`;
-      document.getElementById('insp-female-count').textContent = `${a.femaleCount.toLocaleString()} F`;
-      document.getElementById('insp-male-count').textContent = `${a.maleCount.toLocaleString()} M`;
-
-      document.getElementById('insp-collision-text').textContent = `${(a.collisionProb * 100).toFixed(2)}% internal collision (generates ${a.lossShare.toFixed(1)}% of all islandwide network loss)`;
-
-      document.getElementById('insp-ext-males').textContent = `${a.extMales.toLocaleString()} Males`;
-      document.getElementById('insp-ext-females').textContent = `${a.extFemales.toLocaleString()} Females`;
-
-      const topSourcesEl = document.getElementById('insp-top-sources');
-      if (topSourcesEl) {
-        topSourcesEl.innerHTML = a.topSources.map(s => 
-          `<div class="p-1.5 rounded bg-slate-900 text-slate-300 font-mono text-[10px] flex items-center gap-1.5">
-            <span class="text-indigo-400">➔</span> ${s}
-          </div>`
-        ).join('');
-      }
-
-      document.getElementById('insp-liquidity-rating').textContent = a.liquidityRating;
-      document.getElementById('insp-liquidity-rating').className = "text-xs font-bold mt-0.5 " + a.liquidityClass;
-
-      document.getElementById('insp-routing-desc').textContent = a.routingDesc;
-      document.getElementById('insp-policy-fix').textContent = a.policyFix;
-
-      document.getElementById('insp-priority-badge').textContent = a.priorityBadge;
-      document.getElementById('insp-priority-badge').className = "px-2 py-0.5 rounded font-bold " + a.priorityClass;
-    }
-
-    function setAgencyPolicyMode(mode) {
-      const btnBase = document.getElementById('agency-pol-btn-baseline');
-      const btnMoe = document.getElementById('agency-pol-btn-moe');
-      const btnHealth = document.getElementById('agency-pol-btn-health');
-      const btnFull = document.getElementById('agency-pol-btn-full');
-
-      // Reset button styles
-      [btnBase, btnMoe, btnHealth, btnFull].forEach(b => {
-        b.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-white";
-      });
-
-      const capEl = document.getElementById('pol-kpi-capacity');
-      const barEl = document.getElementById('pol-kpi-bar');
-      const capSubEl = document.getElementById('pol-kpi-cap-sub');
-      const lossEl = document.getElementById('pol-kpi-loss');
-      const lossSubEl = document.getElementById('pol-kpi-loss-sub');
-      const moeSevEl = document.getElementById('pol-kpi-moe-sev');
-      const moeSubEl = document.getElementById('pol-kpi-moe-sub');
-      const birthsEl = document.getElementById('pol-kpi-births');
-      const birthsSubEl = document.getElementById('pol-kpi-births-sub');
-      const descEl = document.getElementById('pol-reform-description');
-
-      if (mode === 'baseline') {
-        btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30";
-        capEl.textContent = "88.08%";
-        barEl.style.width = "88.08%";
-        barEl.className = "bg-indigo-500 h-full transition-all duration-500";
-        capSubEl.textContent = "Preserves 88% of edges under whole-agency ban";
-        lossEl.textContent = "-12.57%";
-        lossSubEl.textContent = "Σ p_k² = 0.125746 across 11 clusters";
-        moeSevEl.textContent = "🚨 CRITICAL (38.5%)";
-        moeSevEl.className = "text-xl font-black text-rose-400 font-mono mt-1";
-        moeSubEl.textContent = "6,547 internal male teachers locked out";
-        birthsEl.textContent = "+143.8 infants";
-        birthsSubEl.textContent = "Yields +0.00419 points national TFR lift";
-        descEl.innerHTML = `<strong class="text-amber-400">Status Quo Operating Model:</strong> A strict whole-agency prohibition (<span class="font-mono">a(u) ≠ a(v)</span>) is applied across all ministries and statutory boards. While preventing HR reporting conflicts, it concentrates 38.5% of all matching friction on MOE female educators and locks out 65,000 healthcare professionals.`;
-      } else if (mode === 'moe_school') {
-        btnMoe.className = "px-3 py-1.5 rounded-md font-bold transition-all text-indigo-400 bg-indigo-500/15 border border-indigo-500/30";
-        capEl.textContent = "95.21%";
-        barEl.style.width = "95.21%";
-        barEl.className = "bg-indigo-400 h-full transition-all duration-500";
-        capSubEl.textContent = "+7.13% capacity gain from school-level matching";
-        lossEl.textContent = "-8.22%";
-        lossSubEl.textContent = "MOE internal collision reduced by 90%";
-        moeSevEl.textContent = "🟢 RESOLVED (Mild)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Cross-school matching unlocked islandwide";
-        birthsEl.textContent = "+168.4 infants";
-        birthsSubEl.textContent = "+24.6 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-indigo-400">Reform A (MOE Cross-School Exemption):</strong> The restriction is refined from whole-ministry to "Same School / Same Division". Teachers in different primary and secondary schools are freely matchable, immediately reclaiming 30,000 potential matching edges and resolving the female educator bottleneck.`;
-      } else if (mode === 'healthcare') {
-        btnHealth.className = "px-3 py-1.5 rounded-md font-bold transition-all text-cyan-400 bg-cyan-500/15 border border-cyan-500/30";
-        capEl.textContent = "96.84%";
-        barEl.style.width = "96.84%";
-        barEl.className = "bg-cyan-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Candidate denominator expands from 93k to 158k";
-        lossEl.textContent = "-10.03%";
-        lossSubEl.textContent = "MOE share diluted from 22.0% to 12.9%";
-        moeSevEl.textContent = "🟢 DILUTED (14.2%)";
-        moeSevEl.className = "text-xl font-black text-cyan-400 font-mono mt-1";
-        moeSubEl.textContent = "SingHealth, NUHS & NHG absorb excess supply";
-        birthsEl.textContent = "+222.2 infants";
-        birthsSubEl.textContent = "+78.4 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-cyan-400">Reform B (Incorporate 65,000 Public Healthcare Workers):</strong> Clause 6.1.1 is amended to admit SingHealth, National Healthcare Group (NHG), and NUHS. Adding 65k officers dilutes ministry concentrations, injects thousands of balanced healthcare professionals, and expands annual live births by over 50%.`;
-      } else if (mode === 'full_reform') {
-        btnFull.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30";
-        capEl.textContent = "98.42%";
-        barEl.style.width = "98.42%";
-        barEl.className = "bg-emerald-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Near-complete graph connectivity across public sector";
-        lossEl.textContent = "-8.52%";
-        lossSubEl.textContent = "Sub-hospital cluster exclusion applied";
-        moeSevEl.textContent = "✨ OPTIMAL (0% Penalty)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Complete liquidity achieved across all agencies";
-        birthsEl.textContent = "+254.8 infants";
-        birthsSubEl.textContent = "+111.0 births/yr (+0.0074 national TFR lift)";
-        descEl.innerHTML = `<strong class="text-emerald-400">Universal Public Sector Matching Protocol:</strong> Combines MOE cross-school exemptions with full public healthcare integration. Graph matching friction drops to negligible levels, transforming FirstDate from an experimental silo into Singapore's most effective national family formation engine.`;
-      }
-    }
-
-      // Initialize Tab 8 table on startup
-      populateAgencyTable();
-</script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GovTech FirstDate: Actuarial, WebGIS & Demographic Policy Hub</title>
-  <script src="https://cdn.tailwindcss.com">
-    // =========================================================================
-    // TAB 8: CROSS-AGENCY GRAPH & BOTTLENECK DATA & LOGIC
-    // =========================================================================
-    const agencyClusterData = {
-      'MOE': {
-        name: 'Ministry of Education (MOE)',
-        entities: 'Primary & Secondary Schools, JCs, Curriculum Planning, NIE, HQ',
-        type: 'Ministry',
-        headcount: 20460,
-        share: 0.220,
-        femaleRatio: 0.68,
-        maleRatio: 0.32,
-        femaleCount: 13913,
-        maleCount: 6547,
-        collisionProb: 0.04840,
-        lossShare: 38.49,
-        badgeClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        statusLabel: '🚨 Severe Female Squeeze',
-        imbalance: '-7,366 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 36040,
-        extFemales: 36497,
-        topSources: ['GovTech / Digital (62% M)', 'MINDEF DXO (58% M)', 'MHA Civilian (56% M)'],
-        routingDesc: 'High female surplus creates acute external competition. Dispatch algorithm must deploy asymmetric priority routing toward male-surplus Tech and Infrastructure statutory boards.',
-        policyFix: 'Exempt cross-school matching. A teacher in Woodlands has zero supervisory conflict with a teacher in Jurong, immediately eliminating 90% of internal friction.',
-        priorityBadge: 'P1 (Critical Priority)',
-        priorityClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        liquidityRating: '🚨 Severe Asymmetric Squeeze for Female Teachers',
-        liquidityClass: 'text-rose-400'
-      },
-      'INFRA': {
-        name: 'Infrastructure Statutory Boards',
-        entities: 'HDB, URA, LTA, NEA, PUB, BCA',
-        type: 'Stat Board',
-        headcount: 15345,
-        share: 0.165,
-        femaleRatio: 0.46,
-        maleRatio: 0.54,
-        femaleCount: 7059,
-        maleCount: 8286,
-        collisionProb: 0.02723,
-        lossShare: 21.65,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Volume Collision Loss',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 34301,
-        extFemales: 43351,
-        topSources: ['MOE Education (68% F)', 'MSF Social Policy (66% F)', 'MOH HQ (62% F)'],
-        routingDesc: 'Slight male surplus with large engineering and town planning corps. Strong natural matches with MOE educators and finance officers.',
-        policyFix: 'Permit inter-board pairings between separate statutory boards (e.g., LTA transit engineer with HDB architect) with standard declaration.',
-        priorityBadge: 'P2 (High Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Balanced External Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'FINANCE': {
-        name: 'Finance & Economic Statutory Boards',
-        entities: 'CPF Board, IRAS, MAS, EDB, EnterpriseSG',
-        type: 'Stat Board',
-        headcount: 10695,
-        share: 0.115,
-        femaleRatio: 0.54,
-        maleRatio: 0.46,
-        femaleCount: 5775,
-        maleCount: 4920,
-        collisionProb: 0.01323,
-        lossShare: 10.52,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 High Equilibrium',
-        imbalance: '-855 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37667,
-        extFemales: 44635,
-        topSources: ['Central Policy Ministries', 'Infra Boards (HDB/URA)', 'Tech Boards (GovTech)'],
-        routingDesc: 'Strong professional parity with balanced sex ratios. High educational homogamy makes this cluster the most stable cross-matching group.',
-        policyFix: 'Maintain current cross-agency rule. High internal mobility ensures healthy external matchmaking.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Excellent Liquidity & High Professional Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'COMMUNITY': {
-        name: 'Community & Culture Statutory Boards',
-        entities: 'People’s Association (PA), NParks, SportSG, NLB, NHB',
-        type: 'Stat Board',
-        headcount: 9670,
-        share: 0.104,
-        femaleRatio: 0.52,
-        maleRatio: 0.48,
-        femaleCount: 5028,
-        maleCount: 4642,
-        collisionProb: 0.01082,
-        lossShare: 8.60,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Demographic',
-        imbalance: '-386 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37945,
-        extFemales: 45382,
-        topSources: ['Central Policy Ministries', 'MHA Civilian', 'MOE Education'],
-        routingDesc: 'Near 1:1 gender balance with high community and ground-engagement presence across heartland CCs and parks.',
-        policyFix: 'Permit PA constituency directors to match with central ministry officers across different GRCs.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MHA': {
-        name: 'Ministry of Home Affairs (MHA Civilian)',
-        entities: 'Home Team HQ, ICA Civilian, SPS Civilian, HTX',
-        type: 'Ministry',
-        headcount: 8835,
-        share: 0.095,
-        femaleRatio: 0.44,
-        maleRatio: 0.56,
-        femaleCount: 3887,
-        maleCount: 4948,
-        collisionProb: 0.00903,
-        lossShare: 7.18,
-        badgeClass: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-        statusLabel: '🟢 Net Male Exporter',
-        imbalance: '+1,061 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 37639,
-        extFemales: 46523,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (IRAS/CPF)'],
-        routingDesc: 'Civilians in Home Team provide a vital source of male partners for female-surplus education and healthcare clusters.',
-        policyFix: 'Cross-agency rule is beneficial; maintains complete operational barrier between Home Team civilian staff and other ministries.',
-        priorityBadge: 'P2 (High Net Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Male Export Liquidity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'POLICY': {
-        name: 'Central Policy Ministries',
-        entities: 'MND, MOT, MTI, MOF, MCCY, MSE, PSD',
-        type: 'Ministry',
-        headcount: 7440,
-        share: 0.080,
-        femaleRatio: 0.51,
-        maleRatio: 0.49,
-        femaleCount: 3794,
-        maleCount: 3646,
-        collisionProb: 0.00640,
-        lossShare: 5.09,
-        badgeClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        statusLabel: '🟢 Near-Perfect Parity',
-        imbalance: '-148 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 38941,
-        extFemales: 46616,
-        topSources: ['Economic Stat Boards (EDB/MAS)', 'Infra Boards (URA/LTA)', 'GovTech Tech'],
-        routingDesc: 'Policy analysts and economists with high educational homogamy and near 1:1 sex ratio.',
-        policyFix: 'Cross-ministry pairing across Treasury and surrounding ministry clusters functions smoothly.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Ideal Matching Parity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MINDEF': {
-        name: 'MINDEF (Defence Executive Officers / DXO)',
-        entities: 'Defence Policy, Logistics, C4I Civilian, DSTA Admin',
-        type: 'Ministry',
-        headcount: 6045,
-        share: 0.065,
-        femaleRatio: 0.42,
-        maleRatio: 0.58,
-        femaleCount: 2539,
-        maleCount: 3506,
-        collisionProb: 0.00423,
-        lossShare: 3.36,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Male Windfall Cluster',
-        imbalance: '+967 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39081,
-        extFemales: 47871,
-        topSources: ['MOE Education (68% F)', 'MOH HQ (62% F)', 'MSF Family Services'],
-        routingDesc: 'Only 0.42% collision loss. Male DXO officers experience exceptionally high match availability across civilian ministries.',
-        policyFix: 'Encourage direct matching pipelines into MOE and MSF.',
-        priorityBadge: 'P2 (Male Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Male Windfall',
-        liquidityClass: 'text-emerald-400'
-      },
-      'TECH': {
-        name: 'Tech & Digital Statutory Boards',
-        entities: 'GovTech, Cyber Security Agency (CSA), IMDA',
-        type: 'Stat Board',
-        headcount: 5115,
-        share: 0.055,
-        femaleRatio: 0.38,
-        maleRatio: 0.62,
-        femaleCount: 1944,
-        maleCount: 3171,
-        collisionProb: 0.00302,
-        lossShare: 2.40,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Maximum Male Windfall',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39416,
-        extFemales: 48466,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (MAS/IRAS)'],
-        routingDesc: 'With 62% male software engineers and cybersecurity specialists, internal collision loss is almost zero (0.3%). Enjoys massive external female choice.',
-        policyFix: 'Pair GovTech engineers directly with MOE teachers to relieve the education sector bottleneck.',
-        priorityBadge: 'P2 (High Male Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 Optimal Liquidity / Highest Choice Density',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MOH': {
-        name: 'Ministry of Health (MOH HQ Civil Service)',
-        entities: 'Healthcare Policy, Communicable Diseases, Ageing Planning',
-        type: 'Ministry',
-        headcount: 3255,
-        share: 0.035,
-        femaleRatio: 0.62,
-        maleRatio: 0.38,
-        femaleCount: 2018,
-        maleCount: 1237,
-        collisionProb: 0.00123,
-        lossShare: 0.98,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Mild Female Squeeze',
-        imbalance: '-781 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41350,
-        extFemales: 48392,
-        topSources: ['Tech Boards (GovTech/CSA)', 'Infra Boards (HDB/PUB)', 'MHA Civilian'],
-        routingDesc: 'Small total size prevents heavy collision loss, but high female ratio creates mild external dependency for male partners.',
-        policyFix: 'Incorporate public hospital clusters (SingHealth/NUHS) to create a massive balanced healthcare network.',
-        priorityBadge: 'P2 (Moderate Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ Moderate Female Surplus Dependency',
-        liquidityClass: 'text-amber-400'
-      },
-      'MOM': {
-        name: 'Ministry of Manpower (MOM)',
-        entities: 'Workplace Safety, Labour Policy, Employment Passes, CPFB Liaison',
-        type: 'Ministry',
-        headcount: 3160,
-        share: 0.034,
-        femaleRatio: 0.56,
-        maleRatio: 0.44,
-        femaleCount: 1770,
-        maleCount: 1390,
-        collisionProb: 0.00116,
-        lossShare: 0.92,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Mobility',
-        imbalance: '-380 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 41197,
-        extFemales: 48640,
-        topSources: ['Economic Stat Boards (EnterpriseSG)', 'MHA Civilian', 'Infra Boards'],
-        routingDesc: 'Compact policy ministry with near-frictionless cross-agency matching.',
-        policyFix: 'Maintain standard cross-agency matching protocol.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MSF': {
-        name: 'Ministry of Social and Family Development (MSF)',
-        entities: 'Family Policy, Early Childhood (ECDA), Social Service Offices',
-        type: 'Ministry',
-        headcount: 2975,
-        share: 0.032,
-        femaleRatio: 0.66,
-        maleRatio: 0.34,
-        femaleCount: 1964,
-        maleCount: 1011,
-        collisionProb: 0.00102,
-        lossShare: 0.81,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Female Surplus Squeeze',
-        imbalance: '-953 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41576,
-        extFemales: 48446,
-        topSources: ['Infra Boards (HDB/URA)', 'Tech Boards (GovTech)', 'Central Policy (MND/MOF)'],
-        routingDesc: 'High female concentration in social services and family development creates high reliance on male officers from external technical boards.',
-        policyFix: 'Prioritize matchmaking linkages between MSF social policy officers and male civil servants in engineering/tech sectors.',
-        priorityBadge: 'P2 (Female Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ High External Sourcing Dependency',
-        liquidityClass: 'text-amber-400'
-      }
-    };
-
-    function populateAgencyTable() {
-      const tbody = document.getElementById('agency-table-body');
-      const dropdown = document.getElementById('agency-inspector-dropdown');
-      if (!tbody || !dropdown) return;
-
-      tbody.innerHTML = '';
-      dropdown.innerHTML = '';
-
-      Object.keys(agencyClusterData).forEach(key => {
-        const a = agencyClusterData[key];
-        
-        // Add option to dropdown
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = `${a.name} (${(a.share * 100).toFixed(1)}%)`;
-        dropdown.appendChild(opt);
-
-        // Add row to table
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 transition-colors cursor-pointer';
-        tr.onclick = () => {
-          dropdown.value = key;
-          loadAgencyInspector(key);
-        };
-
-        const fPct = Math.round(a.femaleRatio * 100);
-        const mPct = 100 - fPct;
-
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 font-sans font-bold text-white">
-            ${a.name}
-            <div class="text-[10px] font-normal text-slate-400 font-sans">${a.entities.substring(0, 42)}...</div>
-          </td>
-          <td class="py-2.5 px-3 text-slate-300 font-sans">${a.type}</td>
-          <td class="py-2.5 px-3 font-mono font-bold text-slate-200">
-            ${a.headcount.toLocaleString()}
-            <span class="text-[10px] text-slate-400 font-normal">(${(a.share * 100).toFixed(1)}%)</span>
-          </td>
-          <td class="py-2.5 px-3">
-            <div class="flex items-center gap-1.5">
-              <span class="text-rose-300 font-bold">${fPct}% F</span>
-              <span class="text-slate-600">/</span>
-              <span class="text-cyan-300 font-bold">${mPct}% M</span>
-            </div>
-          </td>
-          <td class="py-2.5 px-3 font-mono text-slate-300">${a.collisionProb.toFixed(5)}</td>
-          <td class="py-2.5 px-3 font-mono font-bold ${a.lossShare > 20 ? 'text-rose-400' : 'text-slate-300'}">
-            ${a.lossShare.toFixed(2)}%
-          </td>
-          <td class="py-2.5 px-3 font-sans text-xs ${a.imbalanceColor}">
-            ${a.imbalance}
-          </td>
-          <td class="py-2.5 px-3">
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${a.badgeClass} whitespace-nowrap">
-              ${a.statusLabel}
-            </span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Load initial inspector for MOE
-      loadAgencyInspector('MOE');
-    }
-
-    function loadAgencyInspector(key) {
-      const a = agencyClusterData[key];
-      if (!a) return;
-
-      document.getElementById('insp-agency-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + a.badgeClass;
-      document.getElementById('insp-agency-badge').textContent = a.type;
-      document.getElementById('insp-agency-share').textContent = `${(a.share * 100).toFixed(1)}% of Civil Service`;
-      document.getElementById('insp-agency-name').textContent = a.name;
-      document.getElementById('insp-agency-entities').textContent = a.entities;
-
-      document.getElementById('insp-headcount').textContent = a.headcount.toLocaleString();
-      document.getElementById('insp-gender-ratio').textContent = `${Math.round(a.femaleRatio * 100)}% F / ${Math.round(a.maleRatio * 100)}% M`;
-      document.getElementById('insp-female-count').textContent = `${a.femaleCount.toLocaleString()} F`;
-      document.getElementById('insp-male-count').textContent = `${a.maleCount.toLocaleString()} M`;
-
-      document.getElementById('insp-collision-text').textContent = `${(a.collisionProb * 100).toFixed(2)}% internal collision (generates ${a.lossShare.toFixed(1)}% of all islandwide network loss)`;
-
-      document.getElementById('insp-ext-males').textContent = `${a.extMales.toLocaleString()} Males`;
-      document.getElementById('insp-ext-females').textContent = `${a.extFemales.toLocaleString()} Females`;
-
-      const topSourcesEl = document.getElementById('insp-top-sources');
-      if (topSourcesEl) {
-        topSourcesEl.innerHTML = a.topSources.map(s => 
-          `<div class="p-1.5 rounded bg-slate-900 text-slate-300 font-mono text-[10px] flex items-center gap-1.5">
-            <span class="text-indigo-400">➔</span> ${s}
-          </div>`
-        ).join('');
-      }
-
-      document.getElementById('insp-liquidity-rating').textContent = a.liquidityRating;
-      document.getElementById('insp-liquidity-rating').className = "text-xs font-bold mt-0.5 " + a.liquidityClass;
-
-      document.getElementById('insp-routing-desc').textContent = a.routingDesc;
-      document.getElementById('insp-policy-fix').textContent = a.policyFix;
-
-      document.getElementById('insp-priority-badge').textContent = a.priorityBadge;
-      document.getElementById('insp-priority-badge').className = "px-2 py-0.5 rounded font-bold " + a.priorityClass;
-    }
-
-    function setAgencyPolicyMode(mode) {
-      const btnBase = document.getElementById('agency-pol-btn-baseline');
-      const btnMoe = document.getElementById('agency-pol-btn-moe');
-      const btnHealth = document.getElementById('agency-pol-btn-health');
-      const btnFull = document.getElementById('agency-pol-btn-full');
-
-      // Reset button styles
-      [btnBase, btnMoe, btnHealth, btnFull].forEach(b => {
-        b.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-white";
-      });
-
-      const capEl = document.getElementById('pol-kpi-capacity');
-      const barEl = document.getElementById('pol-kpi-bar');
-      const capSubEl = document.getElementById('pol-kpi-cap-sub');
-      const lossEl = document.getElementById('pol-kpi-loss');
-      const lossSubEl = document.getElementById('pol-kpi-loss-sub');
-      const moeSevEl = document.getElementById('pol-kpi-moe-sev');
-      const moeSubEl = document.getElementById('pol-kpi-moe-sub');
-      const birthsEl = document.getElementById('pol-kpi-births');
-      const birthsSubEl = document.getElementById('pol-kpi-births-sub');
-      const descEl = document.getElementById('pol-reform-description');
-
-      if (mode === 'baseline') {
-        btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30";
-        capEl.textContent = "88.08%";
-        barEl.style.width = "88.08%";
-        barEl.className = "bg-indigo-500 h-full transition-all duration-500";
-        capSubEl.textContent = "Preserves 88% of edges under whole-agency ban";
-        lossEl.textContent = "-12.57%";
-        lossSubEl.textContent = "Σ p_k² = 0.125746 across 11 clusters";
-        moeSevEl.textContent = "🚨 CRITICAL (38.5%)";
-        moeSevEl.className = "text-xl font-black text-rose-400 font-mono mt-1";
-        moeSubEl.textContent = "6,547 internal male teachers locked out";
-        birthsEl.textContent = "+143.8 infants";
-        birthsSubEl.textContent = "Yields +0.00419 points national TFR lift";
-        descEl.innerHTML = `<strong class="text-amber-400">Status Quo Operating Model:</strong> A strict whole-agency prohibition (<span class="font-mono">a(u) ≠ a(v)</span>) is applied across all ministries and statutory boards. While preventing HR reporting conflicts, it concentrates 38.5% of all matching friction on MOE female educators and locks out 65,000 healthcare professionals.`;
-      } else if (mode === 'moe_school') {
-        btnMoe.className = "px-3 py-1.5 rounded-md font-bold transition-all text-indigo-400 bg-indigo-500/15 border border-indigo-500/30";
-        capEl.textContent = "95.21%";
-        barEl.style.width = "95.21%";
-        barEl.className = "bg-indigo-400 h-full transition-all duration-500";
-        capSubEl.textContent = "+7.13% capacity gain from school-level matching";
-        lossEl.textContent = "-8.22%";
-        lossSubEl.textContent = "MOE internal collision reduced by 90%";
-        moeSevEl.textContent = "🟢 RESOLVED (Mild)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Cross-school matching unlocked islandwide";
-        birthsEl.textContent = "+168.4 infants";
-        birthsSubEl.textContent = "+24.6 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-indigo-400">Reform A (MOE Cross-School Exemption):</strong> The restriction is refined from whole-ministry to "Same School / Same Division". Teachers in different primary and secondary schools are freely matchable, immediately reclaiming 30,000 potential matching edges and resolving the female educator bottleneck.`;
-      } else if (mode === 'healthcare') {
-        btnHealth.className = "px-3 py-1.5 rounded-md font-bold transition-all text-cyan-400 bg-cyan-500/15 border border-cyan-500/30";
-        capEl.textContent = "96.84%";
-        barEl.style.width = "96.84%";
-        barEl.className = "bg-cyan-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Candidate denominator expands from 93k to 158k";
-        lossEl.textContent = "-10.03%";
-        lossSubEl.textContent = "MOE share diluted from 22.0% to 12.9%";
-        moeSevEl.textContent = "🟢 DILUTED (14.2%)";
-        moeSevEl.className = "text-xl font-black text-cyan-400 font-mono mt-1";
-        moeSubEl.textContent = "SingHealth, NUHS & NHG absorb excess supply";
-        birthsEl.textContent = "+222.2 infants";
-        birthsSubEl.textContent = "+78.4 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-cyan-400">Reform B (Incorporate 65,000 Public Healthcare Workers):</strong> Clause 6.1.1 is amended to admit SingHealth, National Healthcare Group (NHG), and NUHS. Adding 65k officers dilutes ministry concentrations, injects thousands of balanced healthcare professionals, and expands annual live births by over 50%.`;
-      } else if (mode === 'full_reform') {
-        btnFull.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30";
-        capEl.textContent = "98.42%";
-        barEl.style.width = "98.42%";
-        barEl.className = "bg-emerald-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Near-complete graph connectivity across public sector";
-        lossEl.textContent = "-8.52%";
-        lossSubEl.textContent = "Sub-hospital cluster exclusion applied";
-        moeSevEl.textContent = "✨ OPTIMAL (0% Penalty)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Complete liquidity achieved across all agencies";
-        birthsEl.textContent = "+254.8 infants";
-        birthsSubEl.textContent = "+111.0 births/yr (+0.0074 national TFR lift)";
-        descEl.innerHTML = `<strong class="text-emerald-400">Universal Public Sector Matching Protocol:</strong> Combines MOE cross-school exemptions with full public healthcare integration. Graph matching friction drops to negligible levels, transforming FirstDate from an experimental silo into Singapore's most effective national family formation engine.`;
-      }
-    }
-
-      // Initialize Tab 8 table on startup
-      populateAgencyTable();
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -994,487 +34,7 @@
         }
       }
     }
-  
-    // =========================================================================
-    // TAB 8: CROSS-AGENCY GRAPH & BOTTLENECK DATA & LOGIC
-    // =========================================================================
-    const agencyClusterData = {
-      'MOE': {
-        name: 'Ministry of Education (MOE)',
-        entities: 'Primary & Secondary Schools, JCs, Curriculum Planning, NIE, HQ',
-        type: 'Ministry',
-        headcount: 20460,
-        share: 0.220,
-        femaleRatio: 0.68,
-        maleRatio: 0.32,
-        femaleCount: 13913,
-        maleCount: 6547,
-        collisionProb: 0.04840,
-        lossShare: 38.49,
-        badgeClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        statusLabel: '🚨 Severe Female Squeeze',
-        imbalance: '-7,366 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 36040,
-        extFemales: 36497,
-        topSources: ['GovTech / Digital (62% M)', 'MINDEF DXO (58% M)', 'MHA Civilian (56% M)'],
-        routingDesc: 'High female surplus creates acute external competition. Dispatch algorithm must deploy asymmetric priority routing toward male-surplus Tech and Infrastructure statutory boards.',
-        policyFix: 'Exempt cross-school matching. A teacher in Woodlands has zero supervisory conflict with a teacher in Jurong, immediately eliminating 90% of internal friction.',
-        priorityBadge: 'P1 (Critical Priority)',
-        priorityClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-        liquidityRating: '🚨 Severe Asymmetric Squeeze for Female Teachers',
-        liquidityClass: 'text-rose-400'
-      },
-      'INFRA': {
-        name: 'Infrastructure Statutory Boards',
-        entities: 'HDB, URA, LTA, NEA, PUB, BCA',
-        type: 'Stat Board',
-        headcount: 15345,
-        share: 0.165,
-        femaleRatio: 0.46,
-        maleRatio: 0.54,
-        femaleCount: 7059,
-        maleCount: 8286,
-        collisionProb: 0.02723,
-        lossShare: 21.65,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Volume Collision Loss',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 34301,
-        extFemales: 43351,
-        topSources: ['MOE Education (68% F)', 'MSF Social Policy (66% F)', 'MOH HQ (62% F)'],
-        routingDesc: 'Slight male surplus with large engineering and town planning corps. Strong natural matches with MOE educators and finance officers.',
-        policyFix: 'Permit inter-board pairings between separate statutory boards (e.g., LTA transit engineer with HDB architect) with standard declaration.',
-        priorityBadge: 'P2 (High Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Balanced External Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'FINANCE': {
-        name: 'Finance & Economic Statutory Boards',
-        entities: 'CPF Board, IRAS, MAS, EDB, EnterpriseSG',
-        type: 'Stat Board',
-        headcount: 10695,
-        share: 0.115,
-        femaleRatio: 0.54,
-        maleRatio: 0.46,
-        femaleCount: 5775,
-        maleCount: 4920,
-        collisionProb: 0.01323,
-        lossShare: 10.52,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 High Equilibrium',
-        imbalance: '-855 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37667,
-        extFemales: 44635,
-        topSources: ['Central Policy Ministries', 'Infra Boards (HDB/URA)', 'Tech Boards (GovTech)'],
-        routingDesc: 'Strong professional parity with balanced sex ratios. High educational homogamy makes this cluster the most stable cross-matching group.',
-        policyFix: 'Maintain current cross-agency rule. High internal mobility ensures healthy external matchmaking.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Excellent Liquidity & High Professional Mobility',
-        liquidityClass: 'text-emerald-400'
-      },
-      'COMMUNITY': {
-        name: 'Community & Culture Statutory Boards',
-        entities: 'People’s Association (PA), NParks, SportSG, NLB, NHB',
-        type: 'Stat Board',
-        headcount: 9670,
-        share: 0.104,
-        femaleRatio: 0.52,
-        maleRatio: 0.48,
-        femaleCount: 5028,
-        maleCount: 4642,
-        collisionProb: 0.01082,
-        lossShare: 8.60,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Demographic',
-        imbalance: '-386 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 37945,
-        extFemales: 45382,
-        topSources: ['Central Policy Ministries', 'MHA Civilian', 'MOE Education'],
-        routingDesc: 'Near 1:1 gender balance with high community and ground-engagement presence across heartland CCs and parks.',
-        policyFix: 'Permit PA constituency directors to match with central ministry officers across different GRCs.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MHA': {
-        name: 'Ministry of Home Affairs (MHA Civilian)',
-        entities: 'Home Team HQ, ICA Civilian, SPS Civilian, HTX',
-        type: 'Ministry',
-        headcount: 8835,
-        share: 0.095,
-        femaleRatio: 0.44,
-        maleRatio: 0.56,
-        femaleCount: 3887,
-        maleCount: 4948,
-        collisionProb: 0.00903,
-        lossShare: 7.18,
-        badgeClass: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-        statusLabel: '🟢 Net Male Exporter',
-        imbalance: '+1,061 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 37639,
-        extFemales: 46523,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (IRAS/CPF)'],
-        routingDesc: 'Civilians in Home Team provide a vital source of male partners for female-surplus education and healthcare clusters.',
-        policyFix: 'Cross-agency rule is beneficial; maintains complete operational barrier between Home Team civilian staff and other ministries.',
-        priorityBadge: 'P2 (High Net Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Male Export Liquidity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'POLICY': {
-        name: 'Central Policy Ministries',
-        entities: 'MND, MOT, MTI, MOF, MCCY, MSE, PSD',
-        type: 'Ministry',
-        headcount: 7440,
-        share: 0.080,
-        femaleRatio: 0.51,
-        maleRatio: 0.49,
-        femaleCount: 3794,
-        maleCount: 3646,
-        collisionProb: 0.00640,
-        lossShare: 5.09,
-        badgeClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        statusLabel: '🟢 Near-Perfect Parity',
-        imbalance: '-148 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 38941,
-        extFemales: 46616,
-        topSources: ['Economic Stat Boards (EDB/MAS)', 'Infra Boards (URA/LTA)', 'GovTech Tech'],
-        routingDesc: 'Policy analysts and economists with high educational homogamy and near 1:1 sex ratio.',
-        policyFix: 'Cross-ministry pairing across Treasury and surrounding ministry clusters functions smoothly.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 Ideal Matching Parity',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MINDEF': {
-        name: 'MINDEF (Defence Executive Officers / DXO)',
-        entities: 'Defence Policy, Logistics, C4I Civilian, DSTA Admin',
-        type: 'Ministry',
-        headcount: 6045,
-        share: 0.065,
-        femaleRatio: 0.42,
-        maleRatio: 0.58,
-        femaleCount: 2539,
-        maleCount: 3506,
-        collisionProb: 0.00423,
-        lossShare: 3.36,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Male Windfall Cluster',
-        imbalance: '+967 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39081,
-        extFemales: 47871,
-        topSources: ['MOE Education (68% F)', 'MOH HQ (62% F)', 'MSF Family Services'],
-        routingDesc: 'Only 0.42% collision loss. Male DXO officers experience exceptionally high match availability across civilian ministries.',
-        policyFix: 'Encourage direct matching pipelines into MOE and MSF.',
-        priorityBadge: 'P2 (Male Exporter)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 High Liquidity / Male Windfall',
-        liquidityClass: 'text-emerald-400'
-      },
-      'TECH': {
-        name: 'Tech & Digital Statutory Boards',
-        entities: 'GovTech, Cyber Security Agency (CSA), IMDA',
-        type: 'Stat Board',
-        headcount: 5115,
-        share: 0.055,
-        femaleRatio: 0.38,
-        maleRatio: 0.62,
-        femaleCount: 1944,
-        maleCount: 3171,
-        collisionProb: 0.00302,
-        lossShare: 2.40,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Maximum Male Windfall',
-        imbalance: '+1,227 Male Surplus',
-        imbalanceColor: 'text-cyan-400',
-        extMales: 39416,
-        extFemales: 48466,
-        topSources: ['MOE Education (68% F)', 'MSF Social Development', 'Finance Boards (MAS/IRAS)'],
-        routingDesc: 'With 62% male software engineers and cybersecurity specialists, internal collision loss is almost zero (0.3%). Enjoys massive external female choice.',
-        policyFix: 'Pair GovTech engineers directly with MOE teachers to relieve the education sector bottleneck.',
-        priorityBadge: 'P2 (High Male Liquidity)',
-        priorityClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-        liquidityRating: '🟢 Optimal Liquidity / Highest Choice Density',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MOH': {
-        name: 'Ministry of Health (MOH HQ Civil Service)',
-        entities: 'Healthcare Policy, Communicable Diseases, Ageing Planning',
-        type: 'Ministry',
-        headcount: 3255,
-        share: 0.035,
-        femaleRatio: 0.62,
-        maleRatio: 0.38,
-        femaleCount: 2018,
-        maleCount: 1237,
-        collisionProb: 0.00123,
-        lossShare: 0.98,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Mild Female Squeeze',
-        imbalance: '-781 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41350,
-        extFemales: 48392,
-        topSources: ['Tech Boards (GovTech/CSA)', 'Infra Boards (HDB/PUB)', 'MHA Civilian'],
-        routingDesc: 'Small total size prevents heavy collision loss, but high female ratio creates mild external dependency for male partners.',
-        policyFix: 'Incorporate public hospital clusters (SingHealth/NUHS) to create a massive balanced healthcare network.',
-        priorityBadge: 'P2 (Moderate Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ Moderate Female Surplus Dependency',
-        liquidityClass: 'text-amber-400'
-      },
-      'MOM': {
-        name: 'Ministry of Manpower (MOM)',
-        entities: 'Workplace Safety, Labour Policy, Employment Passes, CPFB Liaison',
-        type: 'Ministry',
-        headcount: 3160,
-        share: 0.034,
-        femaleRatio: 0.56,
-        maleRatio: 0.44,
-        femaleCount: 1770,
-        maleCount: 1390,
-        collisionProb: 0.00116,
-        lossShare: 0.92,
-        badgeClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        statusLabel: '🟢 Balanced Mobility',
-        imbalance: '-380 Female Surplus',
-        imbalanceColor: 'text-slate-400',
-        extMales: 41197,
-        extFemales: 48640,
-        topSources: ['Economic Stat Boards (EnterpriseSG)', 'MHA Civilian', 'Infra Boards'],
-        routingDesc: 'Compact policy ministry with near-frictionless cross-agency matching.',
-        policyFix: 'Maintain standard cross-agency matching protocol.',
-        priorityBadge: 'P3 (Stable Matching)',
-        priorityClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-        liquidityRating: '🟢 High Liquidity Profile',
-        liquidityClass: 'text-emerald-400'
-      },
-      'MSF': {
-        name: 'Ministry of Social and Family Development (MSF)',
-        entities: 'Family Policy, Early Childhood (ECDA), Social Service Offices',
-        type: 'Ministry',
-        headcount: 2975,
-        share: 0.032,
-        femaleRatio: 0.66,
-        maleRatio: 0.34,
-        femaleCount: 1964,
-        maleCount: 1011,
-        collisionProb: 0.00102,
-        lossShare: 0.81,
-        badgeClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        statusLabel: '⚠️ Female Surplus Squeeze',
-        imbalance: '-953 Female Surplus',
-        imbalanceColor: 'text-rose-400',
-        extMales: 41576,
-        extFemales: 48446,
-        topSources: ['Infra Boards (HDB/URA)', 'Tech Boards (GovTech)', 'Central Policy (MND/MOF)'],
-        routingDesc: 'High female concentration in social services and family development creates high reliance on male officers from external technical boards.',
-        policyFix: 'Prioritize matchmaking linkages between MSF social policy officers and male civil servants in engineering/tech sectors.',
-        priorityBadge: 'P2 (Female Squeeze)',
-        priorityClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-        liquidityRating: '⚠️ High External Sourcing Dependency',
-        liquidityClass: 'text-amber-400'
-      }
-    };
-
-    function populateAgencyTable() {
-      const tbody = document.getElementById('agency-table-body');
-      const dropdown = document.getElementById('agency-inspector-dropdown');
-      if (!tbody || !dropdown) return;
-
-      tbody.innerHTML = '';
-      dropdown.innerHTML = '';
-
-      Object.keys(agencyClusterData).forEach(key => {
-        const a = agencyClusterData[key];
-        
-        // Add option to dropdown
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = `${a.name} (${(a.share * 100).toFixed(1)}%)`;
-        dropdown.appendChild(opt);
-
-        // Add row to table
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 transition-colors cursor-pointer';
-        tr.onclick = () => {
-          dropdown.value = key;
-          loadAgencyInspector(key);
-        };
-
-        const fPct = Math.round(a.femaleRatio * 100);
-        const mPct = 100 - fPct;
-
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 font-sans font-bold text-white">
-            ${a.name}
-            <div class="text-[10px] font-normal text-slate-400 font-sans">${a.entities.substring(0, 42)}...</div>
-          </td>
-          <td class="py-2.5 px-3 text-slate-300 font-sans">${a.type}</td>
-          <td class="py-2.5 px-3 font-mono font-bold text-slate-200">
-            ${a.headcount.toLocaleString()}
-            <span class="text-[10px] text-slate-400 font-normal">(${(a.share * 100).toFixed(1)}%)</span>
-          </td>
-          <td class="py-2.5 px-3">
-            <div class="flex items-center gap-1.5">
-              <span class="text-rose-300 font-bold">${fPct}% F</span>
-              <span class="text-slate-600">/</span>
-              <span class="text-cyan-300 font-bold">${mPct}% M</span>
-            </div>
-          </td>
-          <td class="py-2.5 px-3 font-mono text-slate-300">${a.collisionProb.toFixed(5)}</td>
-          <td class="py-2.5 px-3 font-mono font-bold ${a.lossShare > 20 ? 'text-rose-400' : 'text-slate-300'}">
-            ${a.lossShare.toFixed(2)}%
-          </td>
-          <td class="py-2.5 px-3 font-sans text-xs ${a.imbalanceColor}">
-            ${a.imbalance}
-          </td>
-          <td class="py-2.5 px-3">
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${a.badgeClass} whitespace-nowrap">
-              ${a.statusLabel}
-            </span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Load initial inspector for MOE
-      loadAgencyInspector('MOE');
-    }
-
-    function loadAgencyInspector(key) {
-      const a = agencyClusterData[key];
-      if (!a) return;
-
-      document.getElementById('insp-agency-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + a.badgeClass;
-      document.getElementById('insp-agency-badge').textContent = a.type;
-      document.getElementById('insp-agency-share').textContent = `${(a.share * 100).toFixed(1)}% of Civil Service`;
-      document.getElementById('insp-agency-name').textContent = a.name;
-      document.getElementById('insp-agency-entities').textContent = a.entities;
-
-      document.getElementById('insp-headcount').textContent = a.headcount.toLocaleString();
-      document.getElementById('insp-gender-ratio').textContent = `${Math.round(a.femaleRatio * 100)}% F / ${Math.round(a.maleRatio * 100)}% M`;
-      document.getElementById('insp-female-count').textContent = `${a.femaleCount.toLocaleString()} F`;
-      document.getElementById('insp-male-count').textContent = `${a.maleCount.toLocaleString()} M`;
-
-      document.getElementById('insp-collision-text').textContent = `${(a.collisionProb * 100).toFixed(2)}% internal collision (generates ${a.lossShare.toFixed(1)}% of all islandwide network loss)`;
-
-      document.getElementById('insp-ext-males').textContent = `${a.extMales.toLocaleString()} Males`;
-      document.getElementById('insp-ext-females').textContent = `${a.extFemales.toLocaleString()} Females`;
-
-      const topSourcesEl = document.getElementById('insp-top-sources');
-      if (topSourcesEl) {
-        topSourcesEl.innerHTML = a.topSources.map(s => 
-          `<div class="p-1.5 rounded bg-slate-900 text-slate-300 font-mono text-[10px] flex items-center gap-1.5">
-            <span class="text-indigo-400">➔</span> ${s}
-          </div>`
-        ).join('');
-      }
-
-      document.getElementById('insp-liquidity-rating').textContent = a.liquidityRating;
-      document.getElementById('insp-liquidity-rating').className = "text-xs font-bold mt-0.5 " + a.liquidityClass;
-
-      document.getElementById('insp-routing-desc').textContent = a.routingDesc;
-      document.getElementById('insp-policy-fix').textContent = a.policyFix;
-
-      document.getElementById('insp-priority-badge').textContent = a.priorityBadge;
-      document.getElementById('insp-priority-badge').className = "px-2 py-0.5 rounded font-bold " + a.priorityClass;
-    }
-
-    function setAgencyPolicyMode(mode) {
-      const btnBase = document.getElementById('agency-pol-btn-baseline');
-      const btnMoe = document.getElementById('agency-pol-btn-moe');
-      const btnHealth = document.getElementById('agency-pol-btn-health');
-      const btnFull = document.getElementById('agency-pol-btn-full');
-
-      // Reset button styles
-      [btnBase, btnMoe, btnHealth, btnFull].forEach(b => {
-        b.className = "px-3 py-1.5 rounded-md font-bold transition-all text-slate-400 hover:text-white";
-      });
-
-      const capEl = document.getElementById('pol-kpi-capacity');
-      const barEl = document.getElementById('pol-kpi-bar');
-      const capSubEl = document.getElementById('pol-kpi-cap-sub');
-      const lossEl = document.getElementById('pol-kpi-loss');
-      const lossSubEl = document.getElementById('pol-kpi-loss-sub');
-      const moeSevEl = document.getElementById('pol-kpi-moe-sev');
-      const moeSubEl = document.getElementById('pol-kpi-moe-sub');
-      const birthsEl = document.getElementById('pol-kpi-births');
-      const birthsSubEl = document.getElementById('pol-kpi-births-sub');
-      const descEl = document.getElementById('pol-reform-description');
-
-      if (mode === 'baseline') {
-        btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30";
-        capEl.textContent = "88.08%";
-        barEl.style.width = "88.08%";
-        barEl.className = "bg-indigo-500 h-full transition-all duration-500";
-        capSubEl.textContent = "Preserves 88% of edges under whole-agency ban";
-        lossEl.textContent = "-12.57%";
-        lossSubEl.textContent = "Σ p_k² = 0.125746 across 11 clusters";
-        moeSevEl.textContent = "🚨 CRITICAL (38.5%)";
-        moeSevEl.className = "text-xl font-black text-rose-400 font-mono mt-1";
-        moeSubEl.textContent = "6,547 internal male teachers locked out";
-        birthsEl.textContent = "+143.8 infants";
-        birthsSubEl.textContent = "Yields +0.00419 points national TFR lift";
-        descEl.innerHTML = `<strong class="text-amber-400">Status Quo Operating Model:</strong> A strict whole-agency prohibition (<span class="font-mono">a(u) ≠ a(v)</span>) is applied across all ministries and statutory boards. While preventing HR reporting conflicts, it concentrates 38.5% of all matching friction on MOE female educators and locks out 65,000 healthcare professionals.`;
-      } else if (mode === 'moe_school') {
-        btnMoe.className = "px-3 py-1.5 rounded-md font-bold transition-all text-indigo-400 bg-indigo-500/15 border border-indigo-500/30";
-        capEl.textContent = "95.21%";
-        barEl.style.width = "95.21%";
-        barEl.className = "bg-indigo-400 h-full transition-all duration-500";
-        capSubEl.textContent = "+7.13% capacity gain from school-level matching";
-        lossEl.textContent = "-8.22%";
-        lossSubEl.textContent = "MOE internal collision reduced by 90%";
-        moeSevEl.textContent = "🟢 RESOLVED (Mild)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Cross-school matching unlocked islandwide";
-        birthsEl.textContent = "+168.4 infants";
-        birthsSubEl.textContent = "+24.6 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-indigo-400">Reform A (MOE Cross-School Exemption):</strong> The restriction is refined from whole-ministry to "Same School / Same Division". Teachers in different primary and secondary schools are freely matchable, immediately reclaiming 30,000 potential matching edges and resolving the female educator bottleneck.`;
-      } else if (mode === 'healthcare') {
-        btnHealth.className = "px-3 py-1.5 rounded-md font-bold transition-all text-cyan-400 bg-cyan-500/15 border border-cyan-500/30";
-        capEl.textContent = "96.84%";
-        barEl.style.width = "96.84%";
-        barEl.className = "bg-cyan-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Candidate denominator expands from 93k to 158k";
-        lossEl.textContent = "-10.03%";
-        lossSubEl.textContent = "MOE share diluted from 22.0% to 12.9%";
-        moeSevEl.textContent = "🟢 DILUTED (14.2%)";
-        moeSevEl.className = "text-xl font-black text-cyan-400 font-mono mt-1";
-        moeSubEl.textContent = "SingHealth, NUHS & NHG absorb excess supply";
-        birthsEl.textContent = "+222.2 infants";
-        birthsSubEl.textContent = "+78.4 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-cyan-400">Reform B (Incorporate 65,000 Public Healthcare Workers):</strong> Clause 6.1.1 is amended to admit SingHealth, National Healthcare Group (NHG), and NUHS. Adding 65k officers dilutes ministry concentrations, injects thousands of balanced healthcare professionals, and expands annual live births by over 50%.`;
-      } else if (mode === 'full_reform') {
-        btnFull.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30";
-        capEl.textContent = "98.42%";
-        barEl.style.width = "98.42%";
-        barEl.className = "bg-emerald-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Near-complete graph connectivity across public sector";
-        lossEl.textContent = "-8.52%";
-        lossSubEl.textContent = "Sub-hospital cluster exclusion applied";
-        moeSevEl.textContent = "✨ OPTIMAL (0% Penalty)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Complete liquidity achieved across all agencies";
-        birthsEl.textContent = "+254.8 infants";
-        birthsSubEl.textContent = "+111.0 births/yr (+0.0074 national TFR lift)";
-        descEl.innerHTML = `<strong class="text-emerald-400">Universal Public Sector Matching Protocol:</strong> Combines MOE cross-school exemptions with full public healthcare integration. Graph matching friction drops to negligible levels, transforming FirstDate from an experimental silo into Singapore's most effective national family formation engine.`;
-      }
-    }
-
-      // Initialize Tab 8 table on startup
-      populateAgencyTable();
-</script>
+  </script>
   <style>
     .zone-hover:hover {
       filter: brightness(1.25);
@@ -3030,7 +1590,6 @@
       </div>
 
     </section>
-
   </main>
 
   <!-- Footer -->
@@ -4485,7 +3044,7 @@
       }
     }
 
-  
+
     // =========================================================================
     // TAB 8: CROSS-AGENCY GRAPH & BOTTLENECK DATA & LOGIC
     // =========================================================================
@@ -4847,21 +3406,34 @@
       const a = agencyClusterData[key];
       if (!a) return;
 
-      document.getElementById('insp-agency-badge').className = "px-2 py-0.5 text-[10px] font-bold rounded " + a.badgeClass;
-      document.getElementById('insp-agency-badge').textContent = a.type;
-      document.getElementById('insp-agency-share').textContent = `${(a.share * 100).toFixed(1)}% of Civil Service`;
-      document.getElementById('insp-agency-name').textContent = a.name;
-      document.getElementById('insp-agency-entities').textContent = a.entities;
+      const badgeEl = document.getElementById('insp-agency-badge');
+      if (badgeEl) {
+        badgeEl.className = "px-2 py-0.5 text-[10px] font-bold rounded " + a.badgeClass;
+        badgeEl.textContent = a.type;
+      }
+      const shareEl = document.getElementById('insp-agency-share');
+      if (shareEl) shareEl.textContent = `${(a.share * 100).toFixed(1)}% of Civil Service`;
+      const nameEl = document.getElementById('insp-agency-name');
+      if (nameEl) nameEl.textContent = a.name;
+      const entEl = document.getElementById('insp-agency-entities');
+      if (entEl) entEl.textContent = a.entities;
 
-      document.getElementById('insp-headcount').textContent = a.headcount.toLocaleString();
-      document.getElementById('insp-gender-ratio').textContent = `${Math.round(a.femaleRatio * 100)}% F / ${Math.round(a.maleRatio * 100)}% M`;
-      document.getElementById('insp-female-count').textContent = `${a.femaleCount.toLocaleString()} F`;
-      document.getElementById('insp-male-count').textContent = `${a.maleCount.toLocaleString()} M`;
+      const hcEl = document.getElementById('insp-headcount');
+      if (hcEl) hcEl.textContent = a.headcount.toLocaleString();
+      const grEl = document.getElementById('insp-gender-ratio');
+      if (grEl) grEl.textContent = `${Math.round(a.femaleRatio * 100)}% F / ${Math.round(a.maleRatio * 100)}% M`;
+      const fcEl = document.getElementById('insp-female-count');
+      if (fcEl) fcEl.textContent = `${a.femaleCount.toLocaleString()} F`;
+      const mcEl = document.getElementById('insp-male-count');
+      if (mcEl) mcEl.textContent = `${a.maleCount.toLocaleString()} M`;
 
-      document.getElementById('insp-collision-text').textContent = `${(a.collisionProb * 100).toFixed(2)}% internal collision (generates ${a.lossShare.toFixed(1)}% of all islandwide network loss)`;
+      const colEl = document.getElementById('insp-collision-text');
+      if (colEl) colEl.textContent = `${(a.collisionProb * 100).toFixed(2)}% internal collision (generates ${a.lossShare.toFixed(1)}% of all islandwide network loss)`;
 
-      document.getElementById('insp-ext-males').textContent = `${a.extMales.toLocaleString()} Males`;
-      document.getElementById('insp-ext-females').textContent = `${a.extFemales.toLocaleString()} Females`;
+      const emEl = document.getElementById('insp-ext-males');
+      if (emEl) emEl.textContent = `${a.extMales.toLocaleString()} Males`;
+      const efEl = document.getElementById('insp-ext-females');
+      if (efEl) efEl.textContent = `${a.extFemales.toLocaleString()} Females`;
 
       const topSourcesEl = document.getElementById('insp-top-sources');
       if (topSourcesEl) {
@@ -4872,14 +3444,22 @@
         ).join('');
       }
 
-      document.getElementById('insp-liquidity-rating').textContent = a.liquidityRating;
-      document.getElementById('insp-liquidity-rating').className = "text-xs font-bold mt-0.5 " + a.liquidityClass;
+      const liqEl = document.getElementById('insp-liquidity-rating');
+      if (liqEl) {
+        liqEl.textContent = a.liquidityRating;
+        liqEl.className = "text-xs font-bold mt-0.5 " + a.liquidityClass;
+      }
 
-      document.getElementById('insp-routing-desc').textContent = a.routingDesc;
-      document.getElementById('insp-policy-fix').textContent = a.policyFix;
+      const rdEl = document.getElementById('insp-routing-desc');
+      if (rdEl) rdEl.textContent = a.routingDesc;
+      const pfEl = document.getElementById('insp-policy-fix');
+      if (pfEl) pfEl.textContent = a.policyFix;
 
-      document.getElementById('insp-priority-badge').textContent = a.priorityBadge;
-      document.getElementById('insp-priority-badge').className = "px-2 py-0.5 rounded font-bold " + a.priorityClass;
+      const pbEl = document.getElementById('insp-priority-badge');
+      if (pbEl) {
+        pbEl.textContent = a.priorityBadge;
+        pbEl.className = "px-2 py-0.5 rounded font-bold " + a.priorityClass;
+      }
     }
 
     function setAgencyPolicyMode(mode) {
@@ -4887,6 +3467,8 @@
       const btnMoe = document.getElementById('agency-pol-btn-moe');
       const btnHealth = document.getElementById('agency-pol-btn-health');
       const btnFull = document.getElementById('agency-pol-btn-full');
+
+      if (!btnBase || !btnMoe || !btnHealth || !btnFull) return;
 
       // Reset button styles
       [btnBase, btnMoe, btnHealth, btnFull].forEach(b => {
@@ -4906,65 +3488,86 @@
 
       if (mode === 'baseline') {
         btnBase.className = "px-3 py-1.5 rounded-md font-bold transition-all text-amber-400 bg-amber-500/15 border border-amber-500/30";
-        capEl.textContent = "88.08%";
-        barEl.style.width = "88.08%";
-        barEl.className = "bg-indigo-500 h-full transition-all duration-500";
-        capSubEl.textContent = "Preserves 88% of edges under whole-agency ban";
-        lossEl.textContent = "-12.57%";
-        lossSubEl.textContent = "Σ p_k² = 0.125746 across 11 clusters";
-        moeSevEl.textContent = "🚨 CRITICAL (38.5%)";
-        moeSevEl.className = "text-xl font-black text-rose-400 font-mono mt-1";
-        moeSubEl.textContent = "6,547 internal male teachers locked out";
-        birthsEl.textContent = "+143.8 infants";
-        birthsSubEl.textContent = "Yields +0.00419 points national TFR lift";
-        descEl.innerHTML = `<strong class="text-amber-400">Status Quo Operating Model:</strong> A strict whole-agency prohibition (<span class="font-mono">a(u) ≠ a(v)</span>) is applied across all ministries and statutory boards. While preventing HR reporting conflicts, it concentrates 38.5% of all matching friction on MOE female educators and locks out 65,000 healthcare professionals.`;
+        if (capEl) capEl.textContent = "88.08%";
+        if (barEl) {
+          barEl.style.width = "88.08%";
+          barEl.className = "bg-indigo-500 h-full transition-all duration-500";
+        }
+        if (capSubEl) capSubEl.textContent = "Preserves 88% of edges under whole-agency ban";
+        if (lossEl) lossEl.textContent = "-12.57%";
+        if (lossSubEl) lossSubEl.textContent = "Σ p_k² = 0.125746 across 11 clusters";
+        if (moeSevEl) {
+          moeSevEl.textContent = "🚨 CRITICAL (38.5%)";
+          moeSevEl.className = "text-xl font-black text-rose-400 font-mono mt-1";
+        }
+        if (moeSubEl) moeSubEl.textContent = "6,547 internal male teachers locked out";
+        if (birthsEl) birthsEl.textContent = "+143.8 infants";
+        if (birthsSubEl) birthsSubEl.textContent = "Yields +0.00419 points national TFR lift";
+        if (descEl) descEl.innerHTML = `<strong class="text-amber-400">Status Quo Operating Model:</strong> A strict whole-agency prohibition (<span class="font-mono">a(u) ≠ a(v)</span>) is applied across all ministries and statutory boards. While preventing HR reporting conflicts, it concentrates 38.5% of all matching friction on MOE female educators and locks out 65,000 healthcare professionals.`;
       } else if (mode === 'moe_school') {
         btnMoe.className = "px-3 py-1.5 rounded-md font-bold transition-all text-indigo-400 bg-indigo-500/15 border border-indigo-500/30";
-        capEl.textContent = "95.21%";
-        barEl.style.width = "95.21%";
-        barEl.className = "bg-indigo-400 h-full transition-all duration-500";
-        capSubEl.textContent = "+7.13% capacity gain from school-level matching";
-        lossEl.textContent = "-8.22%";
-        lossSubEl.textContent = "MOE internal collision reduced by 90%";
-        moeSevEl.textContent = "🟢 RESOLVED (Mild)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Cross-school matching unlocked islandwide";
-        birthsEl.textContent = "+168.4 infants";
-        birthsSubEl.textContent = "+24.6 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-indigo-400">Reform A (MOE Cross-School Exemption):</strong> The restriction is refined from whole-ministry to "Same School / Same Division". Teachers in different primary and secondary schools are freely matchable, immediately reclaiming 30,000 potential matching edges and resolving the female educator bottleneck.`;
+        if (capEl) capEl.textContent = "95.21%";
+        if (barEl) {
+          barEl.style.width = "95.21%";
+          barEl.className = "bg-indigo-400 h-full transition-all duration-500";
+        }
+        if (capSubEl) capSubEl.textContent = "+7.13% capacity gain from school-level matching";
+        if (lossEl) lossEl.textContent = "-8.22%";
+        if (lossSubEl) lossSubEl.textContent = "MOE internal collision reduced by 90%";
+        if (moeSevEl) {
+          moeSevEl.textContent = "🟢 RESOLVED (Mild)";
+          moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
+        }
+        if (moeSubEl) moeSubEl.textContent = "Cross-school matching unlocked islandwide";
+        if (birthsEl) birthsEl.textContent = "+168.4 infants";
+        if (birthsSubEl) birthsSubEl.textContent = "+24.6 incremental live births annually";
+        if (descEl) descEl.innerHTML = `<strong class="text-indigo-400">Reform A (MOE Cross-School Exemption):</strong> The restriction is refined from whole-ministry to "Same School / Same Division". Teachers in different primary and secondary schools are freely matchable, immediately reclaiming 30,000 potential matching edges and resolving the female educator bottleneck.`;
       } else if (mode === 'healthcare') {
         btnHealth.className = "px-3 py-1.5 rounded-md font-bold transition-all text-cyan-400 bg-cyan-500/15 border border-cyan-500/30";
-        capEl.textContent = "96.84%";
-        barEl.style.width = "96.84%";
-        barEl.className = "bg-cyan-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Candidate denominator expands from 93k to 158k";
-        lossEl.textContent = "-10.03%";
-        lossSubEl.textContent = "MOE share diluted from 22.0% to 12.9%";
-        moeSevEl.textContent = "🟢 DILUTED (14.2%)";
-        moeSevEl.className = "text-xl font-black text-cyan-400 font-mono mt-1";
-        moeSubEl.textContent = "SingHealth, NUHS & NHG absorb excess supply";
-        birthsEl.textContent = "+222.2 infants";
-        birthsSubEl.textContent = "+78.4 incremental live births annually";
-        descEl.innerHTML = `<strong class="text-cyan-400">Reform B (Incorporate 65,000 Public Healthcare Workers):</strong> Clause 6.1.1 is amended to admit SingHealth, National Healthcare Group (NHG), and NUHS. Adding 65k officers dilutes ministry concentrations, injects thousands of balanced healthcare professionals, and expands annual live births by over 50%.`;
+        if (capEl) capEl.textContent = "96.84%";
+        if (barEl) {
+          barEl.style.width = "96.84%";
+          barEl.className = "bg-cyan-400 h-full transition-all duration-500";
+        }
+        if (capSubEl) capSubEl.textContent = "Candidate denominator expands from 93k to 158k";
+        if (lossEl) lossEl.textContent = "-10.03%";
+        if (lossSubEl) lossSubEl.textContent = "MOE share diluted from 22.0% to 12.9%";
+        if (moeSevEl) {
+          moeSevEl.textContent = "🟢 DILUTED (14.2%)";
+          moeSevEl.className = "text-xl font-black text-cyan-400 font-mono mt-1";
+        }
+        if (moeSubEl) moeSubEl.textContent = "SingHealth, NUHS & NHG absorb excess supply";
+        if (birthsEl) birthsEl.textContent = "+222.2 infants";
+        if (birthsSubEl) birthsSubEl.textContent = "+78.4 incremental live births annually";
+        if (descEl) descEl.innerHTML = `<strong class="text-cyan-400">Reform B (Incorporate 65,000 Public Healthcare Workers):</strong> Clause 6.1.1 is amended to admit SingHealth, National Healthcare Group (NHG), and NUHS. Adding 65k officers dilutes ministry concentrations, injects thousands of balanced healthcare professionals, and expands annual live births by over 50%.`;
       } else if (mode === 'full_reform') {
         btnFull.className = "px-3 py-1.5 rounded-md font-bold transition-all text-emerald-400 bg-emerald-500/15 border border-emerald-500/30";
-        capEl.textContent = "98.42%";
-        barEl.style.width = "98.42%";
-        barEl.className = "bg-emerald-400 h-full transition-all duration-500";
-        capSubEl.textContent = "Near-complete graph connectivity across public sector";
-        lossEl.textContent = "-8.52%";
-        lossSubEl.textContent = "Sub-hospital cluster exclusion applied";
-        moeSevEl.textContent = "✨ OPTIMAL (0% Penalty)";
-        moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
-        moeSubEl.textContent = "Complete liquidity achieved across all agencies";
-        birthsEl.textContent = "+254.8 infants";
-        birthsSubEl.textContent = "+111.0 births/yr (+0.0074 national TFR lift)";
-        descEl.innerHTML = `<strong class="text-emerald-400">Universal Public Sector Matching Protocol:</strong> Combines MOE cross-school exemptions with full public healthcare integration. Graph matching friction drops to negligible levels, transforming FirstDate from an experimental silo into Singapore's most effective national family formation engine.`;
+        if (capEl) capEl.textContent = "98.42%";
+        if (barEl) {
+          barEl.style.width = "98.42%";
+          barEl.className = "bg-emerald-400 h-full transition-all duration-500";
+        }
+        if (capSubEl) capSubEl.textContent = "Near-complete graph connectivity across public sector";
+        if (lossEl) lossEl.textContent = "-8.52%";
+        if (lossSubEl) lossSubEl.textContent = "Sub-hospital cluster exclusion applied";
+        if (moeSevEl) {
+          moeSevEl.textContent = "✨ OPTIMAL (0% Penalty)";
+          moeSevEl.className = "text-xl font-black text-emerald-400 font-mono mt-1";
+        }
+        if (moeSubEl) moeSubEl.textContent = "Complete liquidity achieved across all agencies";
+        if (birthsEl) birthsEl.textContent = "+254.8 infants";
+        if (birthsSubEl) birthsSubEl.textContent = "+111.0 births/yr (+0.0074 national TFR lift)";
+        if (descEl) descEl.innerHTML = `<strong class="text-emerald-400">Universal Public Sector Matching Protocol:</strong> Combines MOE cross-school exemptions with full public healthcare integration. Graph matching friction drops to negligible levels, transforming FirstDate from an experimental silo into Singapore's most effective national family formation engine.`;
       }
     }
 
-      // Initialize Tab 8 table on startup
+    // Call populateAgencyTable on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', populateAgencyTable);
+    } else {
       populateAgencyTable();
-</script>
+    }
+
+  </script>
 </body>
 </html>
