@@ -21,6 +21,7 @@ Access the complete dashboard and simulation suite directly in your browser:
 5. **Financial Ledger & Singlehood Arbitrage**: Comprehensive 0-to-22y child raising costs (Mid-Tier S$564,200 vs High-SES S$1,160,400) minus state subsidies, alongside the S$650,000+ financial arbitrage of remaining single past age 35.
 6. **Live Match & ROI Simulator**: Client-side interactive Monte Carlo calculator to test custom age, race, religion, and MX-grade pairings with real-time odds of 2nd date, marriage, and live births.
 7. **Dating Platform Benchmarks & Policy Reforms**: Head-to-head comparison against Coffee Meets Bagel, Bumble, Hinge, Tinder, Kopi Date, Lunch Actually, and Muzz, followed by 5 structural policy recommendations to move the demographic needle.
+8. **Inter-Agency Matching Dynamics & Headcount Directory**: Full 11-cluster Whole-of-Government master matrix analyzing cross-agency edge loss (-12.57%), gender liquidity ratings, complementary routing sources, and an interactive Whole-of-Government Headcount Audit reconciling the MOF FY2026 Budget Book (24 Heads of Expenditure = 84,194 permanent staff) against Data.gov.sg (88,664 Ministries + 69,333 Stat Boards = 157,997 Total).
 
 ---
 
@@ -128,3 +129,69 @@ python mcp-servers/firstdate_graph_agent_loop.py
 
 ## 📄 License & Attribution
 Designed by Antigravity IDE with Gemini 3.8 Flash High Effort. Educational and policy research simulator — not affiliated with or endorsed by GovTech Singapore, PSD, or SingStat.
+
+
+---
+
+## 🏛 Whole-of-Government Headcount Audit: MOF Budget Book vs Data.gov.sg
+
+A central methodological requirement of FirstDate's actuarial evaluation is ensuring that all agency headcounts, gender supplies, and cross-ministry matching capacities are mathematically grounded in official government data sources:
+
+1. **MOF Revenue & Expenditure Estimates (Singapore Budget Book FY2026)**: Reports the **authorised permanent establishment** (voted posts under the Supply Bill) for all **24 Heads of Expenditure (8 Organs of State + 16 Ministries)**.
+   * *Actual FY2024 Permanent Staff:* **82,957**
+   * *Revised FY2025 Permanent Staff:* **84,194**
+   * *Estimated FY2026 Permanent Staff:* **87,950**
+   * [Download Official MOF Budget Book PDF (577 pages)](https://files.app.optical.gov.sg/mofbudget/production/assets/031bf134-5b42-4668-80e2-8743b0fe6c97.pdf)
+2. **Data.gov.sg / Public Service Division (PSD)**: Reports the **actual employee headcount** (`d_ded51ba4680464b706b95069018ffcac`):
+   * *Ministries & Organs of State (Civil Service):* **88,664** (39,420 M / 49,244 F)
+   * *Statutory Boards (Autonomous Corporate Entities):* **69,333** (35,542 M / 33,791 F)
+   * *Total Government Employees in Public Service:* **157,997** (74,962 M / 83,035 F)
+
+### Complete 24-Head Permanent Establishment Schedule (MOF Budget Book FY2026)
+
+| Head Code | Entity / Ministry / Organ of State | PDF Page | Actual FY2024 | Revised FY2025 | Estimated FY2026 | Key Schemes & Service Divisions |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Organs of State** | | | | | | |
+| **Head A** | Civil List (Presidency) | p. 58 | 68 | 72 | 72 | President, Aides-de-Camp, Butlers, MX Scheme |
+| **Head B** | Attorney-General's Chambers (AGC) | p. 63 | 631 | 648 | 694 | Legal Service (370), MX Scheme (235) |
+| **Head C** | Auditor-General's Office (AGO) | p. 68 | 198 | 194 | 211 | Auditing Service (173), Corporate Support |
+| **Head D** | Cabinet Office | p. 74 | 7 | 7 | 12 | Administrative Officers |
+| **Head E** | Judicature (Supreme & State Courts) | p. 79 | 1,050 | 1,118 | 1,154 | MX Scheme (661), Judicial & Legal (257) |
+| **Head F** | Parliament | p. 84 | 58 | 57 | 62 | Parliamentary Officers, Language Executives |
+| **Head G** | Presidential Councils | p. 90 | 5 | 2 | 2 | Minority Rights & Presidential Secretariats |
+| **Head H** | Public Service Commission (PSC) | p. 94 | 11 | 10 | 12 | Statutory Commissioners |
+| **Subtotal** | **8 Organs of State** | | **2,028** | **2,108** | **2,219** | **2.5% of Civil Service** |
+| | | | | | | |
+| **Ministries** | | | | | | |
+| **Head I** | Social & Family Development (MSF) | p. 101 | 2,801 | 2,998 | 3,100 | MX Scheme (2,898), Social Service schemes |
+| **Head J** | Ministry of Defence (MINDEF Civilian HQ) | p. 113 | 279 | 70 | 70 | Civilian HQ only. *(SAF combatants & ~5k DXOs under Defence Vote)* |
+| **Head K** | Ministry of Education (MOE) | p. 123 | 38,784 | 39,386 | 40,079 | Education Service (31.2k), MX (2.2k), AEDs (1.2k), MK (1.0k) |
+| **Head L** | Sustainability & Environment (MSE) | p. 143 | 246 | 236 | 257 | Ministry HQ *(NEA, PUB, SFA are Stat Boards)* |
+| **Head M** | Ministry of Finance (MOF) | p. 157 | 2,137 | 2,098 | 2,229 | MX Scheme (1,075), Singapore Customs Unified (768) |
+| **Head N** | Ministry of Foreign Affairs (MFA) | p. 169 | 1,026 | 1,101 | 1,189 | Foreign Service Officers (620), Admin Specialists (396) |
+| **Head O** | Ministry of Health (MOH HQ) | p. 179 | 1,741 | 1,153 | 1,153 | Ministry HQ only *(SingHealth, NUHS, NHG are healthcare clusters)* |
+| **Head P** | Ministry of Home Affairs (MHA) | p. 193 | 26,456 | 27,274 | 29,247 | Police (13.1k), ICA (5.5k), SCDF (2.7k), MX (2.5k), SPS (2.0k), CNB (0.8k) |
+| **Head Q** | Digital Development & Info (MDDI) | p. 213 | 1,113 | 1,138 | 1,286 | MX Scheme (564), Cyber Security Agency CSA (300) |
+| **Head R** | Ministry of Law (MinLaw) | p. 225 | 524 | 541 | 589 | MX Scheme (428), Legal Service Officers |
+| **Head S** | Ministry of Manpower (MOM) | p. 237 | 2,174 | 2,320 | 2,494 | MX Scheme (1,854), Labour Inspectors & Policy Officers |
+| **Head T** | National Development (MND) | p. 247 | 457 | 399 | 471 | Ministry HQ *(HDB, URA, BCA, NParks are Stat Boards)* |
+| **Head U** | Prime Minister's Office (PMO) | p. 263 | 1,214 | 1,307 | 1,363 | PSD, NPTD, SNDGO, CPIB, MX Scheme (1,007) |
+| **Head V** | Trade & Industry (MTI) | p. 275 | 1,044 | 1,107 | 1,201 | MX Scheme (530), SingStat Statisticians (220) |
+| **Head W** | Ministry of Transport (MOT) | p. 289 | 145 | 166 | 166 | Ministry HQ *(LTA, CAAS, MPA are Stat Boards)* |
+| **Head X** | Culture, Community & Youth (MCCY) | p. 301 | 788 | 792 | 837 | Youth Executives (390), MX Scheme (342) |
+| **Subtotal** | **16 Ministries** | | **80,929** | **82,086** | **85,731** | **97.5% of Civil Service** |
+| | | | | | | |
+| **TOTAL** | **Permanent Civil Service Staff** | | **82,957** | **84,194** | **87,950** | **Total Authorised Permanent Establishment** |
+
+### Mathematical Bridge: 84,194 (Budget) vs 88,664 (Data.gov.sg) vs 92,997 (FirstDate)
+
+1. **Reconciling the +4,470 (+5.0%) variance between Budget Book and Data.gov.sg**:
+   * **MINDEF Civilian Defence Executive Officers (DXOs):** Head J in the Budget Book records only 70 civilian HQ permanent posts (SAF combatants and DXOs are funded under the confidential Defence Vote). In Data.gov.sg, ~4,000 to 5,000 civilian DXOs are categorized under "Ministries and Organs of State".
+   * **Temporary, Contract & Daily-Rated Staff:** Data.gov.sg counts all employees. The Budget Book accounts for temporary/contract personnel separately under Object Code 1600 ($553.4M in Revised FY2025). MFA alone employs 507 locally recruited staff; MOE employs hundreds of contract/adjunct educators.
+2. **Reconciling Statutory Boards (69,333 in Data.gov.sg)**:
+   * Statutory Boards (HDB, LTA, CPF, IRAS, GovTech, MAS, PUB, etc.) are independent corporate bodies created by statute. Their payroll is funded through operating revenue or block grants (Object Code 3100 "Grants to Statutory Boards"), rather than the Main Estimates Establishment List.
+3. **Reconciling the 92,997 FirstDate Specified Entities Baseline**:
+   $$egin{aligned}
+   	ext{FirstDate Specified Entities (92,997)} &= 	ext{Civilian Civil Servants (MOE 20.5k, MHA Civ/ICA 8.8k, MINDEF DXO 6.0k, MSF/MOM/Others 16.9k)} \
+   &\quad + 	ext{Core Civilian Statutory Boards (Infra 15.3k, Finance 10.7k, Community 9.7k, Tech 5.1k)}
+   \end{aligned}$$
