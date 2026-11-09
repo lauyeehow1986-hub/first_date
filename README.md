@@ -25,22 +25,24 @@ Access the complete dashboard and simulation suite directly in your browser:
 
 ---
 
-## 📊 Core Empirical Findings: Dual Scope Analysis
+## 📊 Core Empirical Findings: Whole Public Service Baseline
 
-The live dashboard features an interactive **Dual Scope Switcher** on Tab 1 comparing the legal statutory scope against the conservative civilian pilot baseline:
+The dashboard grounds its analysis in the official **157,997 Public Service workforce** (88,664 Ministries + 69,333 Statutory Boards) published on Data.gov.sg:
 
-| Metric | 🌟 Full Statutory Reality (158k) | 🏛 Scoped Civilian Pilot (93k) | Actuarial & Demographic Significance |
-| :--- | :---: | :---: | :--- |
-| **Gross Eligible Public Service Base** | **157,997** | **92,997** | 100% of Ministries (88.7k) + Stat Boards (69.3k) vs civilian-only pilot |
-| **Uniformed Personnel Eligibility** | **Included (+18.5k MHA Home Team)** | Excluded | Home Team (Police, SCDF, Prisons, CNB on Budget Head P p. 135) are eligible via Singpass. (Note: MINDEF Head J p. 113 lists only 70 civilian HQ staff; SAF military personnel are classified under Code 2900 Defence Block Vote) |
-| **Public Healthcare Clusters Exclusion** | **~65k–80k (MOHH Clusters)** | **~65k–80k (MOHH Clusters)** | Corporatised under MOH Holdings: SingHealth (>40k), NHG (~22k), NUHS (~15k) total ~77k–80k gross staff. SingStat m870011 tracks ~52.5k registered public clinical staff (11.2k doctors, 32.1k nurses, 9.2k allied/pharmacists); part of Singapore's 200k+ wider national Health & Social Services sector (MOM SSIC Q) |
-| **Unpartnered Singles (Ages 21–45)** | **20,700** | **12,250** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
-| **Turan Bipartite Matching Capacity** | **96.40%** | **88.08%** | **Uniformed male influx neutralizes the MOE female teacher squeeze!** (Only 3.6% loss vs 12.6%) |
-| **Annual Active Target Pool** | **6,458 users** | **3,828 users** | Onboarded FormSG / Singpass cohort at 31.2% adoption |
-| **Annual Completed Live Births** | **+267.6 births/yr** | **+143.8 births/yr** | **+68.7% higher birth yield** under full statutory participation |
-| **National TFR Lift** | **+0.00793 points** | **+0.00419 points** | Meaningfully increases demographic impact, though still below +0.05 threshold |
-| **Prime Golden Ageband** | **F: 25–29 \| M: 27–31** | **F: 25–29 \| M: 27–31** | Conception pre-34 avoids ovarian cliff; paternal pre-35 avoids sperm DNA fragmentation |
-| **The Singlehood Arbitrage (Age 35)** | **> S$650,000** | **> S$650,000** | Retained net worth via single 2-room Flexi BTO + S$115k grants vs wedding/child/divorce costs |
+| Metric | 🏛️ Official Public Service Baseline (158k) | Actuarial & Demographic Significance |
+| :--- | :---: | :--- |
+| **Gross Public Service Base** | **157,997** | 100% of Ministries (88,664) + Statutory Boards (69,333) on Data.gov.sg `d_8b7ca60d610db92a752565f153af4b6a` |
+| **Public Healthcare Clusters Exclusion** | **~77k–80k (MOHH Clusters)** | Corporatised under MOH Holdings: SingHealth (>40k), NHG (~22k), NUHS (~15k) total ~77k–80k gross staff. SingStat m870011 tracks ~52.5k registered public clinical staff (11.2k doctors, 32.1k nurses, 9.2k allied/pharmacists); excluded externally under FirstDate Clause 6.1.1 |
+| **Courtship Cohort (Ages 21–45)** | **88,500** | 56.0% of the Public Service falls within prime marriageable and reproductive age bands (PSD Age Profile) |
+| **Legally Single Public Officers** | **41,600** | 47.0% never-married baseline weighted by SingStat Table M810681 citizen singlehood proportions |
+| **Unpartnered Singles (Addressable Pool)** | **20,700** | Singles after subtracting the empirical 50.2% pre-partnered/BTO-queue rate (NPTD Survey) |
+| **Turan Bipartite Matching Capacity** | **96.40%** | Cross-agency edge retention across Ministries & Stat Boards (only 3.6% loss under $a(u) 
+eq a(v)$ rule) |
+| **Annual Active Target Pool** | **6,458 users** | Onboarded FormSG / Singpass cohort at 31.2% annual adoption rate |
+| **Annual Completed Live Births** | **+267.6 births/yr** | Projected annual live births from solemnized marriages following dating progression |
+| **National TFR Lift** | **+0.00793 points** | Yields less than 16% of the minimum policy significance threshold (+0.0500) |
+| **Prime Golden Ageband** | **F: 25–29 \| M: 27–31** | Conception pre-34 avoids ovarian cliff; paternal pre-35 avoids sperm DNA fragmentation |
+| **The Singlehood Arbitrage (Age 35)** | **> S$650,000** | Retained net worth via single 2-room Flexi BTO + S$115k grants vs wedding/child/divorce costs |
 
 ---
 
